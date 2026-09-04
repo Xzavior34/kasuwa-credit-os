@@ -1,0 +1,20 @@
+{
+  "name": "kasuwa-relayer",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Watches source-chain economic events, generates Attestcoin/USC proofs via @gluwa/usc-sdk, and submits verified evidence to AttestcoinVerifier on Creditcoin.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/watcher.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@gluwa/usc-sdk": "0.18.0",
+    "ethers": "^6.13.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "chainId": 102031,
+  "rpc": "https://rpc.cc3-testnet.creditcoin.network",
+  "proofBuilderUrl": "https://prover.cc3-testnet.creditcoin.network/",
+  "blockProverUsed": "0x0000000000000000000000000000000000000FD2",
+  "chainInfoPrecompile": "0x0000000000000000000000000000000000000FD3",
+  "usingRealCreditcoinPrecompile": 1,
+  "sourceChainKey": 2,
+  "attestcoinVerifier": "",
+  "creditPassport": "",
+  "creditEngine": "",
+  "policyEngine": "",
+  "creditLine": "",
+  "liquidityPool": "",
+  "economicEvents": "",
+  "deployer": ""
+}

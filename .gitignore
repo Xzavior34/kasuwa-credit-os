@@ -1,0 +1,15 @@
+# foundry
+cache/
+out/
+broadcast/
+
+# node
+node_modules/
+relayer/dist/
+relayer/state/
+
+# secrets
+.env
+*.key
+
+# sdk probe scratch (not part of the repo)
