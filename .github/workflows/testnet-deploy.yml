@@ -88,19 +88,21 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.TESTNET_PRIVATE_KEY }}
         run: |
-          TX_HASH=$(cast send "$ECON_ADDR" \
+          cast send "$ECON_ADDR" \
             "emitPaymentSettled(bytes32,uint256,bytes32)" \
             "${{ inputs.merchant_id }}" "${{ inputs.amount }}" \
             "0x0000000000000000000000000000000000000000000000000000000000000001" \
             --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
             --private-key "$PRIVATE_KEY" \
-            --json | python3 -c "import json,sys;print(json.load(sys.stdin)['transactionHash'])")
+            --json > /tmp/send_output.json || (cat /tmp/send_output.json && exit 1)
+          cat /tmp/send_output.json
+          TX_HASH=$(python3 -c "import json,sys;d=json.load(open('/tmp/send_output.json'));print(d.get('transactionHash') or d.get('txHash') or d.get('hash') or sys.exit(1))")
           echo "SOURCE_TX_HASH=$TX_HASH" >> "$GITHUB_ENV"
           echo "Real Sepolia source tx: https://sepolia.etherscan.io/tx/$TX_HASH"
           # Confirm it actually succeeded — do not assume.
           cast receipt "$TX_HASH" --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" --json > /tmp/source_receipt.json
           cat /tmp/source_receipt.json
-          STATUS=$(python3 -c "import json;print(json.load(open('/tmp/source_receipt.json'))['status'])")
+          STATUS=$(python3 -c "import json;d=json.load(open('/tmp/source_receipt.json'));print(d.get('status'))")
           echo "Source receipt status: $STATUS"
           if [ "$STATUS" != "1" ] && [ "$STATUS" != "0x1" ]; then
             echo "::error::Source transaction did not succeed (status=$STATUS) — stopping rather than pretending it did."
@@ -134,13 +136,15 @@ jobs:
           # BlockProver precompile verification on CC3. See docs/ANTIGRAVITY_HANDOFF.md step 4 —
           # "the single most important step in this entire handoff."
           cd ..
-          TX_HASH2=$(cast send "$ECON_ADDR" \
+          cast send "$ECON_ADDR" \
             "emitPaymentSettled(bytes32,uint256,bytes32)" \
             "${{ inputs.merchant_id }}" "${{ inputs.amount }}" \
             "0x0000000000000000000000000000000000000000000000000000000000000002" \
             --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
             --private-key "${{ secrets.TESTNET_PRIVATE_KEY }}" \
-            --json | python3 -c "import json,sys;print(json.load(sys.stdin)['transactionHash'])")
+            --json > /tmp/send_output2.json || (cat /tmp/send_output2.json && exit 1)
+          cat /tmp/send_output2.json
+          TX_HASH2=$(python3 -c "import json,sys;d=json.load(open('/tmp/send_output2.json'));print(d.get('transactionHash') or d.get('txHash') or d.get('hash') or sys.exit(1))")
           echo "Second Sepolia source tx (relayer should pick this one up live): https://sepolia.etherscan.io/tx/$TX_HASH2"
           echo "SOURCE_TX_HASH_2=$TX_HASH2" >> "$GITHUB_ENV"
           cd relayer
