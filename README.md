@@ -7,14 +7,18 @@ A programmable credit state layer for Creditcoin: cryptographically verified eco
 deterministic policy engine derives borrowing capacity. The loan is the first application; the
 credit state is the product.
 
-**Status: contracts (38 tests, all passing) + relayer + real deployment scripts + a Proof
-Explorer/Security Lab frontend, all actually run end-to-end against a local Anvil chain (real
-addresses, real tx hashes, real attack rejections). The relayer-trust gap flagged in earlier
-review has been closed: AttestcoinVerifier now derives event content on-chain from the proven
-transaction bytes rather than trusting relayer claims — validated against the real
+**Status: contracts (38 tests previously confirmed passing, +4 new reentrancy tests in
+`test/reentrancy.t.sol` added since — see "Honesty note" below, this newest batch has not yet
+been re-run through `forge test` in this environment) + relayer + real deployment scripts + a
+Proof Explorer/Security Lab frontend, all actually run end-to-end against a local Anvil chain
+(real addresses, real tx hashes, real attack rejections). The relayer-trust gap flagged in
+earlier review has been closed: AttestcoinVerifier now derives event content on-chain from the
+proven transaction bytes rather than trusting relayer claims — validated against the real
 `@gluwa/usc-sdk` encoder, not just hand-built fixtures (see `docs/SECURITY_MODEL.md` "Relayer
-honesty"). No live public-testnet deployment yet — see "Honesty note" below before assuming
-otherwise.**
+honesty"). A real reentrancy bug in `CreditLine.borrow` (exposure recorded after, not before, the
+value transfer) has also just been found and fixed — see `docs/SECURITY_MODEL.md` "Reentrancy —
+fixed, previously mis-judged as low-risk". No live public-testnet deployment yet — see "Honesty
+note" below before assuming otherwise.**
 
 ## What is Kasuwa?
 
@@ -50,7 +54,8 @@ See `docs/ARCHITECTURE.md` for the full data flow and contract-by-contract break
 # Contracts (forge-std is excluded from this archive as a dependency - fetch it once first)
 forge install foundry-rs/forge-std --no-commit
 forge build
-forge test -vv          # 38 tests, 12 files, all passing as of this build
+forge test -vv          # 38 tests, 12 files, all passing as of the last confirmed run;
+                         # +4 reentrancy tests added in test/reentrancy.t.sol since — re-run to confirm
 
 # Real local deployment + full vertical slice (deploy, real source tx, evidence, capacity
 # update, borrow, four live attacks) against a local Anvil chain - see docs/DEMO.md

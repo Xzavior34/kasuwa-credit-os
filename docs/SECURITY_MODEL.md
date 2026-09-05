@@ -111,8 +111,15 @@ from the SDK source indicates it should work identically for all of them.
   recognized" check shown conceptually in a Proof Explorer UI (directive section 28) would use
   `PrecompileChainInfoProvider.getSupportedChainByKey` for this; the current contract doesn't
   call it. Not implemented due to time, not because it was judged unnecessary.
-- **`LiquidityPool` uses native value transfer with a plain `.call`, no reentrancy guard.** Given
-  the simple flow (deposit/withdraw/fundCreditLine/receiveRepayment, no external calls back into
-  this contract expected from a standard EOA or the audited `CreditLine`), this was judged
-  low-risk for the MVP, but a real deployment should add OpenZeppelin's `ReentrancyGuard` before
-  handling real value.
+- **Reentrancy — fixed, previously mis-judged as low-risk.** An earlier version of this
+  document judged `LiquidityPool`'s plain `.call` as low-risk because no external call back into
+  the protocol was "expected from a standard EOA or the audited `CreditLine`" — but a *borrower*
+  need not be a standard EOA. `CreditLine.borrow` called `liquidityPool.fundCreditLine`
+  (an external value transfer to the caller) *before* `creditPassport.recordBorrow` updated
+  exposure, so a malicious borrower contract's `receive()` could call `borrow` again while
+  `currentExposure` was still stale — bypassing `maxBorrowerExposure` on every re-entrant call,
+  bounded only by gas. This is now fixed two ways: `src/lib/ReentrancyGuard.sol` (a minimal,
+  dependency-free guard — no OpenZeppelin dependency needed for this) applied via `nonReentrant`
+  to `CreditLine.borrow`/`repay` and `LiquidityPool.withdraw`/`fundCreditLine`; and the
+  effects/interaction order in `CreditLine.borrow` corrected so `recordBorrow` runs before
+  `fundCreditLine` regardless. See `test/reentrancy.t.sol` and `docs/THREAT_MODEL.md`.

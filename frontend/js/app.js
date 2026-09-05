@@ -342,7 +342,7 @@ function getStageDetails(nodeKey, logRecord) {
       return {
         title: "Stage 04: TransactionEvidence.sol On-Chain Decoder",
         grid: [
-          { lbl: "Decoder Architecture:", val: "Independent on-chain EVM log parser (Zero Relayer Trust)" },
+          { lbl: "Decoder Architecture:", val: "Independent on-chain EVM log parser (The relayer is not trusted for economic facts; destination contract independently verifies and decodes evidence)" },
           { lbl: "Allowlist Guard:", val: "Requires log.emitter == registeredSourceContracts[chainKey, emitter]" },
           { lbl: "Decoded Merchant ID:", val: state.merchantId },
           { lbl: "Decoded Event Type:", val: `${typeName} (Type ${eventType})` },

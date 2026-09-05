@@ -10,7 +10,7 @@ For each threat: what the protocol does about it, and where that's tested.
 | Failed source transactions counted as successful | Explicit `sourceTxSuccess` check separate from inclusion proof | `test/failed-source-transaction.t.sol` |
 | Malformed/invalid proof data | Delegated entirely to the real BlockProver precompile's `verify()` — this contract has no fallback path that accepts unverified data | `test/failed-source-transaction.t.sol::test_verificationItself_failing_isRejectedSeparately` |
 | Unauthorized admin actions | `onlyAdmin` modifier on all privileged setters (`registerSourceContract`, `pause`, `setLimits`, etc.) | `test/PolicyEngine.t.sol::test_onlyAdminCanPauseOrChangeLimits`, `test/unauthorized-relayer.t.sol` |
-| Reentrancy | No untrusted external calls occur before state updates in `CreditPassport`/`CreditLine`; `LiquidityPool`'s `.call` for value transfer happens after internal accounting updates (checks-effects-interactions). No `ReentrancyGuard` yet — see Security Model "Known limitations". | Not yet covered by a dedicated fuzz/attack test — flagged as a gap |
+| Reentrancy | Fixed. `src/lib/ReentrancyGuard.sol` (minimal, dependency-free) applied via `nonReentrant` to every function that makes a native-value external call: `CreditLine.borrow`/`repay`, `LiquidityPool.withdraw`/`fundCreditLine`. `CreditLine.borrow` also had its effects/interaction order corrected — `recordBorrow` (exposure update) now runs *before* `fundCreditLine` (the value transfer), not after, closing a real bypass of `maxBorrowerExposure` that a malicious borrower's `receive()` could otherwise exploit during the funding callback. | `test/reentrancy.t.sol` (4 tests: blocked reentrant borrow, exposure recorded exactly once, blocked reentrant withdraw, LP balance debited exactly once) |
 | Integer overflow/underflow | Solidity 0.8.24 has built-in overflow checks; explicit underflow guards in `CreditEngine` (`missedPenalty >= raw ? 0 : raw - missedPenalty`) and `CreditPassport`/`LiquidityPool` exposure/balance arithmetic | `test/CreditEngine.t.sol::test_missedPenaltyCannotUnderflowBelowZero`, fuzz test `testFuzz_capacityAlwaysWithinBounds` |
 | Stale proof / proof for wrong chain or height | `chainKey`/`height` are explicit arguments to `blockProver.verify`, not inferred | Implicit in `test/fake-source.t.sol` scenarios; not separately fuzzed for arbitrary chainKey/height combinations — gap |
 | Duplicate events (content-level, not identity-level) | Explicitly *not* deduplicated by content — only by `(chainKey, sourceTxHash, logIndex)` identity, which is the cryptographically meaningful unit | `test/duplicate-event.t.sol` |
@@ -25,7 +25,11 @@ For each threat: what the protocol does about it, and where that's tested.
 
 ## Honest gaps (not swept under the rug)
 
-- No dedicated reentrancy attack test.
+- Reentrancy is now guarded and tested (`test/reentrancy.t.sol`), but the new tests were verified by direct
+  code review and a standalone `solc` compile of `src/` (both new/edited contracts compile cleanly) —
+  this pass could not reach a Foundry toolchain install (network egress to Foundry's installer and to
+  `binaries.soliditylang.org` is blocked in this environment), so `forge test -vv` has not actually been
+  re-run since this change. Run it before relying on this for a submission.
 - No fuzzing across arbitrary `chainKey`/`height` combinations for the verifier.
 - No simulated relayer-crash-mid-submission test (the design should be safe per the "on-chain is
   authoritative" principle, but this isn't demonstrated by an automated test yet).
