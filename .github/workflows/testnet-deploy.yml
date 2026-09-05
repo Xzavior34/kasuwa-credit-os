@@ -71,6 +71,7 @@ jobs:
         run: |
           forge script script/Deploy.s.sol:Deploy \
             --rpc-url "$CREDITCOIN_RPC_URL" \
+            --evm-version london \
             --skip-simulation \
             --legacy \
             --broadcast -vvvv

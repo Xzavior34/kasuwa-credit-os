@@ -57,6 +57,7 @@ contract Deploy is Script {
     uint64 public sourceChainKey;
 
     function run() external {
+        vm.prevrandao(bytes32(uint256(1)));
         uint256 deployerKey = vm.envUint("PRIVATE_KEY");
         deployer = vm.addr(deployerKey);
 
