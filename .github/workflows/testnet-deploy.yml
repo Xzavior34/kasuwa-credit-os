@@ -71,6 +71,8 @@ jobs:
         run: |
           forge script script/Deploy.s.sol:Deploy \
             --rpc-url "$CREDITCOIN_RPC_URL" \
+            --skip-simulation \
+            --legacy \
             --broadcast -vvvv
           echo "----- Creditcoin CC3 deployment record -----"
           cat "deployments/${CREDITCOIN_CHAIN_ID}.json"
