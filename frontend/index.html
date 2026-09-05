@@ -17,7 +17,7 @@
 <body>
 
 <div class="app-shell">
-  <!-- ================= Left Navigation Sidebar ================= -->
+  <!-- ================= Left Navigation Rail ================= -->
   <aside class="sidebar">
     <div class="brand-block">
       <div class="brand-gem">
@@ -45,7 +45,7 @@
       </button>
       <button class="nav-btn" data-page="creditline">
         <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        Credit Line
+        Credit Facility
       </button>
 
       <div class="nav-heading">Cryptographic Evidence</div>
@@ -63,21 +63,21 @@
         <span class="pill">4 Controls</span>
       </button>
 
-      <div class="nav-heading">Developer &amp; Network</div>
+      <div class="nav-heading">Developer &amp; Systems</div>
       <button class="nav-btn" data-page="api">
         <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         Developer API
       </button>
       <button class="nav-btn" data-page="settings">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        Settings
+        Network &amp; Config
       </button>
     </nav>
 
     <div class="sidebar-footer">
       <div class="trust-card">
         <div class="trust-header">
-          <span>Trust Boundary</span>
+          <span>Trust Architecture</span>
           <span class="status-dot"></span>
         </div>
         <div class="trust-steps">
@@ -119,12 +119,12 @@
     <!-- Judge Tour Fast Ribbon -->
     <div class="judge-tour-ribbon" id="judge-tour-ribbon">
       <div class="tour-label">90s Judge Tour:</div>
-      <button class="judge-tour-step" data-page="overview"><span class="time-tag">0-10s</span> 1. Overview</button>
-      <button class="judge-tour-step" data-page="passport"><span class="time-tag">10-30s</span> 2. Credit Passport</button>
-      <button class="judge-tour-step" data-page="proofs"><span class="time-tag">30-50s</span> 3. Proof Explorer</button>
-      <button class="judge-tour-step" data-page="capacity"><span class="time-tag">50-70s</span> 4. Capacity Engine</button>
+      <button class="judge-tour-step" data-page="overview"><span class="time-tag">0-15s</span> 1. Hero &amp; Proposition</button>
+      <button class="judge-tour-step" data-page="passport"><span class="time-tag">15-35s</span> 2. Credit Passport &amp; Proofs</button>
+      <button class="judge-tour-step" data-page="proofs"><span class="time-tag">35-55s</span> 3. Cryptographic Pipeline</button>
+      <button class="judge-tour-step" data-page="capacity"><span class="time-tag">55-70s</span> 4. Capacity Formula</button>
       <button class="judge-tour-step" data-page="security"><span class="time-tag">70-85s</span> 5. Security Lab</button>
-      <button class="judge-tour-step" data-page="creditline"><span class="time-tag">85-90s</span> 6. Credit Line</button>
+      <button class="judge-tour-step" data-page="creditline"><span class="time-tag">85-90s</span> 6. AI Trust Boundary</button>
     </div>
 
     <div class="content-body">
@@ -139,22 +139,22 @@
       <section class="page-container active" id="page-overview">
         <div class="page-header">
           <h1 class="page-title">Verified Economic Activity. Programmable Credit.</h1>
-          <p class="page-subtitle">An on-chain credit infrastructure layer that transforms independently verified economic activity into persistent, programmable credit capacity.</p>
+          <p class="page-subtitle">Kasuwa Credit OS turns independently verified cross-chain transaction evidence into persistent, programmable on-chain credit capacity.</p>
         </div>
 
         <!-- Hero Capacity Panel -->
         <div class="panel-card">
           <div class="hero-capacity-container">
             <div class="hero-metric-side">
-              <div class="hero-label">Available Credit Capacity <span class="badge verified" style="font-size:10px; margin-left:6px;">ON-CHAIN</span></div>
+              <div class="hero-label">Available Credit Capacity <span class="badge verified" style="margin-left:8px;">LIVE ON-CHAIN</span></div>
               <div class="hero-number">
                 <span class="currency">$</span><span id="overview-capacity">0</span>
                 <span class="units">USD units</span>
               </div>
               <div class="utilization-bar-wrap">
                 <div class="utilization-labels">
-                  <span>Current Exposure: $<span id="overview-exposure">0</span></span>
-                  <span>Max Credit Limit: $<span id="overview-limit">0</span></span>
+                  <span>Active Exposure: $<span id="overview-exposure">0</span></span>
+                  <span>Hard Policy Cap: $<span id="overview-limit">2,000</span></span>
                 </div>
                 <div class="progress-track">
                   <div class="progress-fill" id="overview-progress-bar" style="width: 0%;"></div>
@@ -175,11 +175,38 @@
           </div>
         </div>
 
+        <!-- AI Trust Boundary Banner (Institutional Differentiator) -->
+        <div class="ai-trust-banner">
+          <div class="ai-trust-title-row">
+            <div class="ai-trust-headline">AI Trust Boundary &amp; Policy Authority</div>
+            <div class="ai-trust-quote">"AI can advise. AI cannot authorize."</div>
+          </div>
+          <div class="ai-comparison-grid">
+            <div class="ai-box advisory">
+              <div class="ai-box-lbl">AI Risk Model (Advisory Only)</div>
+              <div class="ai-box-val">$50,000</div>
+              <div class="ai-box-sub">Demonstration Off-Chain Recommendation</div>
+            </div>
+            <div class="ai-arrow">&rarr;</div>
+            <div class="ai-box policy">
+              <div class="ai-box-lbl">PolicyEngine.sol (Authoritative)</div>
+              <div class="ai-box-val">$2,000</div>
+              <div class="ai-box-sub">Hard On-Chain Policy Ceiling</div>
+            </div>
+            <div class="ai-arrow">&rarr;</div>
+            <div class="ai-box result">
+              <div class="ai-box-lbl">Deterministic Decision</div>
+              <div class="ai-box-val" style="color:var(--status-danger);">REJECTED</div>
+              <div class="ai-box-sub">BorrowRejected(POLICY_LIMIT_EXCEEDED)</div>
+            </div>
+          </div>
+        </div>
+
         <!-- 7-Step Institutional Credit Journey Pipeline -->
         <div class="panel-card" style="margin-top:20px;">
           <div class="panel-header">
-            <div class="panel-title">Programmable Credit Pipeline (End-to-End)</div>
-            <span class="badge info">Deterministic Lifecycle</span>
+            <div class="panel-title">End-to-End Cryptographic Credit Lifecycle</div>
+            <span class="badge info">Deterministic Pipeline</span>
           </div>
           <div class="journey-pipeline-container">
             <div class="journey-step-card active" data-step="0">
@@ -192,23 +219,23 @@
             </div>
             <div class="journey-step-card active" data-step="2">
               <div class="journey-step-num">03</div>
-              <div class="journey-step-name">Decoded On-Chain</div>
+              <div class="journey-step-name">Precompile 0xFD2</div>
             </div>
             <div class="journey-step-card active" data-step="3">
               <div class="journey-step-num">04</div>
-              <div class="journey-step-name">Credit Passport</div>
+              <div class="journey-step-name">Transaction Evidence</div>
             </div>
             <div class="journey-step-card active" data-step="4">
               <div class="journey-step-num">05</div>
-              <div class="journey-step-name">Capacity Created</div>
+              <div class="journey-step-name">Credit Passport</div>
             </div>
             <div class="journey-step-card" data-step="5">
               <div class="journey-step-num">06</div>
-              <div class="journey-step-name">Credit Line</div>
+              <div class="journey-step-name">Capacity Created</div>
             </div>
             <div class="journey-step-card" data-step="6">
               <div class="journey-step-num">07</div>
-              <div class="journey-step-name">Capacity Growth</div>
+              <div class="journey-step-name">Liquidity Drawdown</div>
             </div>
           </div>
         </div>
@@ -220,21 +247,21 @@
               <div class="panel-title">Derived Credit Health Score</div>
               <span class="badge advisory">DERIVED UI METRIC</span>
             </div>
-            <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:10px;">
+            <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:12px;">
               <span style="font-size:38px; font-weight:700; color:#fff;" id="health-score-val">0</span>
-              <span class="muted" style="color:var(--text-muted); font-size:12px;">/ 100 (Deterministic client-side composite from on-chain event logs; not an on-chain oracle)</span>
+              <span class="mono" style="color:var(--text-dim); font-size:12px;">/ 100 (Client-side composite from on-chain event ledger)</span>
             </div>
             <div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
-                <span style="color:var(--text-muted);">Verified Payment Volume Contribution (+Vol/50)</span>
+                <span style="color:var(--text-muted);">Verified Volume Contribution (+Vol/50)</span>
                 <span class="mono" id="health-vol-score">+0 pts</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
-                <span style="color:var(--text-muted);">Repayment Track Record Contribution (+10/loan)</span>
+                <span style="color:var(--text-muted);">Repayment Track Record (+10/loan)</span>
                 <span class="mono" id="health-rep-score">+0 pts</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
-                <span style="color:var(--text-muted);">Repayment Streak Continuity (+5/streak)</span>
+                <span style="color:var(--text-muted);">Repayment Streak (+5/streak)</span>
                 <span class="mono" id="health-streak-score">+0 pts</span>
               </div>
               <div style="display:flex; justify-content:space-between;">
@@ -246,29 +273,29 @@
 
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Verified Historical Metrics</div>
-              <span class="badge verified">LIVE ON-CHAIN STATE</span>
+              <div class="panel-title">Verified On-Chain Historical State</div>
+              <span class="badge verified">LIVE ON-CHAIN</span>
             </div>
-            <div class="grid-2col" style="gap:10px;">
-              <div class="stat-box">
-                <div class="stat-lbl">Verified Events</div>
-                <div class="stat-val" id="stat-event-count">0</div>
-                <div class="stat-sub">Event count on-chain</div>
+            <div class="grid-2col" style="gap:12px;">
+              <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Verified Events</div>
+                <div style="font-size:24px; font-weight:700; color:#fff;" id="stat-event-count">0</div>
+                <div style="font-size:10.5px; color:var(--text-muted);">On-Chain Event Count</div>
               </div>
-              <div class="stat-box">
-                <div class="stat-lbl">Total Volume</div>
-                <div class="stat-val" id="stat-total-volume">$0</div>
-                <div class="stat-sub">Cumulative payment volume</div>
+              <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Cumulative Volume</div>
+                <div style="font-size:24px; font-weight:700; color:#fff;" id="stat-total-volume">$0</div>
+                <div style="font-size:10.5px; color:var(--text-muted);">Verified Economic Volume</div>
               </div>
-              <div class="stat-box">
-                <div class="stat-lbl">Repayments</div>
-                <div class="stat-val" id="stat-rep-count">0</div>
-                <div class="stat-sub">Successful loan repayments</div>
+              <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Repayments</div>
+                <div style="font-size:24px; font-weight:700; color:#fff;" id="stat-rep-count">0</div>
+                <div style="font-size:10.5px; color:var(--text-muted);">Successful Loans Closed</div>
               </div>
-              <div class="stat-box">
-                <div class="stat-lbl">Current Streak</div>
-                <div class="stat-val" id="stat-streak-count">0</div>
-                <div class="stat-sub">Consecutive on-time streak</div>
+              <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:11px; color:var(--text-dim); text-transform:uppercase; font-weight:600;">Repayment Streak</div>
+                <div style="font-size:24px; font-weight:700; color:#fff;" id="stat-streak-count">0</div>
+                <div style="font-size:10.5px; color:var(--text-muted);">Consecutive On-Time</div>
               </div>
             </div>
           </div>
@@ -279,49 +306,64 @@
       <section class="page-container" id="page-passport">
         <div class="page-header">
           <h1 class="page-title">Credit Passport</h1>
-          <p class="page-subtitle">Your persistent, tamper-proof economic identity on Creditcoin. Credit state persists independently of any single loan transaction.</p>
+          <p class="page-subtitle">Persistent, cross-loan credit identity anchored on Creditcoin CC3. State persists across loans and is independently queryable by any protocol.</p>
         </div>
 
         <div class="panel-card">
           <div class="panel-header">
-            <div class="panel-title">Merchant Economic Passport Record</div>
-            <span class="badge verified">CreditPassport.sol (Active State)</span>
+            <div class="panel-title">Merchant Credit Passport Record</div>
+            <span class="badge verified">CreditPassport.sol</span>
           </div>
-          <div class="inspector-grid">
-            <div class="lbl">Merchant Alias:</div>
-            <div class="val" id="passport-alias">merchant-1</div>
-            <div class="lbl">Merchant ID (Hex):</div>
-            <div class="val" id="passport-id-hex">0x...</div>
-            <div class="lbl">Assigned Tier:</div>
-            <div class="val" id="passport-tier">Tier 0</div>
-            <div class="lbl">Total Capacity:</div>
-            <div class="val" id="passport-cap">$0.00</div>
-            <div class="lbl">Available Credit:</div>
-            <div class="val" id="passport-avail">$0.00</div>
-            <div class="lbl">Current Exposure:</div>
-            <div class="val" id="passport-exp">$0.00</div>
+          <div class="grid-3col" style="gap:14px;">
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Identity Alias</div>
+              <div class="mono" style="font-size:14px; font-weight:600; color:#fff; margin-top:2px;" id="passport-alias">merchant-1</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Assigned Tier</div>
+              <div class="mono" style="font-size:14px; font-weight:600; color:var(--brand-primary); margin-top:2px;" id="passport-tier">Tier 0</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Available Credit</div>
+              <div class="mono" style="font-size:14px; font-weight:600; color:var(--status-success); margin-top:2px;" id="passport-avail">$0.00</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Total Capacity</div>
+              <div class="mono" style="font-size:14px; font-weight:600; color:#fff; margin-top:2px;" id="passport-cap">$0.00</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Current Exposure</div>
+              <div class="mono" style="font-size:14px; font-weight:600; color:#f59e0b; margin-top:2px;" id="passport-exp">$0.00</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Merchant ID Hex</div>
+              <div class="mono" style="font-size:11px; color:var(--text-muted); margin-top:4px; word-break:break-all;" id="passport-id-hex">0x...</div>
+            </div>
           </div>
         </div>
 
         <div class="panel-card" style="margin-top:20px;">
           <div class="panel-header">
             <div class="panel-title">Verified Event History Ledger</div>
-            <span class="badge info">VerifiedEventRecorded Events</span>
+            <span class="badge info">Click Any Row to Inspect Proof</span>
           </div>
-          <table class="fin-table">
-            <thead>
-              <tr>
-                <th>Event Type</th>
-                <th>Volume</th>
-                <th>Evidence ID</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="passport-events-tbody">
-              <tr><td colspan="5" style="text-align:center; color:var(--text-dim); padding:20px;">Loading verified events...</td></tr>
-            </tbody>
-          </table>
+          <div class="ledger-table-wrap">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Event Type</th>
+                  <th>Volume</th>
+                  <th>Source Chain</th>
+                  <th>Evidence ID</th>
+                  <th>Provenance Status</th>
+                  <th>Inspect</th>
+                </tr>
+              </thead>
+              <tbody id="passport-events-tbody">
+                <tr><td colspan="6" style="text-align:center; color:var(--text-dim); padding:20px;">Loading verified events from Creditcoin...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -329,16 +371,16 @@
       <section class="page-container" id="page-capacity">
         <div class="page-header">
           <h1 class="page-title">Deterministic Capacity Engine</h1>
-          <p class="page-subtitle">Mathematical, verifiable rules calculate credit limits directly on-chain in CreditEngine.sol without human discretion.</p>
+          <p class="page-subtitle">Mathematical, verifiable rules calculate credit limits directly on-chain in CreditEngine.sol without centralized human discretion.</p>
         </div>
 
         <div class="grid-2col">
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">On-Chain Formula Specification</div>
-              <span class="badge info">CreditEngine.sol</span>
+              <div class="panel-title">On-Chain Mathematical Specification</div>
+              <span class="badge info">CreditEngine.sol:calculateCapacity</span>
             </div>
-            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.7; background:var(--bg-base); padding:16px; border-radius:6px; border:1px solid var(--border-subtle); color:#e2e8f0;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.7; background:var(--bg-input); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); color:#93c5fd;">
               Base Capacity = VerifiedVolume / 10<br/>
               Repayment Bonus = Base * (RepaymentCount * 5%)<br/>
               Streak Bonus = Base * (Streak * 2%)<br/>
@@ -350,8 +392,8 @@
 
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Merchant Live Evaluation Breakdown</div>
-              <span class="badge verified">Calculated Live</span>
+              <div class="panel-title">Live Dynamic Breakdown</div>
+              <span class="badge verified">Calculated On-Chain</span>
             </div>
             <div style="display:flex; flex-direction:column; gap:10px; font-size:13px;">
               <div style="display:flex; justify-content:space-between;">
@@ -371,7 +413,7 @@
                 <span class="mono" style="color:var(--status-danger);" id="calc-missed-penalty">-$0</span>
               </div>
               <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
-                <span>Total Active Capacity:</span>
+                <span>Calculated Active Capacity:</span>
                 <span class="mono" style="color:var(--brand-primary);" id="calc-final-capacity">$0</span>
               </div>
             </div>
@@ -379,94 +421,77 @@
         </div>
       </section>
 
-      <!-- ================= 4. CREDIT LINE & BORROWING ================= -->
+      <!-- ================= 4. CREDIT FACILITY & BORROWING ================= -->
       <section class="page-container" id="page-creditline">
         <div class="page-header">
-          <h1 class="page-title">Credit Facility &amp; Borrowing</h1>
-          <p class="page-subtitle">Access programmatic credit lines governed strictly by on-chain PolicyEngine hard bounds.</p>
+          <h1 class="page-title">Credit Facility &amp; Liquidity</h1>
+          <p class="page-subtitle">Draw funds from the institutional LiquidityPool.sol governed strictly by PolicyEngine.sol invariants.</p>
         </div>
 
         <div class="grid-2col">
           <!-- Borrow Form -->
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Draw From Credit Line</div>
-              <span class="badge info">CreditLine.sol</span>
+              <div class="panel-title">Draw Down Credit</div>
+              <span class="badge info">CreditLine.sol:borrow</span>
             </div>
 
-            <div style="display:flex; flex-direction:column; gap:14px;">
-              <div>
-                <label class="hero-label">Borrow Amount (Units)</label>
-                <input class="input-field" id="borrow-amount-input" type="number" placeholder="e.g. 50" value="50" />
-              </div>
-
-              <div>
-                <label class="hero-label">Tenor (Seconds)</label>
-                <input class="input-field" id="borrow-tenor-input" type="number" placeholder="604800 (7 days)" value="604800" />
-              </div>
-
-              <!-- Live Pre-Flight Policy Evaluation Box -->
-              <div class="inspector-card" style="margin-top:0;">
-                <div style="font-weight:600; font-size:12px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Live Policy Pre-Flight Check</div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12.5px;">
-                  <span style="color:var(--text-muted);">Requested Amount:</span>
-                  <span class="mono" id="prev-req-amt">$50</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12.5px;">
-                  <span style="color:var(--text-muted);">On-Chain Policy Limit:</span>
-                  <span class="mono" id="prev-policy-max">$2,000</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12.5px;">
-                  <span style="color:var(--text-muted);">Available Capacity:</span>
-                  <span class="mono" id="prev-avail-cap">$0</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-subtle); padding-top:6px; font-size:12.5px;">
-                  <span style="color:var(--text-muted);">Eligibility Result:</span>
-                  <span class="badge verified" id="prev-result-badge">BORROW APPROVED</span>
-                </div>
-              </div>
-
-              <button class="btn-primary" id="execute-borrow-btn">Request Credit Drawdown</button>
-
-              <div id="borrow-tx-status" style="display:none;"></div>
+            <div class="form-group">
+              <label class="form-label">Borrow Amount (USD Units)</label>
+              <input class="form-input" id="borrow-amount-input" type="number" placeholder="50" value="50" />
             </div>
+
+            <div class="form-group">
+              <label class="form-label">Tenor (Seconds)</label>
+              <input class="form-input" id="borrow-tenor-input" type="number" placeholder="604800 (7 days)" value="604800" />
+            </div>
+
+            <!-- Live Pre-Flight Evaluation Box -->
+            <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:12px; margin-bottom:16px;">
+              <div style="font-weight:700; font-size:11px; text-transform:uppercase; color:var(--text-dim); margin-bottom:8px;">Smart Contract Pre-Flight Evaluation</div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12px;">
+                <span style="color:var(--text-muted);">Requested Amount:</span>
+                <span class="mono" id="prev-req-amt">$50</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12px;">
+                <span style="color:var(--text-muted);">Hard Policy Max:</span>
+                <span class="mono" id="prev-policy-max">$2,000</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12px;">
+                <span style="color:var(--text-muted);">Available Capacity:</span>
+                <span class="mono" id="prev-avail-cap">$0</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-subtle); padding-top:6px; font-size:12px;">
+                <span style="color:var(--text-muted);">Policy Pre-Check:</span>
+                <span class="badge verified" id="prev-result-badge">BORROW APPROVED</span>
+              </div>
+            </div>
+
+            <button class="form-btn" style="width:100%;" id="execute-borrow-btn">Request Credit Drawdown</button>
           </div>
 
-          <!-- Risk Advisor vs Policy Engine Rule -->
+          <!-- Facility Status & Repay Form -->
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Risk Advisor vs Policy Authority</div>
-              <span class="badge advisory">ADVISORY ONLY</span>
+              <div class="panel-title">Facility Status &amp; Exposure</div>
+              <span class="badge verified">LiquidityPool.sol</span>
             </div>
 
-            <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
-              AI and off-chain models provide advisory suggestions. The protocol enforces credit decisions deterministically via smart contract rules.
-            </p>
-
-            <div style="background:var(--bg-base); border:1px solid var(--border-subtle); border-radius:6px; padding:14px;">
-              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span style="color:var(--text-muted);">AI Suggested Amount <span class="badge advisory" style="font-size:9.5px;">DEMO SCENARIO</span>:</span>
-                <span class="mono" style="color:var(--status-warning);">$50,000</span>
+            <div class="grid-2col" style="gap:12px; margin-bottom:20px;">
+              <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Pool Liquidity</div>
+                <div class="mono" style="font-size:20px; font-weight:700; color:#fff;" id="facility-pool-liquidity">$10,000</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span style="color:var(--text-muted);">Hard On-Chain Policy Limit <span class="badge verified" style="font-size:9.5px;">ON-CHAIN</span>:</span>
-                <span class="mono" style="color:#ffffff;" id="ai-policy-cap-lbl">$2,000</span>
-              </div>
-              <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-subtle); padding-top:8px;">
-                <span style="color:var(--text-muted);">Enforcement Authority:</span>
-                <span class="badge danger">POLICY ENGINE OVERRIDES</span>
+              <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                <div style="font-size:10.5px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Active Debt Exposure</div>
+                <div class="mono" style="font-size:20px; font-weight:700; color:#f59e0b;" id="facility-active-exp">$0</div>
               </div>
             </div>
 
-            <div style="font-size:12px; color:var(--text-dim); margin-top:10px; font-style:italic;">
-              "AI recommendations cannot authorize credit. Deterministic smart contract policy is the sole authority."
-            </div>
-
-            <!-- Repay Form -->
-            <div style="margin-top:20px; border-top:1px solid var(--border-subtle); padding-top:16px;">
-              <div class="panel-title" style="margin-bottom:10px;">Repay Active Debt</div>
-              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Send native funds to reduce current exposure in LiquidityPool.sol.</p>
-              <button class="btn-secondary" style="width:100%;" id="execute-repay-btn">Repay Full Active Exposure</button>
+            <div style="border-top:1px solid var(--border-subtle); padding-top:16px;">
+              <div class="panel-title" style="margin-bottom:8px;">Repay Active Debt</div>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:12px;">Repay active drawdown to restore available capacity and increase repayment score.</p>
+              <button class="attack-action-btn" style="width:100%;" id="execute-repay-btn">Repay Active Exposure via Native Asset</button>
             </div>
           </div>
         </div>
@@ -475,58 +500,49 @@
       <!-- ================= 5. PROOF EXPLORER PAGE ================= -->
       <section class="page-container" id="page-proofs">
         <div class="page-header">
-          <h1 class="page-title">Proof Explorer</h1>
-          <p class="page-subtitle">Trace economic activity from source transaction to verified on-chain credit capacity.</p>
+          <h1 class="page-title">Cryptographic Proof Explorer</h1>
+          <p class="page-subtitle">Inspect the 5-stage verification path from Ethereum Sepolia event to Creditcoin precompile verification and passport update.</p>
         </div>
 
         <div class="panel-card">
           <div class="panel-header">
             <div>
               <div class="panel-title" id="proof-status-header">PROOF STATUS: VERIFIED ON-CHAIN</div>
-              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;" id="proof-status-path">Verification path completed on-chain</div>
+              <div style="font-size:11.5px; color:var(--text-muted); margin-top:2px;" id="proof-status-path">Attestcoin / USC v0.18.0 Cryptographic Pipeline</div>
             </div>
-            <span class="badge verified">USC v0.18.0 Trace</span>
+            <button class="form-btn" style="padding:6px 14px; font-size:11.5px;" id="open-full-inspector-btn">Inspect Raw Proof Payload</button>
           </div>
 
-          <div class="proof-chain-flow">
-            <div class="proof-chain-node selected" data-node="source">
-              <div class="node-step">Stage 01</div>
-              <div class="node-title">Source Transaction</div>
-              <span class="node-badge badge verified">Receipt Status = 1</span>
+          <div class="journey-pipeline-container" style="margin-bottom:20px;">
+            <div class="journey-step-card active" data-node="source">
+              <div class="journey-step-num">STAGE 01</div>
+              <div class="journey-step-name">Source Tx Receipt</div>
             </div>
-            <div class="proof-chain-arrow">&rarr;</div>
-            <div class="proof-chain-node" data-node="attestcoin">
-              <div class="node-step">Stage 02</div>
-              <div class="node-title">Attestcoin / USC</div>
-              <span class="node-badge badge info">Proof Builder</span>
+            <div class="journey-step-card active" data-node="attestcoin">
+              <div class="journey-step-num">STAGE 02</div>
+              <div class="journey-step-name">USC / Attestcoin</div>
             </div>
-            <div class="proof-chain-arrow">&rarr;</div>
-            <div class="proof-chain-node" data-node="precompile">
-              <div class="node-step">Stage 03</div>
-              <div class="node-title">Precompile 0xFD2</div>
-              <span class="node-badge badge verified">Merkle Inclusion</span>
+            <div class="journey-step-card active" data-node="precompile">
+              <div class="journey-step-num">STAGE 03</div>
+              <div class="journey-step-name">BlockProver 0xFD2</div>
             </div>
-            <div class="proof-chain-arrow">&rarr;</div>
-            <div class="proof-chain-node" data-node="decoder">
-              <div class="node-step">Stage 04</div>
-              <div class="node-title">Evidence Decoder</div>
-              <span class="node-badge badge info">On-Chain Library</span>
+            <div class="journey-step-card active" data-node="decoder">
+              <div class="journey-step-num">STAGE 04</div>
+              <div class="journey-step-name">Evidence Decoder</div>
             </div>
-            <div class="proof-chain-arrow">&rarr;</div>
-            <div class="proof-chain-node" data-node="credit">
-              <div class="node-step">Stage 05</div>
-              <div class="node-title">Credit Passport</div>
-              <span class="node-badge badge verified">Capacity Updated</span>
+            <div class="journey-step-card active" data-node="credit">
+              <div class="journey-step-num">STAGE 05</div>
+              <div class="journey-step-name">Credit Passport</div>
             </div>
           </div>
 
-          <div class="inspector-card" id="proof-node-detail">
-            <div class="panel-title" id="node-detail-title" style="margin-bottom:12px;">Stage 01: Source Transaction Details</div>
-            <div class="inspector-grid" id="node-detail-grid">
-              <div class="lbl">Source Chain Key:</div><div class="val">ChainKey: 2 (Sepolia)</div>
-              <div class="lbl">Source Contract:</div><div class="val">0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e</div>
-              <div class="lbl">Event Signature:</div><div class="val">PaymentSettled(bytes32,address,uint256,bytes32,uint64)</div>
-              <div class="lbl">EIP-658 Status:</div><div class="val">status = 1 (SUCCESS enforced on-chain)</div>
+          <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:16px;" id="proof-node-detail">
+            <div class="panel-title" id="node-detail-title" style="margin-bottom:12px;">Stage 01: Source Transaction Receipt Details</div>
+            <div class="grid-2col" id="node-detail-grid" style="gap:10px; font-size:12px;">
+              <div><span style="color:var(--text-dim);">Source Chain Key:</span> <span class="mono" style="color:#fff;">1 (Sepolia)</span></div>
+              <div><span style="color:var(--text-dim);">EIP-658 Status:</span> <span class="badge verified">1 - SUCCESS</span></div>
+              <div><span style="color:var(--text-dim);">Emitter Contract:</span> <span class="mono" style="color:#93c5fd;">EconomicEvents.sol</span></div>
+              <div><span style="color:var(--text-dim);">Event Signature:</span> <span class="mono" style="color:#fff;">PaymentSettled(...)</span></div>
             </div>
           </div>
         </div>
@@ -535,40 +551,38 @@
       <!-- ================= 6. ECONOMIC ACTIVITY PAGE ================= -->
       <section class="page-container" id="page-activity">
         <div class="page-header">
-          <h1 class="page-title">Source-Chain Activity Generator</h1>
-          <p class="page-subtitle">Simulate or emit source economic events from external payment rails.</p>
+          <h1 class="page-title">Economic Activity Emitter</h1>
+          <p class="page-subtitle">Emit real or simulated economic events on EconomicEvents.sol to test end-to-end evidence generation.</p>
         </div>
 
         <div class="grid-2col">
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Emit Source Event</div>
+              <div class="panel-title">Emit Event on Source Contract</div>
               <span class="badge info">EconomicEvents.sol</span>
             </div>
-            <div style="display:flex; flex-direction:column; gap:12px;">
-              <div>
-                <label class="hero-label">Event Category</label>
-                <select class="input-field" id="emit-type-select">
-                  <option value="0">Payment Settled (Payment rail settlement)</option>
-                  <option value="1">Revenue Recorded (Point of sale invoice)</option>
-                  <option value="2">Loan Repayment (External debt repayment history)</option>
-                  <option value="3">Obligation Missed (Delinquency record)</option>
-                </select>
-              </div>
-              <div>
-                <label class="hero-label">Volume (USDC Units)</label>
-                <input class="input-field" id="emit-amount-input" type="number" value="750" />
-              </div>
-              <button class="btn-primary" id="emit-event-btn">Emit &amp; Verify Evidence</button>
+            <div class="form-group">
+              <label class="form-label">Event Type</label>
+              <select class="form-input" id="emit-type-select">
+                <option value="0">Payment Settled (External payment settlement)</option>
+                <option value="1">Revenue Recorded (Point of sale invoice)</option>
+                <option value="2">Loan Repayment (External loan repayment history)</option>
+                <option value="3">Obligation Missed (Delinquency event)</option>
+              </select>
             </div>
+            <div class="form-group">
+              <label class="form-label">Amount / Volume (USD)</label>
+              <input class="form-input" id="emit-amount-input" type="number" value="750" />
+            </div>
+            <button class="form-btn" style="width:100%;" id="emit-event-btn">Emit &amp; Verify Evidence</button>
           </div>
 
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Execution Log (Live 4-Step Pipeline)</div>
+              <div class="panel-title">Live Execution Stream</div>
             </div>
-            <div style="background:var(--bg-base); border:1px solid var(--border-subtle); border-radius:6px; padding:14px; font-family:'IBM Plex Mono',monospace; font-size:12px; height:180px; overflow-y:auto; color:var(--text-muted);" id="activity-log-box">
-              [Ready] Select an event type and volume to execute live source-to-Creditcoin lifecycle...
+            <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; font-family:'IBM Plex Mono',monospace; font-size:11.5px; height:180px; overflow-y:auto; color:var(--text-muted);" id="activity-log-box">
+              [Ready] Select an event type and volume to execute the live cross-chain lifecycle...
             </div>
           </div>
         </div>
@@ -578,68 +592,84 @@
       <section class="page-container" id="page-security">
         <div class="page-header">
           <h1 class="page-title">Security Lab</h1>
-          <p class="page-subtitle">Execute real malicious attack payloads against the protocol to independently verify on-chain custom error reversions.</p>
+          <p class="page-subtitle">Four ways an untrusted actor could attempt to corrupt credit state — and how the protocol deterministically blocks each vector on-chain.</p>
         </div>
 
         <div class="attack-grid">
           <!-- Attack 1: Replay -->
           <div class="attack-card">
             <div class="attack-header">
-              <div class="attack-num">ATTACK 01</div>
-              <span class="badge danger">Replay Vector</span>
+              <div>
+                <div class="attack-num">01 REPLAY ATTACK</div>
+                <div class="attack-name">Reuse Consumed Evidence</div>
+              </div>
+              <span class="badge danger">BLOCKED</span>
             </div>
-            <div class="attack-title">Replay Already-Consumed Evidence</div>
-            <div class="attack-desc">Submits valid evidence chunk a second time. Expected: Rejection by replay registry (`EvidenceAlreadyConsumed()`).</div>
-            <div class="attack-timeline" id="tl-replay">
-              <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
+            <div class="attack-desc">Submits previously verified evidence chunk a second time to inflate credit capacity maliciously.</div>
+            <div class="attack-code-box">
+              <div class="attack-code-line"><span>Revert Reason:</span> <span style="color:#ef4444;">EvidenceAlreadyConsumed()</span></div>
+              <div class="attack-code-line"><span>Error Selector:</span> <span style="color:#93c5fd;">0xae5c42ee</span></div>
+              <div class="attack-code-line"><span>Enforcement:</span> <span>AttestcoinVerifier.sol</span></div>
             </div>
-            <button class="btn-danger" data-attack="replay">Execute Replay Attack</button>
-            <div class="attack-result-box" id="res-replay">Awaiting test execution...</div>
+            <button class="attack-action-btn" data-attack="replay">Run Attack 01</button>
+            <div class="attack-result-box" id="res-replay"></div>
           </div>
 
           <!-- Attack 2: Fake Source -->
           <div class="attack-card">
             <div class="attack-header">
-              <div class="attack-num">ATTACK 02</div>
-              <span class="badge danger">Spoof Vector</span>
+              <div>
+                <div class="attack-num">02 SOURCE SPOOFING</div>
+                <div class="attack-name">Unregistered Source Emitter</div>
+              </div>
+              <span class="badge danger">BLOCKED</span>
             </div>
-            <div class="attack-title">Source Contract Spoofing</div>
-            <div class="attack-desc">Submits evidence claiming an unregistered emitter address. Expected: Rejection by allowlist (`SourceContractMismatch()`).</div>
-            <div class="attack-timeline" id="tl-fakesource">
-              <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
+            <div class="attack-desc">Submits proof claiming an arbitrary unverified contract emitted economic volume for the merchant.</div>
+            <div class="attack-code-box">
+              <div class="attack-code-line"><span>Revert Reason:</span> <span style="color:#ef4444;">SourceContractMismatch()</span></div>
+              <div class="attack-code-line"><span>Error Selector:</span> <span style="color:#93c5fd;">0xd1ec97f1</span></div>
+              <div class="attack-code-line"><span>Enforcement:</span> <span>AttestcoinVerifier.sol</span></div>
             </div>
-            <button class="btn-danger" data-attack="fakesource">Execute Spoof Attack</button>
-            <div class="attack-result-box" id="res-fakesource">Awaiting test execution...</div>
+            <button class="attack-action-btn" data-attack="fakesource">Run Attack 02</button>
+            <div class="attack-result-box" id="res-fakesource"></div>
           </div>
 
           <!-- Attack 3: Failed Source Tx -->
           <div class="attack-card">
             <div class="attack-header">
-              <div class="attack-num">ATTACK 03</div>
-              <span class="badge danger">Reverted Tx Vector</span>
+              <div>
+                <div class="attack-num">03 REVERTED SOURCE TX</div>
+                <div class="attack-name">Failed Source Transaction</div>
+              </div>
+              <span class="badge danger">BLOCKED</span>
             </div>
-            <div class="attack-title">Failed Source Transaction</div>
-            <div class="attack-desc">Submits an included-but-reverted source receipt (status=0). Expected: Rejection by decoder (`SourceTransactionFailed()`).</div>
-            <div class="attack-timeline" id="tl-failedtx">
-              <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
+            <div class="attack-desc">Submits an included-but-reverted source receipt (status=0) attempting to claim credit for failed payments.</div>
+            <div class="attack-code-box">
+              <div class="attack-code-line"><span>Revert Reason:</span> <span style="color:#ef4444;">SourceTransactionFailed()</span></div>
+              <div class="attack-code-line"><span>Error Selector:</span> <span style="color:#93c5fd;">0xc60cdba1</span></div>
+              <div class="attack-code-line"><span>Enforcement:</span> <span>TransactionEvidence.sol</span></div>
             </div>
-            <button class="btn-danger" data-attack="failedtx">Execute Reverted Tx Attack</button>
-            <div class="attack-result-box" id="res-failedtx">Awaiting test execution...</div>
+            <button class="attack-action-btn" data-attack="failedtx">Run Attack 03</button>
+            <div class="attack-result-box" id="res-failedtx"></div>
           </div>
 
           <!-- Attack 4: Policy Bypass -->
           <div class="attack-card">
             <div class="attack-header">
-              <div class="attack-num">ATTACK 04</div>
-              <span class="badge danger">Policy Bypass Vector</span>
+              <div>
+                <div class="attack-num">04 POLICY BYPASS</div>
+                <div class="attack-name">Malicious AI Suggestion ($50k)</div>
+              </div>
+              <span class="badge danger">BLOCKED</span>
             </div>
-            <div class="attack-title">Policy Engine Bypass ($50k)</div>
-            <div class="attack-desc">Attempts $50,000 borrow using malicious AI recommendation against $2,000 cap. Expected: `BorrowRejected(POLICY_LIMIT_EXCEEDED)`.</div>
-            <div class="attack-timeline" id="tl-maliciousai">
-              <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
+            <div class="attack-desc">Attempts to borrow $50,000 based on a hallucinated AI recommendation against a $2,000 hard policy ceiling.</div>
+            <div class="attack-code-box">
+              <div class="attack-code-line"><span>Revert Reason:</span> <span style="color:#ef4444;">BorrowRejected(POLICY_LIMIT_EXCEEDED)</span></div>
+              <div class="attack-code-line"><span>Error Selector:</span> <span style="color:#93c5fd;">0x3777de94</span></div>
+              <div class="attack-code-line"><span>Enforcement:</span> <span>PolicyEngine.sol</span></div>
             </div>
-            <button class="btn-danger" data-attack="maliciousai">Execute Policy Bypass</button>
-            <div class="attack-result-box" id="res-maliciousai">Awaiting test execution...</div>
+            <button class="attack-action-btn" data-attack="maliciousai">Run Attack 04</button>
+            <div class="attack-result-box" id="res-maliciousai"></div>
           </div>
         </div>
       </section>
@@ -647,8 +677,8 @@
       <!-- ================= 8. DEVELOPER API ================= -->
       <section class="page-container" id="page-api">
         <div class="page-header">
-          <h1 class="page-title">Developer Read API</h1>
-          <p class="page-subtitle">Integrate Kasuwa Credit Passport state into external Creditcoin smart contracts.</p>
+          <h1 class="page-title">Developer Integration API</h1>
+          <p class="page-subtitle">Query and compose verified Credit Passport identity into external Creditcoin contracts.</p>
         </div>
 
         <div class="grid-2col">
@@ -656,33 +686,43 @@
             <div class="panel-header">
               <div class="panel-title">Solidity Interface: ICreditPassport.sol</div>
             </div>
-            <pre style="background:var(--bg-base); padding:16px; border-radius:6px; border:1px solid var(--border-subtle); font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#93c5fd; overflow-x:auto;">
+            <pre style="background:var(--bg-input); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#93c5fd; overflow-x:auto;">
 interface ICreditPassport {
     function getCreditCapacity(bytes32 merchantId) external view returns (uint256);
     function getCreditTier(bytes32 merchantId) external view returns (uint8);
     function getCurrentExposure(bytes32 merchantId) external view returns (uint256);
     function getAvailableCredit(bytes32 merchantId) external view returns (uint256);
     function getVerifiedEconomicActivity(bytes32 merchantId) external view returns (uint256 eventCount, uint256 paymentVolume);
-    function getMerchantState(bytes32 merchantId) external view returns (tuple(...));
+    function getMerchantState(bytes32 merchantId) external view returns (tuple(
+        uint256 verifiedEventCount,
+        uint256 verifiedPaymentVolume,
+        uint256 successfulRepaymentCount,
+        uint256 repaymentVolume,
+        uint256 repaymentStreak,
+        uint256 missedObligations,
+        uint64 lastVerifiedActivity,
+        uint256 currentExposure,
+        uint256 currentCapacity
+    ));
 }</pre>
           </div>
 
           <div class="panel-card">
             <div class="panel-header">
               <div class="panel-title">Live RPC Query Test (getMerchantState)</div>
-              <button class="btn-primary" id="api-query-btn" style="padding:4px 12px; font-size:11.5px;">Execute Query</button>
+              <button class="form-btn" id="api-query-btn" style="padding:4px 12px; font-size:11.5px;">Execute Query</button>
             </div>
-            <pre style="background:var(--bg-base); padding:16px; border-radius:6px; border:1px solid var(--border-subtle); font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#6ee7b7; overflow-x:auto; height:180px;" id="api-response-box">
+            <pre style="background:var(--bg-input); padding:16px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle); font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#6ee7b7; overflow-x:auto; height:200px;" id="api-response-box">
 Click "Execute Query" to inspect live getMerchantState() return payload...</pre>
           </div>
         </div>
       </section>
 
-      <!-- ================= 9. SETTINGS & ENVIRONMENT ================= -->
+      <!-- ================= 9. SETTINGS & NETWORK PRESETS ================= -->
       <section class="page-container" id="page-settings">
         <div class="page-header">
-          <h1 class="page-title">Environment &amp; Network Presets</h1>
-          <p class="page-subtitle">Switch between Local Anvil simulation and Creditcoin CC3 Testnet.</p>
+          <h1 class="page-title">Environment &amp; Network Configuration</h1>
+          <p class="page-subtitle">Inspect active contract deployments and toggle between Local Anvil and Creditcoin CC3 Testnet.</p>
         </div>
 
         <div class="panel-card">
@@ -690,29 +730,100 @@ Click "Execute Query" to inspect live getMerchantState() return payload...</pre>
             <div class="panel-title">Active Network Presets</div>
           </div>
           <div style="display:flex; gap:12px; margin-bottom:20px;">
-            <button class="btn-secondary" style="flex:1;" id="env-preset-local">Load Local Anvil (31337)</button>
-            <button class="btn-secondary" style="flex:1;" id="env-preset-cc3">Load CC3 Testnet (102031)</button>
+            <button class="form-btn" style="flex:1;" id="env-preset-local">Load Local Anvil (31337)</button>
+            <button class="attack-action-btn" style="flex:1;" id="env-preset-cc3">Load CC3 Testnet (102031)</button>
           </div>
 
-          <div class="inspector-grid">
-            <div class="lbl">Active Preset Name:</div>
-            <div class="val" id="cfg-active-name">LOCAL ANVIL (Chain ID: 31337)</div>
-            <div class="lbl">RPC Endpoint:</div>
-            <div class="val" id="cfg-active-rpc">http://127.0.0.1:8545</div>
-            <div class="lbl">Source Chain Key:</div>
-            <div class="val">2 (Sepolia)</div>
-            <div class="lbl">Deployment Status:</div>
-            <div class="val" id="cfg-active-status">Verified &amp; Seeded with merchant-1 state</div>
+          <div class="grid-2col" style="gap:12px; font-size:12px;">
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Preset Name</div>
+              <div class="mono" style="color:#fff;" id="cfg-active-name">LOCAL ANVIL (Chain ID: 31337)</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">RPC Endpoint</div>
+              <div class="mono" style="color:#93c5fd;" id="cfg-active-rpc">http://127.0.0.1:8545</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Source Chain Key</div>
+              <div class="mono" style="color:#fff;" id="cfg-active-chainkey">2 (Sepolia)</div>
+            </div>
+            <div style="background:var(--bg-input); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+              <div style="font-size:10px; font-weight:700; color:var(--text-dim); text-transform:uppercase;">Deployment Status</div>
+              <div class="mono" style="color:var(--status-success);" id="cfg-active-status">Verified On-Chain State</div>
+            </div>
           </div>
         </div>
       </section>
+
+      <!-- Technical Footer -->
+      <footer class="app-footer">
+        <div>KASUWA CREDIT OS — Verified Economic Activity. Programmable Credit. (Chain ID: 102031 / 31337)</div>
+        <div class="footer-links">
+          <a href="https://github.com/Xzavior34/kasuwa-credit-os" target="_blank" rel="noopener">GitHub</a>
+          <a href="#" onclick="navigateToPage('api'); return false;">Developer API</a>
+          <a href="#" onclick="navigateToPage('security'); return false;">Security Lab</a>
+        </div>
+      </footer>
 
     </div>
   </main>
 </div>
 
+<!-- ================= Proof Inspector Drawer Modal ================= -->
+<div class="proof-drawer-backdrop" id="proof-drawer-backdrop">
+  <div class="proof-modal">
+    <div class="proof-modal-header">
+      <div class="proof-modal-title">Cryptographic Evidence &amp; Proof Inspector</div>
+      <button class="proof-modal-close" id="close-proof-modal-btn">&times;</button>
+    </div>
+    <div class="proof-modal-body">
+      <div class="proof-spec-grid">
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">Source Transaction Hash</div>
+          <div class="proof-spec-val" id="insp-tx-hash">0x065b0ac898e06407010921671686db916cf5aad15e0db97e7d0288e8f9d11da2</div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">Source Chain &amp; Block</div>
+          <div class="proof-spec-val" id="insp-chain-block">Ethereum Sepolia (ChainKey 1) / Block #11,639,957</div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">EIP-658 Receipt Status</div>
+          <div class="proof-spec-val"><span class="badge verified">1 — SUCCESS</span></div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">Source Log Emitter</div>
+          <div class="proof-spec-val" id="insp-emitter">0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1</div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">Merchant Identity</div>
+          <div class="proof-spec-val" id="insp-merchant">merchant-1 (0x6d65726368616e742d31...)</div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">Verified Economic Event</div>
+          <div class="proof-spec-val" id="insp-event">PaymentSettled — Volume: $750.00</div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">Destination Precompile</div>
+          <div class="proof-spec-val">BlockProver (0x0000000000000000000000000000000000000FD2)</div>
+        </div>
+        <div class="proof-spec-item">
+          <div class="proof-spec-lbl">On-Chain Decoder</div>
+          <div class="proof-spec-val">TransactionEvidence.sol</div>
+        </div>
+      </div>
+
+      <div class="proof-spec-item">
+        <div class="proof-spec-lbl">USC Encoded Transaction Payload (3,522 Hex Chars)</div>
+        <div class="proof-spec-val" style="max-height:80px; overflow-y:auto; font-size:10.5px; color:#93c5fd;" id="insp-encoded-tx">
+          0x000000010000000000000000000000000000000000000000000000000000000000000020000000000000000000000000ed15beb8f5d7854f27b965d1fd4c0584877554c10000000000000000000000000000000000000000000000000000000000000001...
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Toast Container -->
-<div id="toast-container"></div>
+<div class="toast-container" id="toast-container"></div>
 
 <!-- Application Main Script -->
 <script type="module" src="./js/app.js"></script>

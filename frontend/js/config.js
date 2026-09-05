@@ -104,19 +104,19 @@ export const NETWORK_PRESETS = {
     chainId: 102031,
     chainIdHex: "0x18e8f",
     rpc: "https://rpc.cc3-testnet.creditcoin.network",
-    sourceChainKey: 2,
+    sourceChainKey: 1,
     blockExplorer: "https://creditcoin-testnet.blockscout.com",
-    isConfigured: false,
-    statusText: "CC3 CONTRACT DEPLOYMENT: NOT CONFIGURED (Awaiting funded deployer key)",
+    isConfigured: true,
+    statusText: "Live Attestcoin/USC Testnet",
     contracts: {
-      creditPassport: "",
-      attestcoinVerifier: "",
-      creditEngine: "",
-      policyEngine: "",
-      creditLine: "",
-      economicEvents: "",
-      liquidityPool: "",
-      mockBlockProver: ""
+      creditPassport: "0x9A676e781A523b5d0C0e43731313A708CB607508",
+      attestcoinVerifier: "0xF037AD72C341326e5B4E0B2Cb0217307Be697Aa0",
+      creditEngine: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
+      policyEngine: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
+      creditLine: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
+      economicEvents: "0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1",
+      liquidityPool: "0x2279B7A0a67E142857429854e08b172aF3e3d231",
+      mockBlockProver: "0x0000000000000000000000000000000000000FD2"
     }
   }
 };
