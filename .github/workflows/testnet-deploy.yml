@@ -11,7 +11,7 @@ on:
       merchant_id:
         description: "bytes32 merchantId for the demo economic event (any 0x-prefixed 32-byte hex)"
         required: false
-        default: "0x6d65726368616e742d6c6976652d6465706c6f790000000000000000000000"
+        default: "0x6d65726368616e742d6c6976652d6465706c6f79000000000000000000000000"
       amount:
         description: "Demo payment amount (uint256, arbitrary demo unit)"
         required: false
@@ -88,9 +88,10 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.TESTNET_PRIVATE_KEY }}
         run: |
+          MERCHANT_ID=$(cast --to-bytes32 "${{ inputs.merchant_id }}")
           cast send "$ECON_ADDR" \
             "emitPaymentSettled(bytes32,uint256,bytes32)" \
-            "${{ inputs.merchant_id }}" "${{ inputs.amount }}" \
+            "$MERCHANT_ID" "${{ inputs.amount }}" \
             "0x0000000000000000000000000000000000000000000000000000000000000001" \
             --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
             --private-key "$PRIVATE_KEY" \
@@ -136,9 +137,10 @@ jobs:
           # BlockProver precompile verification on CC3. See docs/ANTIGRAVITY_HANDOFF.md step 4 —
           # "the single most important step in this entire handoff."
           cd ..
+          MERCHANT_ID=$(cast --to-bytes32 "${{ inputs.merchant_id }}")
           cast send "$ECON_ADDR" \
             "emitPaymentSettled(bytes32,uint256,bytes32)" \
-            "${{ inputs.merchant_id }}" "${{ inputs.amount }}" \
+            "$MERCHANT_ID" "${{ inputs.amount }}" \
             "0x0000000000000000000000000000000000000000000000000000000000000002" \
             --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
             --private-key "${{ secrets.TESTNET_PRIVATE_KEY }}" \
