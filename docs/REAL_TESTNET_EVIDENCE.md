@@ -1,42 +1,28 @@
 # Real Testnet Evidence & Verification Report
 
-## Live Public Network Status
+## Live public-network status (updated 2026-09-05)
 
-### Network Connectivity Verified
-
-Live network endpoints and RPCs have been independently verified from this environment:
-
-| Network / Service | Verified Endpoint | Chain ID / Status | Status |
+| Contract | Network | Address | Verified how |
 |---|---|---|---|
-| **Creditcoin CC3 Testnet** | `https://rpc.cc3-testnet.creditcoin.network` | `102031` (`0x18e8f`) | Responsive (Status 200) |
-| **Creditcoin Proof Builder** | `https://prover.cc3-net.creditcoin.network/` | Service Gateway | Responsive (Status 200) |
-| **Ethereum Sepolia Testnet** | `https://1rpc.io/sepolia` | `11155111` (`0xaa36a7`) | Responsive (Status 200) |
+| `EconomicEvents.sol` | Ethereum Sepolia (`11155111`) | `0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1` | Confirmed on Etherscan: real contract, 2 real transactions, deployed by `0x73af91CE084D84Ccdd6613D5B135EB10549C4616` |
+| `AttestcoinVerifier.sol` | Creditcoin CC3 testnet (`102031`) | `0xF037AD72C341326e5B4E0B2Cb0217307Be697Aa0` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success`, same deployer wallet as Sepolia |
+| `CreditPassport.sol`, `CreditEngine.sol`, `PolicyEngine.sol`, `CreditLine.sol`, `LiquidityPool.sol` | Creditcoin CC3 testnet | pending — deployment in progress | tracked in [Actions run #10](https://github.com/Xzavior34/kasuwa-credit-os/actions/runs/33964265571); each address will be re-verified against Blockscout before being listed here as live |
 
-### Live Deployment Readiness & Required Step
+**Important correction**: an earlier internal report listed `CreditFacility` and `CreditScoreOracle`
+addresses on CC3 that turned out, on independent verification, to be the **local Anvil (chain
+`31337`)** addresses below, mislabeled as CC3. Nothing in this file states an address is live on
+a public network unless it has been checked directly against that network's block explorer.
 
-All deployment scripts (`script/Deploy.s.sol`, `script/DeployMockProver.s.sol`) and the authoritative relayer (`relayer/src/*.ts`) are fully built and configured for CC3 Testnet + Sepolia.
-
-To broadcast live testnet transactions:
-1. Supply a dedicated, funded testnet private key (`export PRIVATE_KEY=0x...`).
-2. Run deployment to CC3 Testnet:
-   ```bash
-   forge script script/Deploy.s.sol:Deploy --rpc-url https://rpc.cc3-testnet.creditcoin.network --broadcast
-   ```
-3. Run deployment to Sepolia:
-   ```bash
-   DEPLOY_ECONOMIC_EVENTS=true forge script script/Deploy.s.sol:Deploy --rpc-url https://1rpc.io/sepolia --broadcast
-   ```
-4. Start relayer with the live contract addresses in `relayer/.env`.
-
-*(Note: Per the strict honesty rule, placeholder hashes are never fabricated. Live transaction hashes and contract addresses will be recorded immediately upon broadcast).*
-
----
+Both confirmed-live addresses above were deployed from the same wallet on both chains — one
+coordinated cross-chain deployment, not two unrelated demos.
 
 ## Local Verification & Security Audit Results
 
-### 1. Security Audit Matrix (42/42 Passing Foundry Tests Across 12 Suites)
+### 1. Security Audit Matrix (45/45 Foundry tests across 13 suites)
 
-All 42 smart contract tests pass in Foundry against sandboxed EVM:
+All 45 smart contract tests pass in Foundry against a sandboxed EVM, including 4 dedicated
+reentrancy-attack tests (`test/reentrancy.t.sol`) added after an internal threat-model review
+found and fixed a real reentrancy exposure in `CreditLine.borrow()`:
 
 | Suite | Tests | Result | Invariant Covered |
 |---|---|---|---|
@@ -52,8 +38,13 @@ All 42 smart contract tests pass in Foundry against sandboxed EVM:
 | `OverLimitTest` | 2/2 | **PASS** | Borrows exceeding capacity or liquidity rejected |
 | `ReplayTest` | 1/1 | **PASS** | Evidence consumption prevents double-execution |
 | `DeploymentSmokeTest` | 1/1 | **PASS** | Multi-contract permission wiring and admin setup |
+| `ReentrancyTest` | 4/4 | **PASS** | Reentrant borrow/withdraw attacks blocked by `ReentrancyGuard` + checks-effects-interactions |
 
-### 2. Local Vertical Slice Execution Evidence
+### 2. Local Vertical Slice Execution Evidence (chain 31337, Anvil)
+
+This full walkthrough — deploy, real source tx, evidence verification, capacity update, borrow,
+and four live attack rejections — was run end-to-end against a local Anvil chain before the CC3
+deployment above. These addresses are **local-only**, not to be confused with the CC3 table:
 
 - **Chain ID**: `31337` (Anvil Local EVM)
 - **Deployed Contracts**:
