@@ -109,13 +109,13 @@ export const NETWORK_PRESETS = {
     isConfigured: true,
     statusText: "Live Attestcoin/USC Testnet",
     contracts: {
-      creditPassport: "0x9A676e781A523b5d0C0e43731313A708CB607508",
-      attestcoinVerifier: "0xF037AD72C341326e5B4E0B2Cb0217307Be697Aa0",
-      creditEngine: "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44",
-      policyEngine: "0x0B306BF915C4d645ff596e518fAf3F9669b97016",
-      creditLine: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853",
-      economicEvents: "0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1",
-      liquidityPool: "0x2279B7A0a67E142857429854e08b172aF3e3d231",
+      creditPassport: "0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d",
+      attestcoinVerifier: "0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2",
+      creditEngine: "0xcc364e6D87146abBdB47ebaAAe964f7d447E4875",
+      policyEngine: "0x30b7A70b4fA0Be2F3eD2ef7551c4890A481Ef047",
+      creditLine: "0x3ed53F226dd8f46451E3e5D418b25Be7889fd49e",
+      economicEvents: "0x84780ab03db7A3FebFdb789De402314F202D8263",
+      liquidityPool: "0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8",
       mockBlockProver: "0x0000000000000000000000000000000000000FD2"
     }
   }
