@@ -332,7 +332,7 @@ function getStageDetails(nodeKey, logRecord) {
       return {
         title: "Stage 03: Creditcoin BlockProver Precompile (0xFD2)",
         grid: [
-          { lbl: "Verification Engine:", val: "Creditcoin native precompile at 0x000...00FD2 (or MockBlockProver in local test harness)" },
+          { lbl: "Verification Engine:", val: "Local end-to-end proof-flow demonstration using MockBlockProver (standing in for Creditcoin native precompile 0x000...00FD2)" },
           { lbl: "Cryptographic Check:", val: "Verifies inclusion of transaction chunk inside block header root" },
           { lbl: "Replay Protection:", val: "AttestcoinVerifier.evidenceConsumed(evidenceId) mapping check" },
           { lbl: "Verifier Contract:", val: c.attestcoinVerifier || 'N/A' }
