@@ -293,7 +293,7 @@ header.topbar {
 .topbar-left {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
 }
 
 .mobile-menu-btn {
@@ -328,7 +328,7 @@ header.topbar {
   color: #ffffff;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
-  width: 140px;
+  width: 130px;
 }
 .merchant-picker button {
   all: unset;
@@ -349,7 +349,29 @@ header.topbar {
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+}
+
+.judge-tour-toggle {
+  all: unset;
+  cursor: pointer;
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.35);
+  color: #93c5fd;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 600;
+  transition: all var(--trans-fast);
+}
+.judge-tour-toggle:hover {
+  background: rgba(59, 130, 246, 0.25);
+  border-color: var(--brand-primary);
+}
+.judge-tour-toggle.active {
+  background: var(--brand-primary);
+  color: #ffffff;
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.5);
 }
 
 .net-badge {
@@ -358,7 +380,7 @@ header.topbar {
   gap: 7px;
   padding: 5px 12px;
   border-radius: var(--radius-sm);
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   font-family: 'IBM Plex Mono', monospace;
   background: var(--bg-base);
@@ -390,7 +412,7 @@ header.topbar {
   color: var(--text-main);
   padding: 6px 14px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   transition: all var(--trans-fast);
 }
@@ -405,9 +427,81 @@ header.topbar {
   font-family: 'IBM Plex Mono', monospace;
 }
 
+/* Judge Tour Ribbon */
+.judge-tour-ribbon {
+  display: none;
+  background: #091122;
+  border-bottom: 1px solid var(--border-strong);
+  padding: 8px 32px;
+  gap: 12px;
+  align-items: center;
+  overflow-x: auto;
+}
+.judge-tour-ribbon .tour-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--brand-primary);
+  font-family: 'IBM Plex Mono', monospace;
+  white-space: nowrap;
+}
+.judge-tour-step {
+  all: unset;
+  cursor: pointer;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--trans-fast);
+}
+.judge-tour-step:hover {
+  border-color: var(--brand-primary);
+  color: #ffffff;
+}
+.judge-tour-step .time-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9.5px;
+  color: var(--text-dim);
+}
+
+/* Environment Header Banner */
+.env-banner {
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20px;
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.env-banner.local {
+  background: rgba(59, 130, 246, 0.06);
+  border-color: rgba(59, 130, 246, 0.25);
+}
+.env-banner.cc3 {
+  background: rgba(239, 68, 68, 0.06);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+.env-banner-title {
+  font-size: 12px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  color: #ffffff;
+}
+.env-banner-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
 /* Content Container */
 .content-body {
-  padding: 32px 36px 64px;
+  padding: 24px 36px 64px;
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
@@ -428,10 +522,10 @@ header.topbar {
 
 /* Page Headers */
 .page-header {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 .page-title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 6px;
@@ -439,7 +533,7 @@ header.topbar {
 .page-subtitle {
   color: var(--text-muted);
   font-size: 13.5px;
-  max-width: 820px;
+  max-width: 860px;
   line-height: 1.5;
 }
 
@@ -466,7 +560,7 @@ header.topbar {
   margin-bottom: 18px;
 }
 .panel-title {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--text-main);
   display: flex;
@@ -495,7 +589,7 @@ header.topbar {
   color: var(--text-muted);
 }
 .hero-number {
-  font-size: 52px;
+  font-size: 50px;
   font-weight: 700;
   line-height: 1.05;
   color: #ffffff;
@@ -505,10 +599,10 @@ header.topbar {
 }
 .hero-number span.currency {
   color: var(--brand-primary);
-  font-size: 34px;
+  font-size: 32px;
 }
 .hero-number span.units {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text-dim);
   font-weight: 500;
   font-family: 'Inter', sans-serif;
@@ -639,7 +733,7 @@ header.topbar {
 }
 .journey-step-card.active .journey-step-num { color: var(--brand-primary); }
 .journey-step-name {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--text-main);
   line-height: 1.3;
@@ -674,7 +768,7 @@ header.topbar {
   text-transform: uppercase;
 }
 .proof-chain-node .node-title {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   color: #ffffff;
   margin-top: 2px;
@@ -704,7 +798,7 @@ header.topbar {
 }
 .inspector-grid {
   display: grid;
-  grid-template-columns: 180px 1fr;
+  grid-template-columns: 190px 1fr;
   row-gap: 12px;
   column-gap: 16px;
   font-size: 13px;
@@ -843,7 +937,7 @@ table.fin-table tr:hover td {
   font-weight: 600;
 }
 .attack-title {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 700;
   color: #ffffff;
 }
@@ -870,9 +964,10 @@ table.fin-table tr:hover td {
   padding: 10px 12px;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 11.5px;
-  min-height: 42px;
+  min-height: 48px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  justify-content: center;
   color: var(--text-dim);
   word-break: break-all;
 }
@@ -908,32 +1003,6 @@ table.fin-table tr:hover td {
   font-size: 12.5px;
 }
 
-/* Empty State */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-dim);
-}
-.empty-state svg {
-  width: 44px;
-  height: 44px;
-  stroke: var(--text-dim);
-  margin-bottom: 12px;
-  opacity: 0.6;
-}
-.empty-state .title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-.empty-state .subtitle {
-  font-size: 12.5px;
-  color: var(--text-dim);
-  max-width: 400px;
-  margin: 0 auto;
-}
-
 /* Toast Notifications */
 #toast-container {
   position: fixed;
@@ -957,6 +1026,10 @@ table.fin-table tr:hover td {
   gap: 8px;
   animation: toastIn 0.2s ease-out;
 }
+.toast-msg.toast-success { border-color: var(--status-success-border); }
+.toast-msg.toast-warning { border-color: var(--status-warning-border); }
+.toast-msg.toast-danger { border-color: var(--status-danger-border); }
+
 @keyframes toastIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
@@ -980,6 +1053,6 @@ table.fin-table tr:hover td {
   .hero-capacity-container { grid-template-columns: 1fr; }
   .journey-pipeline-container { grid-template-columns: repeat(2, 1fr); }
   header.topbar { padding: 0 16px; }
-  .content-body { padding: 20px 16px 48px; }
+  .content-body { padding: 16px 16px 48px; }
   .inspector-grid { grid-template-columns: 1fr; gap: 4px; }
 }

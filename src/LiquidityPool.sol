@@ -2,6 +2,7 @@
 pragma solidity ^0.8.24;
 
 import {ILiquidityPool} from "./interfaces/ILiquidityPool.sol";
+import {ReentrancyGuard} from "./lib/ReentrancyGuard.sol";
 
 /// @title LiquidityPool
 /// @notice A deliberately simple liquidity pool: LPs deposit native value, only the registered
@@ -9,7 +10,7 @@ import {ILiquidityPool} from "./interfaces/ILiquidityPool.sol";
 /// risk tranching beyond a single pool — see docs/ARCHITECTURE.md for why this is intentionally
 /// minimal (P2 per the priority order; a functioning simple pool beats a sophisticated broken
 /// one).
-contract LiquidityPool is ILiquidityPool {
+contract LiquidityPool is ILiquidityPool, ReentrancyGuard {
     error NotAdmin();
     error NotCreditLine();
     error InsufficientLiquidity();
@@ -50,7 +51,7 @@ contract LiquidityPool is ILiquidityPool {
         emit Deposited(msg.sender, msg.value);
     }
 
-    function withdraw(uint256 amount) external {
+    function withdraw(uint256 amount) external nonReentrant {
         if (lpBalance[msg.sender] < amount) revert InsufficientLiquidity();
         if (address(this).balance < totalOutstanding + amount) revert InsufficientLiquidity();
         lpBalance[msg.sender] -= amount;
@@ -66,7 +67,7 @@ contract LiquidityPool is ILiquidityPool {
         return bal - totalOutstanding;
     }
 
-    function fundCreditLine(address borrower, uint256 amount) external onlyCreditLine {
+    function fundCreditLine(address borrower, uint256 amount) external onlyCreditLine nonReentrant {
         if (address(this).balance < totalOutstanding + amount) revert InsufficientLiquidity();
         totalOutstanding += amount;
         (bool ok,) = borrower.call{value: amount}("");

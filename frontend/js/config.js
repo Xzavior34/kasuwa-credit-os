@@ -1,4 +1,4 @@
-// frontend/js/config.js - Contract configurations, ABIs, and network presets
+// frontend/js/config.js - Contract configurations, ABIs, network presets, and error definitions
 
 export const ABI = {
   passport: [
@@ -28,18 +28,20 @@ export const ABI = {
   ],
   policy: [
     "function maxLoanAmount() view returns (uint256)",
-    "function maxTenorSeconds() view returns (uint256)"
+    "function maxTenorSeconds() view returns (uint256)",
+    "function minCreditTier() view returns (uint8)",
+    "function paused() view returns (bool)"
   ],
   creditline: [
-    "function borrow(bytes32,uint256,uint256,uint256)",
-    "function repay(bytes32) payable",
+    "function borrow(bytes32 merchantId, uint256 requestedAmount, uint256 tenorSeconds, uint256 aiRecommendedAmount)",
+    "function repay(bytes32 merchantId) payable",
     "error BorrowRejected(uint8 reason)"
   ],
   econ: [
-    "function emitPaymentSettled(bytes32,uint256,bytes32)",
-    "function emitRevenueRecorded(bytes32,uint256,bytes32)",
-    "function emitLoanRepayment(bytes32,uint256,bytes32)",
-    "function emitObligationMissed(bytes32,uint256,bytes32)"
+    "function emitPaymentSettled(bytes32 merchantId, uint256 amount, bytes32 referenceId)",
+    "function emitRevenueRecorded(bytes32 merchantId, uint256 amount, bytes32 referenceId)",
+    "function emitLoanRepayment(bytes32 merchantId, uint256 amount, bytes32 referenceId)",
+    "function emitObligationMissed(bytes32 merchantId, uint256 amount, bytes32 referenceId)"
   ],
   pool: [
     "function deposit() payable",
@@ -74,11 +76,16 @@ export const REJECTION_REASON_NAMES = [
 
 export const NETWORK_PRESETS = {
   local: {
-    name: "Local Anvil (31337)",
+    id: "local",
+    name: "LOCAL ANVIL — DEMO ENVIRONMENT",
+    shortName: "LOCAL ANVIL",
     chainId: 31337,
+    chainIdHex: "0x7a69",
     rpc: "http://127.0.0.1:8545",
     sourceChainKey: 2,
     blockExplorer: null,
+    isConfigured: true,
+    statusText: "Deterministic Local Testing Environment",
     contracts: {
       creditPassport: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9",
       attestcoinVerifier: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
@@ -91,11 +98,16 @@ export const NETWORK_PRESETS = {
     }
   },
   cc3: {
-    name: "Creditcoin CC3 Testnet (102031)",
+    id: "cc3",
+    name: "CREDITCOIN CC3 — TESTNET",
+    shortName: "CC3 TESTNET",
     chainId: 102031,
+    chainIdHex: "0x18e8f",
     rpc: "https://rpc.cc3-testnet.creditcoin.network",
     sourceChainKey: 2,
     blockExplorer: "https://creditcoin-testnet.blockscout.com",
+    isConfigured: false,
+    statusText: "CC3 CONTRACT DEPLOYMENT: NOT CONFIGURED (Awaiting funded deployer key)",
     contracts: {
       creditPassport: "",
       attestcoinVerifier: "",

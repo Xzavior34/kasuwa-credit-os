@@ -5,6 +5,7 @@ import {CreditPassport} from "./CreditPassport.sol";
 import {PolicyEngine} from "./PolicyEngine.sol";
 import {ICreditEngine} from "./interfaces/ICreditEngine.sol";
 import {ILiquidityPool} from "./interfaces/ILiquidityPool.sol";
+import {ReentrancyGuard} from "./lib/ReentrancyGuard.sol";
 
 /// @title CreditLine
 /// @notice Handles borrow/repay against a merchant's CreditPassport capacity.
@@ -14,7 +15,7 @@ import {ILiquidityPool} from "./interfaces/ILiquidityPool.sol";
 /// PolicyEngine and to the BorrowBlocked/Borrowed events purely as display data for the Security
 /// Lab / Proof Explorer UI. The actual outcome is decided entirely by PolicyEngine.evaluateBorrow
 /// reading real on-chain state. See test/malicious-ai.t.sol.
-contract CreditLine {
+contract CreditLine is ReentrancyGuard {
     error NotAdmin();
     error InvalidAmount();
     error BorrowRejected(PolicyEngine.RejectionReason reason);
@@ -51,7 +52,7 @@ contract CreditLine {
     }
 
     /// @param aiRecommendedAmount Advisory-only. Never affects the outcome — see contract natspec.
-    function borrow(bytes32 merchantId, uint256 amount, uint256 tenorSeconds, uint256 aiRecommendedAmount) external {
+    function borrow(bytes32 merchantId, uint256 amount, uint256 tenorSeconds, uint256 aiRecommendedAmount) external nonReentrant {
         uint256 availableCredit = creditPassport.getAvailableCredit(merchantId);
         uint256 currentExposure = creditPassport.getCurrentExposure(merchantId);
         uint256 capacity = creditPassport.getCreditCapacity(merchantId);
@@ -67,13 +68,18 @@ contract CreditLine {
             revert BorrowRejected(reason);
         }
 
-        liquidityPool.fundCreditLine(msg.sender, amount);
+        // Effects before interaction: record the exposure increase BEFORE any value leaves
+        // this contract, so a malicious borrower re-entering during the transfer below (or
+        // anywhere else) sees the updated exposure rather than a stale, pre-borrow snapshot.
+        // `nonReentrant` above already blocks re-entry outright; this ordering is defense in
+        // depth so the invariant holds even without the guard. See test/reentrancy.t.sol.
         creditPassport.recordBorrow(merchantId, amount);
+        liquidityPool.fundCreditLine(msg.sender, amount);
 
         emit Borrowed(merchantId, msg.sender, amount, tenorSeconds);
     }
 
-    function repay(bytes32 merchantId, uint256 amount) external payable {
+    function repay(bytes32 merchantId, uint256 amount) external payable nonReentrant {
         if (msg.value != amount || amount == 0) revert InvalidAmount();
         liquidityPool.receiveRepayment{value: msg.value}(msg.sender, amount);
         creditPassport.recordRepayment(merchantId, amount);

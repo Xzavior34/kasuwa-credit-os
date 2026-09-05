@@ -30,7 +30,7 @@
     </div>
 
     <nav class="nav-menu">
-      <div class="nav-heading">Platform</div>
+      <div class="nav-heading">Platform Architecture</div>
       <button class="nav-btn active" data-page="overview">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Overview
@@ -77,7 +77,7 @@
     <div class="sidebar-footer">
       <div class="trust-card">
         <div class="trust-header">
-          <span>Trust Architecture</span>
+          <span>Trust Boundary</span>
           <span class="status-dot"></span>
         </div>
         <div class="trust-steps">
@@ -107,6 +107,7 @@
       </div>
 
       <div class="topbar-right">
+        <button class="judge-tour-toggle" id="judge-mode-toggle-btn">⚡ Judge Tour (90s)</button>
         <div class="net-badge local" id="env-badge">
           <span class="status-dot" id="env-dot"></span>
           <span id="env-label">LOCAL ANVIL (31337)</span>
@@ -115,8 +116,25 @@
       </div>
     </header>
 
+    <!-- Judge Tour Fast Ribbon -->
+    <div class="judge-tour-ribbon" id="judge-tour-ribbon">
+      <div class="tour-label">90s Judge Tour:</div>
+      <button class="judge-tour-step" data-page="overview"><span class="time-tag">0-10s</span> 1. Overview</button>
+      <button class="judge-tour-step" data-page="passport"><span class="time-tag">10-30s</span> 2. Credit Passport</button>
+      <button class="judge-tour-step" data-page="proofs"><span class="time-tag">30-50s</span> 3. Proof Explorer</button>
+      <button class="judge-tour-step" data-page="capacity"><span class="time-tag">50-70s</span> 4. Capacity Engine</button>
+      <button class="judge-tour-step" data-page="security"><span class="time-tag">70-85s</span> 5. Security Lab</button>
+      <button class="judge-tour-step" data-page="creditline"><span class="time-tag">85-90s</span> 6. Credit Line</button>
+    </div>
+
     <div class="content-body">
       
+      <!-- Top Environment Truth Banner -->
+      <div class="env-banner local" id="env-header-banner">
+        <div class="env-banner-title">LOCAL ANVIL — DEMO ENVIRONMENT (Chain ID: 31337)</div>
+        <div class="env-banner-desc">Deterministic Local Testing Environment (RPC: 127.0.0.1:8545)</div>
+      </div>
+
       <!-- ================= 1. OVERVIEW PAGE ================= -->
       <section class="page-container active" id="page-overview">
         <div class="page-header">
@@ -128,15 +146,15 @@
         <div class="panel-card">
           <div class="hero-capacity-container">
             <div class="hero-metric-side">
-              <div class="hero-label">Available Credit Capacity</div>
+              <div class="hero-label">Available Credit Capacity <span class="badge verified" style="font-size:10px; margin-left:6px;">ON-CHAIN</span></div>
               <div class="hero-number">
                 <span class="currency">$</span><span id="overview-capacity">0</span>
                 <span class="units">USD units</span>
               </div>
               <div class="utilization-bar-wrap">
                 <div class="utilization-labels">
-                  <span>Exposure: $<span id="overview-exposure">0</span></span>
-                  <span>Credit Limit: $<span id="overview-limit">0</span></span>
+                  <span>Current Exposure: $<span id="overview-exposure">0</span></span>
+                  <span>Max Credit Limit: $<span id="overview-limit">0</span></span>
                 </div>
                 <div class="progress-track">
                   <div class="progress-fill" id="overview-progress-bar" style="width: 0%;"></div>
@@ -160,7 +178,7 @@
         <!-- 7-Step Institutional Credit Journey Pipeline -->
         <div class="panel-card" style="margin-top:20px;">
           <div class="panel-header">
-            <div class="panel-title">Programmable Credit Pipeline</div>
+            <div class="panel-title">Programmable Credit Pipeline (End-to-End)</div>
             <span class="badge info">Deterministic Lifecycle</span>
           </div>
           <div class="journey-pipeline-container">
@@ -199,28 +217,28 @@
         <div class="grid-2col" style="margin-top:20px;">
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Credit Health Score</div>
-              <span class="badge verified" id="health-tier-badge">Tier 0</span>
+              <div class="panel-title">Derived Credit Health Score</div>
+              <span class="badge advisory">DERIVED UI METRIC</span>
             </div>
-            <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:14px;">
+            <div style="display:flex; align-items:baseline; gap:10px; margin-bottom:10px;">
               <span style="font-size:38px; font-weight:700; color:#fff;" id="health-score-val">0</span>
-              <span class="muted" style="color:var(--text-muted); font-size:12.5px;">/ 100 (Computed deterministically on-chain)</span>
+              <span class="muted" style="color:var(--text-muted); font-size:12px;">/ 100 (Deterministic client-side composite from on-chain event logs; not an on-chain oracle)</span>
             </div>
-            <div style="display:flex; flex-direction:column; gap:8px; font-size:13px;">
+            <div style="display:flex; flex-direction:column; gap:8px; font-size:12.5px;">
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
-                <span style="color:var(--text-muted);">Verified Payment Volume</span>
+                <span style="color:var(--text-muted);">Verified Payment Volume Contribution (+Vol/50)</span>
                 <span class="mono" id="health-vol-score">+0 pts</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
-                <span style="color:var(--text-muted);">Repayment Track Record</span>
+                <span style="color:var(--text-muted);">Repayment Track Record Contribution (+10/loan)</span>
                 <span class="mono" id="health-rep-score">+0 pts</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:6px;">
-                <span style="color:var(--text-muted);">Repayment Streak Continuity</span>
+                <span style="color:var(--text-muted);">Repayment Streak Continuity (+5/streak)</span>
                 <span class="mono" id="health-streak-score">+0 pts</span>
               </div>
               <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--text-muted);">Missed Obligations Deductions</span>
+                <span style="color:var(--text-muted);">Missed Obligations Penalty (-20/missed)</span>
                 <span class="mono" style="color:var(--status-danger);" id="health-missed-score">-0 pts</span>
               </div>
             </div>
@@ -229,23 +247,28 @@
           <div class="panel-card">
             <div class="panel-header">
               <div class="panel-title">Verified Historical Metrics</div>
+              <span class="badge verified">LIVE ON-CHAIN STATE</span>
             </div>
             <div class="grid-2col" style="gap:10px;">
               <div class="stat-box">
                 <div class="stat-lbl">Verified Events</div>
                 <div class="stat-val" id="stat-event-count">0</div>
+                <div class="stat-sub">Event count on-chain</div>
               </div>
               <div class="stat-box">
                 <div class="stat-lbl">Total Volume</div>
                 <div class="stat-val" id="stat-total-volume">$0</div>
+                <div class="stat-sub">Cumulative payment volume</div>
               </div>
               <div class="stat-box">
                 <div class="stat-lbl">Repayments</div>
                 <div class="stat-val" id="stat-rep-count">0</div>
+                <div class="stat-sub">Successful loan repayments</div>
               </div>
               <div class="stat-box">
                 <div class="stat-lbl">Current Streak</div>
                 <div class="stat-val" id="stat-streak-count">0</div>
+                <div class="stat-sub">Consecutive on-time streak</div>
               </div>
             </div>
           </div>
@@ -256,19 +279,23 @@
       <section class="page-container" id="page-passport">
         <div class="page-header">
           <h1 class="page-title">Credit Passport</h1>
-          <p class="page-subtitle">Your persistent, tamper-proof economic identity on Creditcoin.</p>
+          <p class="page-subtitle">Your persistent, tamper-proof economic identity on Creditcoin. Credit state persists independently of any single loan transaction.</p>
         </div>
 
         <div class="panel-card">
           <div class="panel-header">
             <div class="panel-title">Merchant Economic Passport Record</div>
-            <span class="badge verified">On-Chain Sink Active</span>
+            <span class="badge verified">CreditPassport.sol (Active State)</span>
           </div>
           <div class="inspector-grid">
+            <div class="lbl">Merchant Alias:</div>
+            <div class="val" id="passport-alias">merchant-1</div>
             <div class="lbl">Merchant ID (Hex):</div>
             <div class="val" id="passport-id-hex">0x...</div>
             <div class="lbl">Assigned Tier:</div>
-            <div class="val" id="passport-tier">Tier 0 (Unranked)</div>
+            <div class="val" id="passport-tier">Tier 0</div>
+            <div class="lbl">Total Capacity:</div>
+            <div class="val" id="passport-cap">$0.00</div>
             <div class="lbl">Available Credit:</div>
             <div class="val" id="passport-avail">$0.00</div>
             <div class="lbl">Current Exposure:</div>
@@ -278,7 +305,8 @@
 
         <div class="panel-card" style="margin-top:20px;">
           <div class="panel-header">
-            <div class="panel-title">Verified Event History Log</div>
+            <div class="panel-title">Verified Event History Ledger</div>
+            <span class="badge info">VerifiedEventRecorded Events</span>
           </div>
           <table class="fin-table">
             <thead>
@@ -301,13 +329,14 @@
       <section class="page-container" id="page-capacity">
         <div class="page-header">
           <h1 class="page-title">Deterministic Capacity Engine</h1>
-          <p class="page-subtitle">Mathematical, verifiable rules calculate credit limits directly on-chain without human discretion.</p>
+          <p class="page-subtitle">Mathematical, verifiable rules calculate credit limits directly on-chain in CreditEngine.sol without human discretion.</p>
         </div>
 
         <div class="grid-2col">
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Formula Specification (CreditEngine.sol)</div>
+              <div class="panel-title">On-Chain Formula Specification</div>
+              <span class="badge info">CreditEngine.sol</span>
             </div>
             <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1.7; background:var(--bg-base); padding:16px; border-radius:6px; border:1px solid var(--border-subtle); color:#e2e8f0;">
               Base Capacity = VerifiedVolume / 10<br/>
@@ -315,32 +344,33 @@
               Streak Bonus = Base * (Streak * 2%)<br/>
               Missed Penalty = Base * (MissedObligations * 25%)<br/>
               <br/>
-              Final Capacity = Clamp(Base + RepBonus + StreakBonus - MissedPenalty, Exposure, 2,000)
+              Final Capacity = Clamp(Base + RepBonus + StreakBonus - MissedPenalty, Exposure, PolicyMax)
             </div>
           </div>
 
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Merchant Live Evaluation</div>
+              <div class="panel-title">Merchant Live Evaluation Breakdown</div>
+              <span class="badge verified">Calculated Live</span>
             </div>
-            <div style="display:flex; flex-direction:column; gap:10px; font-size:13.5px;">
+            <div style="display:flex; flex-direction:column; gap:10px; font-size:13px;">
               <div style="display:flex; justify-content:space-between;">
                 <span style="color:var(--text-muted);">Base Capacity (10% Volume):</span>
                 <span class="mono" id="calc-base">$0</span>
               </div>
               <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--text-muted);">Repayment Multiplier Bonus:</span>
+                <span style="color:var(--text-muted);">Repayment Multiplier (+5% each):</span>
                 <span class="mono" style="color:var(--status-success);" id="calc-rep-bonus">+$0</span>
               </div>
               <div style="display:flex; justify-content:space-between;">
-                <span style="color:var(--text-muted);">Streak Multiplier Bonus:</span>
+                <span style="color:var(--text-muted);">Streak Multiplier (+2% each):</span>
                 <span class="mono" style="color:var(--status-success);" id="calc-streak-bonus">+$0</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border-subtle); padding-bottom:10px;">
-                <span style="color:var(--text-muted);">Missed Obligations Penalty:</span>
+                <span style="color:var(--text-muted);">Missed Obligations Penalty (-25% each):</span>
                 <span class="mono" style="color:var(--status-danger);" id="calc-missed-penalty">-$0</span>
               </div>
-              <div style="display:flex; justify-content:space-between; font-size:16px; font-weight:700;">
+              <div style="display:flex; justify-content:space-between; font-size:15px; font-weight:700;">
                 <span>Total Active Capacity:</span>
                 <span class="mono" style="color:var(--brand-primary);" id="calc-final-capacity">$0</span>
               </div>
@@ -353,7 +383,7 @@
       <section class="page-container" id="page-creditline">
         <div class="page-header">
           <h1 class="page-title">Credit Facility &amp; Borrowing</h1>
-          <p class="page-subtitle">Access programmatic credit with on-chain PolicyEngine hard bounds.</p>
+          <p class="page-subtitle">Access programmatic credit lines governed strictly by on-chain PolicyEngine hard bounds.</p>
         </div>
 
         <div class="grid-2col">
@@ -361,7 +391,7 @@
           <div class="panel-card">
             <div class="panel-header">
               <div class="panel-title">Draw From Credit Line</div>
-              <span class="badge info">Policy Engine Governed</span>
+              <span class="badge info">CreditLine.sol</span>
             </div>
 
             <div style="display:flex; flex-direction:column; gap:14px;">
@@ -375,44 +405,52 @@
                 <input class="input-field" id="borrow-tenor-input" type="number" placeholder="604800 (7 days)" value="604800" />
               </div>
 
+              <!-- Live Pre-Flight Policy Evaluation Box -->
               <div class="inspector-card" style="margin-top:0;">
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <div style="font-weight:600; font-size:12px; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px;">Live Policy Pre-Flight Check</div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12.5px;">
+                  <span style="color:var(--text-muted);">Requested Amount:</span>
+                  <span class="mono" id="prev-req-amt">$50</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12.5px;">
+                  <span style="color:var(--text-muted);">On-Chain Policy Limit:</span>
+                  <span class="mono" id="prev-policy-max">$2,000</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:12.5px;">
                   <span style="color:var(--text-muted);">Available Capacity:</span>
-                  <span class="mono" id="borrow-avail-lbl">$0</span>
+                  <span class="mono" id="prev-avail-cap">$0</span>
                 </div>
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                  <span style="color:var(--text-muted);">Policy Engine Cap:</span>
-                  <span class="mono" id="borrow-policy-cap">$2,000</span>
-                </div>
-                <div style="display:flex; justify-content:space-between;">
-                  <span style="color:var(--text-muted);">Eligibility:</span>
-                  <span class="badge verified" id="borrow-eligibility-badge">ELIGIBLE</span>
+                <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-subtle); padding-top:6px; font-size:12.5px;">
+                  <span style="color:var(--text-muted);">Eligibility Result:</span>
+                  <span class="badge verified" id="prev-result-badge">BORROW APPROVED</span>
                 </div>
               </div>
 
               <button class="btn-primary" id="execute-borrow-btn">Request Credit Drawdown</button>
+
+              <div id="borrow-tx-status" style="display:none;"></div>
             </div>
           </div>
 
           <!-- Risk Advisor vs Policy Engine Rule -->
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Risk Advisor Guardrails</div>
+              <div class="panel-title">Risk Advisor vs Policy Authority</div>
               <span class="badge advisory">ADVISORY ONLY</span>
             </div>
 
             <p style="font-size:13px; color:var(--text-muted); line-height:1.5; margin-bottom:14px;">
-              AI and off-chain models provide advisory recommendations. The protocol enforces credit decisions deterministically via smart contract rules.
+              AI and off-chain models provide advisory suggestions. The protocol enforces credit decisions deterministically via smart contract rules.
             </p>
 
             <div style="background:var(--bg-base); border:1px solid var(--border-subtle); border-radius:6px; padding:14px;">
               <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span style="color:var(--text-muted);">AI Suggested Amount:</span>
+                <span style="color:var(--text-muted);">AI Suggested Amount <span class="badge advisory" style="font-size:9.5px;">DEMO SCENARIO</span>:</span>
                 <span class="mono" style="color:var(--status-warning);">$50,000</span>
               </div>
               <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                <span style="color:var(--text-muted);">Hard On-Chain Policy Limit:</span>
-                <span class="mono" style="color:#ffffff;">$2,000</span>
+                <span style="color:var(--text-muted);">Hard On-Chain Policy Limit <span class="badge verified" style="font-size:9.5px;">ON-CHAIN</span>:</span>
+                <span class="mono" style="color:#ffffff;" id="ai-policy-cap-lbl">$2,000</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-top:1px solid var(--border-subtle); padding-top:8px;">
                 <span style="color:var(--text-muted);">Enforcement Authority:</span>
@@ -420,10 +458,14 @@
               </div>
             </div>
 
+            <div style="font-size:12px; color:var(--text-dim); margin-top:10px; font-style:italic;">
+              "AI recommendations cannot authorize credit. Deterministic smart contract policy is the sole authority."
+            </div>
+
             <!-- Repay Form -->
             <div style="margin-top:20px; border-top:1px solid var(--border-subtle); padding-top:16px;">
               <div class="panel-title" style="margin-bottom:10px;">Repay Active Debt</div>
-              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Send native funds to reduce current exposure in LiquidityPool.</p>
+              <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Send native funds to reduce current exposure in LiquidityPool.sol.</p>
               <button class="btn-secondary" style="width:100%;" id="execute-repay-btn">Repay Full Active Exposure</button>
             </div>
           </div>
@@ -439,8 +481,11 @@
 
         <div class="panel-card">
           <div class="panel-header">
-            <div class="panel-title">5-Stage Cryptographic Verification Flow</div>
-            <span class="badge verified">End-to-End Trace</span>
+            <div>
+              <div class="panel-title" id="proof-status-header">PROOF STATUS: VERIFIED ON-CHAIN</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;" id="proof-status-path">Verification path completed on-chain</div>
+            </div>
+            <span class="badge verified">USC v0.18.0 Trace</span>
           </div>
 
           <div class="proof-chain-flow">
@@ -478,7 +523,7 @@
           <div class="inspector-card" id="proof-node-detail">
             <div class="panel-title" id="node-detail-title" style="margin-bottom:12px;">Stage 01: Source Transaction Details</div>
             <div class="inspector-grid" id="node-detail-grid">
-              <div class="lbl">Source Chain:</div><div class="val">Sepolia / External Settlement Rail (ChainKey: 2)</div>
+              <div class="lbl">Source Chain Key:</div><div class="val">ChainKey: 2 (Sepolia)</div>
               <div class="lbl">Source Contract:</div><div class="val">0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e</div>
               <div class="lbl">Event Signature:</div><div class="val">PaymentSettled(bytes32,address,uint256,bytes32,uint64)</div>
               <div class="lbl">EIP-658 Status:</div><div class="val">status = 1 (SUCCESS enforced on-chain)</div>
@@ -520,10 +565,10 @@
 
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Execution Log</div>
+              <div class="panel-title">Execution Log (Live 4-Step Pipeline)</div>
             </div>
             <div style="background:var(--bg-base); border:1px solid var(--border-subtle); border-radius:6px; padding:14px; font-family:'IBM Plex Mono',monospace; font-size:12px; height:180px; overflow-y:auto; color:var(--text-muted);" id="activity-log-box">
-              [Ready] Select an event type and amount to emit economic activity...
+              [Ready] Select an event type and volume to execute live source-to-Creditcoin lifecycle...
             </div>
           </div>
         </div>
@@ -533,7 +578,7 @@
       <section class="page-container" id="page-security">
         <div class="page-header">
           <h1 class="page-title">Security Lab</h1>
-          <p class="page-subtitle">Test and prove that the protocol deterministically blocks all invalid or malicious evidence attempts.</p>
+          <p class="page-subtitle">Execute real malicious attack payloads against the protocol to independently verify on-chain custom error reversions.</p>
         </div>
 
         <div class="attack-grid">
@@ -544,8 +589,8 @@
               <span class="badge danger">Replay Vector</span>
             </div>
             <div class="attack-title">Replay Already-Consumed Evidence</div>
-            <div class="attack-desc">Submits valid evidence with an identical identifier a second time. Expected: Rejection by replay mapping.</div>
-            <div class="attack-timeline">
+            <div class="attack-desc">Submits valid evidence chunk a second time. Expected: Rejection by replay registry (`EvidenceAlreadyConsumed()`).</div>
+            <div class="attack-timeline" id="tl-replay">
               <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
             </div>
             <button class="btn-danger" data-attack="replay">Execute Replay Attack</button>
@@ -559,8 +604,8 @@
               <span class="badge danger">Spoof Vector</span>
             </div>
             <div class="attack-title">Source Contract Spoofing</div>
-            <div class="attack-desc">Submits validly formed evidence from an unregistered emitter address. Expected: Rejection by allowlist.</div>
-            <div class="attack-timeline">
+            <div class="attack-desc">Submits evidence claiming an unregistered emitter address. Expected: Rejection by allowlist (`SourceContractMismatch()`).</div>
+            <div class="attack-timeline" id="tl-fakesource">
               <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
             </div>
             <button class="btn-danger" data-attack="fakesource">Execute Spoof Attack</button>
@@ -574,8 +619,8 @@
               <span class="badge danger">Reverted Tx Vector</span>
             </div>
             <div class="attack-title">Failed Source Transaction</div>
-            <div class="attack-desc">Submits an included-but-reverted source transaction (status=0). Expected: Rejection by decoder.</div>
-            <div class="attack-timeline">
+            <div class="attack-desc">Submits an included-but-reverted source receipt (status=0). Expected: Rejection by decoder (`SourceTransactionFailed()`).</div>
+            <div class="attack-timeline" id="tl-failedtx">
               <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
             </div>
             <button class="btn-danger" data-attack="failedtx">Execute Reverted Tx Attack</button>
@@ -589,8 +634,8 @@
               <span class="badge danger">Policy Bypass Vector</span>
             </div>
             <div class="attack-title">Policy Engine Bypass ($50k)</div>
-            <div class="attack-desc">Attempts to borrow $50,000 using malicious AI recommendation against $2,000 cap. Expected: Policy limit rejection.</div>
-            <div class="attack-timeline">
+            <div class="attack-desc">Attempts $50,000 borrow using malicious AI recommendation against $2,000 cap. Expected: `BorrowRejected(POLICY_LIMIT_EXCEEDED)`.</div>
+            <div class="attack-timeline" id="tl-maliciousai">
               <span>INIT</span> &rarr; <span>SUBMIT</span> &rarr; <span>REVERT</span> &rarr; <span>DECODE</span>
             </div>
             <button class="btn-danger" data-attack="maliciousai">Execute Policy Bypass</button>
@@ -624,7 +669,7 @@ interface ICreditPassport {
 
           <div class="panel-card">
             <div class="panel-header">
-              <div class="panel-title">Live RPC Query Test</div>
+              <div class="panel-title">Live RPC Query Test (getMerchantState)</div>
               <button class="btn-primary" id="api-query-btn" style="padding:4px 12px; font-size:11.5px;">Execute Query</button>
             </div>
             <pre style="background:var(--bg-base); padding:16px; border-radius:6px; border:1px solid var(--border-subtle); font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#6ee7b7; overflow-x:auto; height:180px;" id="api-response-box">
@@ -642,11 +687,22 @@ Click "Execute Query" to inspect live getMerchantState() return payload...</pre>
 
         <div class="panel-card">
           <div class="panel-header">
-            <div class="panel-title">Select Preset</div>
+            <div class="panel-title">Active Network Presets</div>
           </div>
           <div style="display:flex; gap:12px; margin-bottom:20px;">
             <button class="btn-secondary" style="flex:1;" id="env-preset-local">Load Local Anvil (31337)</button>
             <button class="btn-secondary" style="flex:1;" id="env-preset-cc3">Load CC3 Testnet (102031)</button>
+          </div>
+
+          <div class="inspector-grid">
+            <div class="lbl">Active Preset Name:</div>
+            <div class="val" id="cfg-active-name">LOCAL ANVIL (Chain ID: 31337)</div>
+            <div class="lbl">RPC Endpoint:</div>
+            <div class="val" id="cfg-active-rpc">http://127.0.0.1:8545</div>
+            <div class="lbl">Source Chain Key:</div>
+            <div class="val">2 (Sepolia)</div>
+            <div class="lbl">Deployment Status:</div>
+            <div class="val" id="cfg-active-status">Verified &amp; Seeded with merchant-1 state</div>
           </div>
         </div>
       </section>
