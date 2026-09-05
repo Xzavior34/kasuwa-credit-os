@@ -1,0 +1,229 @@
+name: Real testnet deployment (Sepolia -> Creditcoin CC3)
+
+# Manual-only trigger on purpose: this spends real (if valueless) testnet gas from a funded
+# wallet on every run, and produces a durable on-chain record each time. Run it deliberately,
+# not on every push. See docs/ANTIGRAVITY_HANDOFF.md for the full manual version of these same
+# steps — this workflow automates exactly that, step for step, and refuses to paper over a
+# failure (see docs/ANTIGRAVITY_HANDOFF.md "Rules that apply throughout").
+on:
+  workflow_dispatch:
+    inputs:
+      merchant_id:
+        description: "bytes32 merchantId for the demo economic event (any 0x-prefixed 32-byte hex)"
+        required: false
+        default: "0x6d65726368616e742d6c6976652d6465706c6f790000000000000000000000"
+      amount:
+        description: "Demo payment amount (uint256, arbitrary demo unit)"
+        required: false
+        default: "4200"
+
+permissions:
+  contents: write
+
+env:
+  # Confirmed live 2026-09-05 from docs.creditcoin.org/environments/testnet.md and
+  # docs.attestcoin.org/attestcoin-protocol/environments/testnet.md — see docs/NETWORKS.md.
+  CREDITCOIN_RPC_URL: https://rpc.cc3-testnet.creditcoin.network
+  CREDITCOIN_CHAIN_ID: "102031"
+  CREDITCOIN_PROOF_BUILDER_URL: https://prover.cc3-testnet.creditcoin.network
+  # Real chainKey Attestcoin has assigned Ethereum Sepolia (NOT the "2" placeholder used
+  # throughout test/ — see docs/NETWORKS.md "Sepolia chainKey correction").
+  SOURCE_CHAIN_KEY: "1"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+
+      - name: Install forge-std
+        run: forge install foundry-rs/forge-std --no-commit
+
+      - name: Build
+        run: forge build
+
+      - name: Run full local test suite (must be green before touching a real network)
+        run: forge test -vv
+
+      - name: Set up Node for the relayer
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Deploy EconomicEvents to Sepolia (source chain only — see script/DeploySourceOnly.s.sol)
+        env:
+          PRIVATE_KEY: ${{ secrets.TESTNET_PRIVATE_KEY }}
+        run: |
+          forge script script/DeploySourceOnly.s.sol:DeploySourceOnly \
+            --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
+            --broadcast -vvvv
+          echo "----- Sepolia deployment record -----"
+          cat deployments/11155111.json
+          ECON_ADDR=$(python3 -c "import json;print(json.load(open('deployments/11155111.json'))['economicEvents'])")
+          echo "ECON_ADDR=$ECON_ADDR" >> "$GITHUB_ENV"
+
+      - name: Deploy Kasuwa stack to Creditcoin CC3 testnet
+        env:
+          PRIVATE_KEY: ${{ secrets.TESTNET_PRIVATE_KEY }}
+          DEPLOY_ECONOMIC_EVENTS: "false"
+          ECONOMIC_EVENTS_ADDRESS: ${{ env.ECON_ADDR }}
+        run: |
+          forge script script/Deploy.s.sol:Deploy \
+            --rpc-url "$CREDITCOIN_RPC_URL" \
+            --broadcast -vvvv
+          echo "----- Creditcoin CC3 deployment record -----"
+          cat "deployments/${CREDITCOIN_CHAIN_ID}.json"
+          VERIFIER_ADDR=$(python3 -c "import json;print(json.load(open('deployments/${CREDITCOIN_CHAIN_ID}.json'))['attestcoinVerifier'])")
+          echo "VERIFIER_ADDR=$VERIFIER_ADDR" >> "$GITHUB_ENV"
+
+      - name: Confirm wiring on the real CC3 deployment
+        run: |
+          RPC_URL="$CREDITCOIN_RPC_URL" CHAIN_ID="$CREDITCOIN_CHAIN_ID" bash script/smoke-test.sh
+
+      - name: Emit a real economic event on Sepolia
+        env:
+          PRIVATE_KEY: ${{ secrets.TESTNET_PRIVATE_KEY }}
+        run: |
+          TX_HASH=$(cast send "$ECON_ADDR" \
+            "emitPaymentSettled(bytes32,uint256,bytes32)" \
+            "${{ inputs.merchant_id }}" "${{ inputs.amount }}" \
+            "0x0000000000000000000000000000000000000000000000000000000000000001" \
+            --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
+            --private-key "$PRIVATE_KEY" \
+            --json | python3 -c "import json,sys;print(json.load(sys.stdin)['transactionHash'])")
+          echo "SOURCE_TX_HASH=$TX_HASH" >> "$GITHUB_ENV"
+          echo "Real Sepolia source tx: https://sepolia.etherscan.io/tx/$TX_HASH"
+          # Confirm it actually succeeded — do not assume.
+          cast receipt "$TX_HASH" --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" --json > /tmp/source_receipt.json
+          cat /tmp/source_receipt.json
+          STATUS=$(python3 -c "import json;print(json.load(open('/tmp/source_receipt.json'))['status'])")
+          echo "Source receipt status: $STATUS"
+          if [ "$STATUS" != "1" ] && [ "$STATUS" != "0x1" ]; then
+            echo "::error::Source transaction did not succeed (status=$STATUS) — stopping rather than pretending it did."
+            exit 1
+          fi
+
+      - name: Build the relayer
+        working-directory: relayer
+        run: |
+          npm install
+          npm run build
+
+      - name: Run the relayer end-to-end and wait for CREDIT_UPDATED
+        env:
+          SOURCE_CHAIN_RPC_URL: ${{ secrets.SEPOLIA_RPC_URL }}
+          ECONOMIC_EVENTS_ADDRESS: ${{ env.ECON_ADDR }}
+          ATTESTCOIN_VERIFIER_ADDRESS: ${{ env.VERIFIER_ADDR }}
+          PRIVATE_KEY: ${{ secrets.TESTNET_PRIVATE_KEY }}
+        working-directory: relayer
+        run: |
+          nohup npm start > relayer.log 2>&1 &
+          echo $! > relayer.pid
+          sleep 5
+          echo "----- relayer startup log -----"
+          cat relayer.log
+
+          # The relayer only reacts to NEW events emitted after it starts watching, so re-emit
+          # the demo event now that it's live and listening, then poll its local job store
+          # (state/jobs.json) for a terminal status. This is the real end-to-end Attestcoin
+          # round-trip: Sepolia event -> attestation wait -> real Proof Builder call -> real
+          # BlockProver precompile verification on CC3. See docs/ANTIGRAVITY_HANDOFF.md step 4 —
+          # "the single most important step in this entire handoff."
+          cd ..
+          TX_HASH2=$(cast send "$ECON_ADDR" \
+            "emitPaymentSettled(bytes32,uint256,bytes32)" \
+            "${{ inputs.merchant_id }}" "${{ inputs.amount }}" \
+            "0x0000000000000000000000000000000000000000000000000000000000000002" \
+            --rpc-url "${{ secrets.SEPOLIA_RPC_URL }}" \
+            --private-key "${{ secrets.TESTNET_PRIVATE_KEY }}" \
+            --json | python3 -c "import json,sys;print(json.load(sys.stdin)['transactionHash'])")
+          echo "Second Sepolia source tx (relayer should pick this one up live): https://sepolia.etherscan.io/tx/$TX_HASH2"
+          echo "SOURCE_TX_HASH_2=$TX_HASH2" >> "$GITHUB_ENV"
+          cd relayer
+
+          DEADLINE=$((SECONDS + 900))
+          FOUND=0
+          while [ $SECONDS -lt $DEADLINE ]; do
+            if [ -f state/jobs.json ]; then
+              STATUS=$(python3 ../script/check_job_status.py "$TX_HASH2" state/jobs.json 2>/dev/null || echo "")
+              if [ -n "$STATUS" ]; then
+                echo "job status: $STATUS"
+                if [ "$STATUS" = "CREDIT_UPDATED" ]; then
+                  FOUND=1
+                  break
+                fi
+                case "$STATUS" in
+                  SOURCE_FAILED|PROOF_FAILED|INVALID_SOURCE|REPLAYED|POLICY_REJECTED|SUBMISSION_FAILED)
+                    echo "::error::Relayer job reached terminal failure state: $STATUS"
+                    break
+                    ;;
+                esac
+              fi
+            fi
+            sleep 15
+          done
+
+          echo "----- full relayer log -----"
+          cat relayer.log
+          echo "----- final state/jobs.json -----"
+          cat state/jobs.json 2>/dev/null || echo "(no state file written)"
+
+          kill "$(cat relayer.pid)" 2>/dev/null || true
+
+          if [ "$FOUND" != "1" ]; then
+            echo "::error::Relayer did not reach CREDIT_UPDATED within the time budget. See relayer.log and state/jobs.json above — this is real information about what actually happened against the live network, not a script bug to silence."
+            exit 1
+          fi
+
+      - name: Write generated evidence summary
+        if: always()
+        run: |
+          {
+            echo "# Real testnet evidence — generated $(date -u +%FT%TZ)"
+            echo
+            echo "## Sepolia (chain 11155111)"
+            echo '```json'
+            cat deployments/11155111.json 2>/dev/null || echo "(not written)"
+            echo '```'
+            echo "First source tx: https://sepolia.etherscan.io/tx/${SOURCE_TX_HASH:-unknown}"
+            echo "Relayer-observed source tx: https://sepolia.etherscan.io/tx/${SOURCE_TX_HASH_2:-unknown}"
+            echo
+            echo "## Creditcoin CC3 testnet (chain 102031)"
+            echo '```json'
+            cat deployments/102031.json 2>/dev/null || echo "(not written)"
+            echo '```'
+            echo
+            echo "## Relayer job record"
+            echo '```json'
+            cat relayer/state/jobs.json 2>/dev/null || echo "(not written)"
+            echo '```'
+          } | tee docs/REAL_TESTNET_EVIDENCE.generated.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload evidence as workflow artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: real-testnet-evidence
+          path: |
+            deployments/*.json
+            relayer/state/jobs.json
+            relayer/relayer.log
+            docs/REAL_TESTNET_EVIDENCE.generated.md
+          if-no-files-found: warn
+
+      - name: Commit real deployment evidence back to the repo
+        if: success()
+        run: |
+          git config user.name "kasuwa-testnet-deploy-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add deployments/11155111.json deployments/102031.json docs/REAL_TESTNET_EVIDENCE.generated.md 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: real Sepolia + Creditcoin CC3 testnet deployment evidence (run ${{ github.run_id }}, source tx ${SOURCE_TX_HASH_2:-unknown})"
+            git push
+          else
+            echo "Nothing new to commit."
+          fi

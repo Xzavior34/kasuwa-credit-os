@@ -41,10 +41,21 @@ cat deployments/31337.json
 2. Fund a **dedicated testnet wallet** (never a mainnet key) and set `PRIVATE_KEY` to it.
 3. Do **not** set `BLOCK_PROVER_ADDRESS` — leave it unset so the script uses the real, verified
    `0x0000000000000000000000000000000000000FD2` address.
-4. Run the source-chain half first (`DEPLOY_ECONOMIC_EVENTS=true`, rest of the Kasuwa contracts
-   are irrelevant there since they belong on Creditcoin — a real two-chain deployment would
-   likely use a smaller script that only deploys `EconomicEvents.sol` against the source
-   chain's RPC), then the Creditcoin half (`DEPLOY_ECONOMIC_EVENTS=false`, real Creditcoin RPC).
+4. Run the source-chain half first, then the Creditcoin half. **Use
+   `script/DeploySourceOnly.s.sol:DeploySourceOnly`** for the source-chain half (Sepolia) — it
+   deploys only `EconomicEvents.sol`, not the full Kasuwa stack, avoiding unused
+   CreditEngine/CreditPassport/PolicyEngine/LiquidityPool/CreditLine/AttestcoinVerifier
+   instances sitting wired to a nonexistent-on-Sepolia BlockProver precompile address. Then run
+   `script/Deploy.s.sol:Deploy` with `DEPLOY_ECONOMIC_EVENTS=false` against the real Creditcoin
+   RPC for the Creditcoin half, passing the Sepolia `EconomicEvents` address via
+   `ECONOMIC_EVENTS_ADDRESS`.
+
+   `.github/workflows/testnet-deploy.yml` automates exactly this split (plus the full relayer
+   round-trip and evidence capture) as a one-click, `workflow_dispatch`-triggered CI job — see
+   its comments for the full step-by-step. It requires two repo secrets:
+   `TESTNET_PRIVATE_KEY` (a dedicated, funded testnet wallet — see below) and
+   `SEPOLIA_RPC_URL`. Fund the wallet via a Sepolia faucet and the Creditcoin CC3 faucet (Discord
+   `#token-faucet`, `/faucet address:<address>` — see `docs/NETWORKS.md`) before running it.
 5. Configure the relayer's `.env` (see `relayer/.env.example`) with the resulting addresses and
    real RPC/proof-builder URLs, then run it against the real deployment.
 6. Fill in `docs/REAL_TESTNET_EVIDENCE.md` with the actual resulting hashes/addresses — only

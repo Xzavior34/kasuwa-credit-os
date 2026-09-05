@@ -54,3 +54,30 @@ Foundry tests do not run against any of the above networks. They construct
 `AttestcoinVerifier` with a `MockBlockProver` test double (`test/mocks/MockBlockProver.sol`)
 instead of the real precompile address, because this sandbox cannot reach a live Creditcoin RPC.
 This substitution is confined to `test/` and documented in `docs/SECURITY_MODEL.md`.
+
+
+## Live network values — independently re-verified 2026-09-05 (for real deployment)
+
+Re-checked directly against Creditcoin's and Attestcoin's official docs sites (not the SDK
+README's example values) ahead of the first real testnet deployment attempt — see
+`.github/workflows/testnet-deploy.yml` and `docs/ANTIGRAVITY_HANDOFF.md`.
+
+| Value | Confirmed | Source |
+|---|---|---|
+| Creditcoin CC3 testnet RPC | `https://rpc.cc3-testnet.creditcoin.network` | docs.creditcoin.org/environments/testnet |
+| Creditcoin CC3 testnet chain ID | `102031` | docs.creditcoin.org/environments/testnet |
+| Creditcoin CC3 explorer (EVM) | `https://creditcoin-testnet.blockscout.com/` | docs.creditcoin.org/environments/testnet |
+| Attestcoin Proof Builder (testnet) | `https://prover.cc3-testnet.creditcoin.network` (alt: `https://proof-gen-api.cc3-testnet.creditcoin.network/`) | docs.attestcoin.org/attestcoin-protocol/environments/testnet |
+| BlockProver precompile | `0x0000000000000000000000000000000000000FD2` | docs.attestcoin.org (matches SDK export used throughout this repo) |
+| **Ethereum Sepolia chainKey** | **`1`** | docs.attestcoin.org/attestcoin-protocol/environments/testnet |
+| Ethereum Mainnet chainKey | `3` | docs.attestcoin.org/attestcoin-protocol/environments/testnet |
+| Testnet CTC faucet | Discord `#token-faucet` channel, `/faucet address:<your EVM address>` | docs.creditcoin.org/wallets/using-testnet-faucet |
+
+**Correction this establishes:** `test/helpers/KasuwaTestBase.sol`'s `SOURCE_CHAIN_KEY = 2` was
+always documented as "an arbitrary demo source chain" placeholder, never a claim about Sepolia's
+real assigned key — that placeholder is fine to leave as-is in `test/` (it never touches a real
+network). But any REAL deployment targeting Sepolia as the source chain must use `chainKey = 1`,
+not `2` — `.github/workflows/testnet-deploy.yml` sets `SOURCE_CHAIN_KEY=1` accordingly. Deploying
+with the wrong chainKey wouldn't silently corrupt anything (Attestcoin's own chain registry would
+simply fail to recognize transactions under the wrong key), but it's worth getting right before
+spending real testnet gas on a deployment that can't attest.
