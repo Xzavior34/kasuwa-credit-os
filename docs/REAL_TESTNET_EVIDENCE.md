@@ -1,20 +1,37 @@
 # Real Testnet Evidence & Verification Report
 
-## Live public-network status (updated 2026-09-05)
+## Live public-network status (updated 2026-09-06)
+
+All 7 contracts of the Kasuwa stack are now live and independently verified on public testnets —
+no local-only or in-progress components remain. Every address below was checked directly against
+Blockscout (CC3) or Etherscan (Sepolia): `is_contract: true`, `creation_status: success`.
 
 | Contract | Network | Address | Verified how |
 |---|---|---|---|
-| `EconomicEvents.sol` | Ethereum Sepolia (`11155111`) | `0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1` | Confirmed on Etherscan: real contract, 2 real transactions, deployed by `0x73af91CE084D84Ccdd6613D5B135EB10549C4616` |
-| `AttestcoinVerifier.sol` | Creditcoin CC3 testnet (`102031`) | `0xF037AD72C341326e5B4E0B2Cb0217307Be697Aa0` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success`, same deployer wallet as Sepolia |
-| `CreditPassport.sol`, `CreditEngine.sol`, `PolicyEngine.sol`, `CreditLine.sol`, `LiquidityPool.sol` | Creditcoin CC3 testnet | pending — deployment in progress | tracked in [Actions run #10](https://github.com/Xzavior34/kasuwa-credit-os/actions/runs/33964265571); each address will be re-verified against Blockscout before being listed here as live |
+| `EconomicEvents.sol` | Ethereum Sepolia (`11155111`) | `0x84780ab03db7A3FebFdb789De402314F202D8263` | Confirmed on Etherscan: real contract, real transactions, deployed by `0x73af91CE084D84Ccdd6613D5B135EB10549C4616` |
+| `AttestcoinVerifier.sol` | Creditcoin CC3 testnet (`102031`) | `0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success` |
+| `CreditPassport.sol` | Creditcoin CC3 testnet (`102031`) | `0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success` |
+| `CreditEngine.sol` | Creditcoin CC3 testnet (`102031`) | `0xcc364e6D87146abBdB47ebaAAe964f7d447E4875` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success` |
+| `PolicyEngine.sol` | Creditcoin CC3 testnet (`102031`) | `0x30b7A70b4fA0Be2F3eD2ef7551c4890A481Ef047` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success` |
+| `CreditLine.sol` | Creditcoin CC3 testnet (`102031`) | `0x3ed53F226dd8f46451E3e5D418b25Be7889fd49e` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success` |
+| `LiquidityPool.sol` | Creditcoin CC3 testnet (`102031`) | `0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8` | Confirmed on Blockscout: `is_contract: true`, `creation_status: success` |
+
+All seven contracts were deployed from the same wallet, `0x73af91CE084D84Ccdd6613D5B135EB10549C4616`,
+on both chains — one coordinated cross-chain deployment, not disconnected demos. Full addresses
+are also committed in the repo at `deployments/102031.json` and `deployments/11155111.json`, and
+raw relayer/attestation evidence (real tx hashes, relayer job state) is in
+`docs/REAL_TESTNET_EVIDENCE.generated.md`, so this table can be cross-checked without taking our
+word for it.
+
+Real source and evidence-verification transactions from this deployment:
+- Source tx (Sepolia): [`0x30e8780988f6641a8e426d315d16179f60556572a83540b7ed79fbdfab356fe0`](https://sepolia.etherscan.io/tx/0x30e8780988f6641a8e426d315d16179f60556572a83540b7ed79fbdfab356fe0)
+- Relayer-observed source tx (Sepolia): [`0xacb4856a667a29e5fa92f898f5e273d62a3cb951b0e23e0a6439fe6aed6a4321`](https://sepolia.etherscan.io/tx/0xacb4856a667a29e5fa92f898f5e273d62a3cb951b0e23e0a6439fe6aed6a4321)
 
 **Important correction**: an earlier internal report listed `CreditFacility` and `CreditScoreOracle`
 addresses on CC3 that turned out, on independent verification, to be the **local Anvil (chain
-`31337`)** addresses below, mislabeled as CC3. Nothing in this file states an address is live on
-a public network unless it has been checked directly against that network's block explorer.
-
-Both confirmed-live addresses above were deployed from the same wallet on both chains — one
-coordinated cross-chain deployment, not two unrelated demos.
+`31337`)** addresses in the section below, mislabeled as CC3. Nothing in this file states an
+address is live on a public network unless it has been checked directly against that network's
+block explorer.
 
 ## Local Verification & Security Audit Results
 

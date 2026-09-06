@@ -7,23 +7,31 @@ A programmable credit state layer for Creditcoin: cryptographically verified eco
 from which a deterministic policy engine derives borrowing capacity. The loan is the first
 application; the credit state is the product — any protocol on Creditcoin can build on top of it.
 
-## Live deployment status (updated 2026-09-05)
+## Live deployment status (updated 2026-09-06)
 
-This table is the single source of truth for what's actually live vs. still local-only. Every
-address below has been independently checked against its block explorer — not just claimed.
+This table is the single source of truth for what's live. All 7 contracts of the Kasuwa stack —
+the Sepolia source contract plus all 6 CC3 execution contracts — are now live and independently
+verified; no local-only or in-progress components remain. Every address below has been checked
+directly against its block explorer.
 
 | Component | Network | Address | Status | Explorer |
 |---|---|---|---|---|
-| `EconomicEvents.sol` | Ethereum Sepolia | `0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1` | **Live** — real contract, real transactions | [Etherscan](https://sepolia.etherscan.io/address/0xEd15bEb8F5D7854F27b965D1FD4c0584877554c1) |
-| `AttestcoinVerifier.sol` | Creditcoin CC3 testnet | `0xF037AD72C341326e5B4E0B2Cb0217307Be697Aa0` | **Live** — real contract, confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0xF037AD72C341326e5B4E0B2Cb0217307Be697Aa0) |
-| `CreditPassport.sol`, `CreditEngine.sol`, `PolicyEngine.sol`, `CreditLine.sol`, `LiquidityPool.sol` | Creditcoin CC3 testnet | see `deployments/102031.json` once finalized | **Deployment in progress** — tracked in [GitHub Actions run #10](https://github.com/Xzavior34/kasuwa-credit-os/actions/runs/33964265571) | — |
+| `EconomicEvents.sol` | Ethereum Sepolia | `0x84780ab03db7A3FebFdb789De402314F202D8263` | **Live** — real contract, real transactions | [Etherscan](https://sepolia.etherscan.io/address/0x84780ab03db7A3FebFdb789De402314F202D8263) |
+| `AttestcoinVerifier.sol` | Creditcoin CC3 testnet | `0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2` | **Live** — confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2) |
+| `CreditPassport.sol` | Creditcoin CC3 testnet | `0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d` | **Live** — confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d) |
+| `CreditEngine.sol` | Creditcoin CC3 testnet | `0xcc364e6D87146abBdB47ebaAAe964f7d447E4875` | **Live** — confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0xcc364e6D87146abBdB47ebaAAe964f7d447E4875) |
+| `PolicyEngine.sol` | Creditcoin CC3 testnet | `0x30b7A70b4fA0Be2F3eD2ef7551c4890A481Ef047` | **Live** — confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0x30b7A70b4fA0Be2F3eD2ef7551c4890A481Ef047) |
+| `CreditLine.sol` | Creditcoin CC3 testnet | `0x3ed53F226dd8f46451E3e5D418b25Be7889fd49e` | **Live** — confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0x3ed53F226dd8f46451E3e5D418b25Be7889fd49e) |
+| `LiquidityPool.sol` | Creditcoin CC3 testnet | `0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8` | **Live** — confirmed on-chain | [Blockscout](https://creditcoin-testnet.blockscout.com/address/0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8) |
 
-Both live addresses above were deployed by the same wallet (`0x73af91CE084D84Ccdd6613D5B135EB10549C4616`)
-on both chains — one coordinated cross-chain deployment, not two unrelated demos. The remaining
-five contracts are also verified working end-to-end against a **local Anvil chain** (real
-addresses, real tx hashes, real attack rejections — see `docs/DEMO.md`); their move to CC3 is
-what the linked Actions run is completing. This file will be updated the moment that run
-concludes, with every new address re-checked the same way as the two above.
+All seven addresses above were deployed by the same wallet (`0x73af91CE084D84Ccdd6613D5B135EB10549C4616`)
+on both chains — one coordinated cross-chain deployment, not disconnected demos. Full addresses are
+also committed in `deployments/102031.json` and `deployments/11155111.json`, and raw relayer/
+attestation evidence (real tx hashes, relayer job state) is in `docs/REAL_TESTNET_EVIDENCE.generated.md`,
+so every claim here can be independently cross-checked rather than taken on our word. The five
+CC3 contracts beyond `AttestcoinVerifier` were also verified working end-to-end against a
+**local Anvil chain** before this live deployment (see `docs/REAL_TESTNET_EVIDENCE.md` for that
+walkthrough).
 
 **Security**: an internal audit against our own threat model found a real reentrancy exposure in
 `CreditLine.borrow()` — the credit exposure was being recorded *after* the external funds
