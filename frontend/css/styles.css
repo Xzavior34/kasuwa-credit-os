@@ -64,6 +64,19 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Keyboard-focus visibility, applied consistently app-wide.
+   :focus-visible (not :focus) so a mouse click never shows a ring --
+   only real keyboard/switch-device navigation does. This is the one
+   accessible-focus system for the whole app; individual :focus rules
+   below (e.g. .form-input:focus) layer on top of this, they don't
+   replace it. */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+
 html, body {
   background-color: var(--bg-base);
   color: var(--text-main);
@@ -426,6 +439,11 @@ a:hover {
   font-size: 12px;
   outline: none;
   cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+.merchant-picker select:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
 }
 .merchant-picker select option {
   background: var(--bg-surface-elevated);
@@ -1006,6 +1024,10 @@ input[type="range"] {
   border-radius: 3px;
   outline: none;
   cursor: pointer;
+}
+input[type="range"]:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 3px;
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
