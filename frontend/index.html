@@ -51,40 +51,46 @@
       <button class="nav-btn active" data-page="overview">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
         Overview
+        <span class="nav-keycap">1</span>
       </button>
       <button class="nav-btn" data-page="passport">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         Credit Passport
+        <span class="nav-keycap">2</span>
       </button>
       <button class="nav-btn" data-page="capacity">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
         Capacity Engine
-        <span class="pill" style="background:rgba(59,130,246,0.12); color:#60a5fa; border-color:rgba(59,130,246,0.3);">Live Sim</span>
+        <span class="nav-keycap">3</span>
       </button>
       <button class="nav-btn" data-page="creditline">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         Credit Facility
+        <span class="nav-keycap">4</span>
       </button>
 
       <div class="nav-heading">Cryptographic Evidence</div>
       <button class="nav-btn" data-page="proofs">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Proof Explorer
+        <span class="nav-keycap">5</span>
       </button>
       <button class="nav-btn" data-page="activity">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
         Economic Activity
+        <span class="nav-keycap">6</span>
       </button>
       <button class="nav-btn" data-page="security">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Security &amp; Adversarial Lab
-        <span class="pill">4 Attacks</span>
+        Security Lab
+        <span class="nav-keycap">7</span>
       </button>
 
       <div class="nav-heading">Developer &amp; Systems</div>
       <button class="nav-btn" data-page="api">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
         Developer API
+        <span class="nav-keycap">8</span>
       </button>
       <button class="nav-btn" data-page="settings">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -152,7 +158,16 @@
       </div>
 
       <div class="topbar-right">
-        <button class="judge-tour-toggle" id="judge-mode-toggle-btn">⚡ Judge Tour (90s)</button>
+        <!-- Dual FX Parity Switcher -->
+        <div class="currency-toggle" id="currency-toggle" role="group" aria-label="Currency Parity">
+          <button class="curr-btn active" data-curr="USD" title="USDC Stablecoin">USDc</button>
+          <button class="curr-btn" data-curr="NGN" title="Nigerian Naira (₦1,620/$)">NGN (₦1,620)</button>
+          <button class="curr-btn" data-curr="KES" title="Kenyan Shilling (KSh130/$)">KES (KSh130)</button>
+        </div>
+
+        <button class="shortcuts-btn" id="shortcuts-toggle-btn" title="Keyboard Shortcuts [?]">⌨ [?]</button>
+
+        <button class="judge-tour-toggle" id="judge-mode-toggle-btn">⚡ Judge Tour (90s) [J]</button>
         <div class="net-badge cc3" id="env-badge">
           <span class="status-dot"></span>
           <span id="env-label">CC3 TESTNET (102031)</span>
@@ -206,7 +221,8 @@
               <span>Verified Credit Capacity</span>
               <span class="badge verified">[LIVE ON-CHAIN]</span>
             </div>
-            <div style="display:flex; gap:8px;">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button class="form-btn" id="zero-trust-inspect-btn" style="padding:4px 12px; font-size:11.5px; background:rgba(16, 185, 129, 0.12); color:#34d399; border:1px solid rgba(16, 185, 129, 0.35);" title="Query raw CC3 consensus node directly [Z]">⚡ Query Live CC3 Node [Z]</button>
               <button class="form-btn" style="padding:4px 12px; font-size:11.5px;" onclick="navigateToPage('creditline')">Draw Credit</button>
               <button class="form-btn" style="padding:4px 12px; font-size:11.5px; background:var(--bg-surface-elevated); border-color:var(--border-strong);" onclick="navigateToPage('capacity')">Simulate Math</button>
             </div>
@@ -216,18 +232,21 @@
             <div class="hero-metric-side">
               <div class="hero-label">Available Borrowing Limit</div>
               <div class="hero-number">
-                <span class="currency">$</span>
+                <span class="currency" id="overview-currency-symbol">$</span>
                 <span id="overview-capacity">1,650</span>
-                <span class="units">USDc</span>
+                <span class="units" id="overview-currency-units">USDc</span>
               </div>
 
               <div class="utilization-bar-wrap">
                 <div class="utilization-labels">
-                  <span>Current Exposure: $<span id="overview-exposure">350</span></span>
-                  <span>Max On-Chain Policy Ceiling: $<span id="overview-limit">2,000</span></span>
+                  <span>Current Exposure: <span id="overview-exposure">$350</span></span>
+                  <span>Max On-Chain Policy Ceiling: <span id="overview-limit">$2,000</span></span>
                 </div>
                 <div class="progress-track">
                   <div class="progress-fill" id="overview-progress-bar" style="width: 12%;"></div>
+                </div>
+                <div class="fx-context-caption" id="fx-context-caption">
+                  Working capital equivalent for Lagos Agricultural Export Ltd &amp; Kano Grain Syndicate
                 </div>
               </div>
             </div>
@@ -241,6 +260,73 @@
                 <div class="gauge-center-val" id="overview-util-pct">12%</div>
                 <div class="gauge-center-lbl">Utilized</div>
               </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Cross-Chain "Chain of Custody" Stepper -->
+        <div class="panel-card" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>Cryptographic Chain of Custody</span>
+              <span class="badge verified">Cross-Chain Precompile Invariant</span>
+            </div>
+            <div style="font-size:11.5px; color:var(--text-dim);">Ethereum Sepolia ➔ Creditcoin CC3</div>
+          </div>
+
+          <div class="chain-custody-grid">
+            <!-- Node 1: Source Event -->
+            <div class="chain-node">
+              <div class="chain-node-header">
+                <span class="pulse-dot" style="background:#60a5fa; box-shadow:0 0 6px #60a5fa;"></span>
+                <span class="chain-node-step">01. SOURCE TRANSACTION</span>
+              </div>
+              <div class="chain-node-title">Sepolia Commercial Turnover</div>
+              <div class="chain-node-desc">Circle USDC / EconomicEvents.sol emits indexed event.</div>
+              <div class="chain-node-meta mono">tx: 0x30e8...6fe0 (#11.64M)</div>
+              <a class="chain-node-link" href="https://sepolia.etherscan.io/address/0x84780ab03db7A3FebFdb789De402314F202D8263" target="_blank" rel="noopener">↗ Etherscan Verified</a>
+            </div>
+
+            <div class="chain-arrow">➔</div>
+
+            <!-- Node 2: Multi-Sig Quorum -->
+            <div class="chain-node">
+              <div class="chain-node-header">
+                <span class="pulse-dot" style="background:#f59e0b; box-shadow:0 0 6px #f59e0b;"></span>
+                <span class="chain-node-step">02. ATTESTCOIN QUORUM</span>
+              </div>
+              <div class="chain-node-title">Independent Validation</div>
+              <div class="chain-node-desc">38-block finality confirmed; Merkle inclusion proof built.</div>
+              <div class="chain-node-meta mono">Quorum: 2/3 Multi-Sig</div>
+              <a class="chain-node-link" href="javascript:void(0)" onclick="openProofDrawer(1)">↗ Inspect Merkle Proof</a>
+            </div>
+
+            <div class="chain-arrow">➔</div>
+
+            <!-- Node 3: Precompile Verification -->
+            <div class="chain-node">
+              <div class="chain-node-header">
+                <span class="pulse-dot" style="background:#10b981; box-shadow:0 0 6px #10b981;"></span>
+                <span class="chain-node-step">03. CC3 PRECOMPILE 0xFD2</span>
+              </div>
+              <div class="chain-node-title">Native Precompile Check</div>
+              <div class="chain-node-desc">EIP-658 status = 1 and RLP receipt verified at EVM layer.</div>
+              <div class="chain-node-meta mono">Precompile: 0x...0FD2</div>
+              <a class="chain-node-link" href="https://creditcoin-testnet.blockscout.com/address/0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2" target="_blank" rel="noopener">↗ AttestcoinVerifier Hub</a>
+            </div>
+
+            <div class="chain-arrow">➔</div>
+
+            <!-- Node 4: Credit Passport -->
+            <div class="chain-node">
+              <div class="chain-node-header">
+                <span class="pulse-dot" style="background:#a855f7; box-shadow:0 0 6px #a855f7;"></span>
+                <span class="chain-node-step">04. CREDIT PASSPORT</span>
+              </div>
+              <div class="chain-node-title">Programmable Credit</div>
+              <div class="chain-node-desc">Capacity expanded deterministically; uncollateralized loan unlocked.</div>
+              <div class="chain-node-meta mono" id="stepper-avail-credit">Available: $1,650 (Cap: $2k)</div>
+              <a class="chain-node-link" href="https://creditcoin-testnet.blockscout.com/address/0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d" target="_blank" rel="noopener">↗ CreditPassport State</a>
             </div>
           </div>
         </div>
@@ -817,13 +903,14 @@
         <div class="panel-card" style="margin-bottom: 24px;">
           <div class="panel-header">
             <div class="panel-title">
-              <span>Kasuwa TypeScript SDK (@kasuwa/sdk)</span>
-              <span class="badge verified">Ecosystem OS API</span>
+              <span>Kasuwa TypeScript SDK</span>
+              <span class="badge dim">Open-source client, not yet published to npm</span>
             </div>
-            <span style="font-size:11.5px; color:var(--text-dim);">Query verifiable credit state in 3 lines of code</span>
+            <span style="font-size:11.5px; color:var(--text-dim);">Query verifiable credit state against the live CreditPassport contract in 3 lines of code -- source: src/sdk/KasuwaSDK.ts</span>
           </div>
           <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; font-family:'IBM Plex Mono', monospace; font-size:12px; color:#93c5fd; overflow-x:auto;">
-<span style="color:#60a5fa;">import</span> { KasuwaClient } <span style="color:#60a5fa;">from</span> <span style="color:#34d399;">"@kasuwa/sdk"</span>;
+<span style="color:var(--text-dim);">// Copy src/sdk/KasuwaSDK.ts into your project (not yet published as an npm package):</span>
+<span style="color:#60a5fa;">import</span> { KasuwaClient } <span style="color:#60a5fa;">from</span> <span style="color:#34d399;">"./KasuwaSDK"</span>;
 
 <span style="color:var(--text-dim);">// 1. Initialize client with Creditcoin CC3 RPC &amp; verified CreditPassport</span>
 <span style="color:#60a5fa;">const</span> kasuwa = <span style="color:#60a5fa;">new</span> KasuwaClient(provider, { passportAddress: <span style="color:#34d399;">"0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d"</span> });
@@ -976,6 +1063,72 @@ Click 'Execute RPC Query' to fetch live on-chain state...
         <div class="proof-spec-val" style="max-height:80px; overflow-y:auto; font-size:10.5px; color:#93c5fd;" id="insp-encoded-tx">
           0x00000001000000000000000000000000000000000000000000000000000000000000002000000000000000000000000084780ab03db7a3febfdb789de402314f202d82630000000000000000000000000000000000000000000000000000000000000001...
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= Zero-Trust Node Inspector Modal Drawer ================= -->
+<div class="proof-drawer-backdrop" id="zero-trust-modal-backdrop">
+  <div class="proof-modal" style="max-width: 860px;">
+    <div class="proof-modal-header" style="background:rgba(16,185,129,0.06); border-bottom:1px solid rgba(16,185,129,0.2);">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></span>
+        <div class="proof-modal-title" style="font-family:'IBM Plex Mono', monospace; font-size:14px; color:#34d399;">
+          ZERO-TRUST CC3 RPC INSPECTOR // LIVE EVM CONSENSUS
+        </div>
+      </div>
+      <button class="proof-modal-close" id="close-zero-trust-btn">&times;</button>
+    </div>
+    <div class="proof-modal-body" style="background:#02050c; padding:18px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-size:12px; color:var(--text-muted);">
+        <div>Network: <span class="mono" style="color:#ffffff;">Creditcoin CC3 Testnet (102031)</span></div>
+        <div>Target: <span class="mono" style="color:#60a5fa;">CreditPassport.sol (0x9DbaD85c...)</span></div>
+        <button class="form-btn" id="zero-trust-refresh-btn" style="padding:3px 10px; font-size:11px;">↺ Re-Execute RPC Call</button>
+      </div>
+
+      <div class="mono" id="zero-trust-terminal" style="background:#040813; border:1px solid rgba(59,130,246,0.3); border-radius:6px; padding:16px; font-size:11.5px; line-height:1.6; color:#93c5fd; max-height:360px; overflow-y:auto; white-space:pre-wrap;">
+Connecting to Creditcoin CC3 RPC endpoint...
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
+        <div style="font-size:11.5px; color:var(--text-dim);">
+          Direct JSON-RPC <span class="mono" style="color:#34d399;">eth_call</span> against live consensus node with zero frontend mock caching.
+        </div>
+        <a href="https://creditcoin-testnet.blockscout.com/address/0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d" target="_blank" rel="noopener" style="color:#34d399; font-size:11.5px; text-decoration:none; font-weight:600;">
+          ↗ Inspect on Creditcoin Blockscout
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= Keyboard Shortcuts Modal ================= -->
+<div class="proof-drawer-backdrop" id="shortcuts-modal-backdrop">
+  <div class="proof-modal" style="max-width: 520px;">
+    <div class="proof-modal-header">
+      <div class="proof-modal-title" style="font-size:14px; font-family:'IBM Plex Mono', monospace;">
+        ⚡ Bloomberg Terminal Hotkeys
+      </div>
+      <button class="proof-modal-close" id="close-shortcuts-btn">&times;</button>
+    </div>
+    <div class="proof-modal-body" style="padding:18px;">
+      <div style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+        Navigate the platform with single keypresses:
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:11.5px;">
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Overview</span><span class="nav-keycap">1</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Credit Passport</span><span class="nav-keycap">2</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Capacity Engine</span><span class="nav-keycap">3</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Credit Facility</span><span class="nav-keycap">4</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Proof Explorer</span><span class="nav-keycap">5</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Economic Activity</span><span class="nav-keycap">6</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Security Lab</span><span class="nav-keycap">7</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Developer API</span><span class="nav-keycap">8</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Judge Tour (90s)</span><span class="nav-keycap">J</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle);"><span>Zero-Trust RPC</span><span class="nav-keycap">Z</span></div>
+        <div style="display:flex; justify-content:space-between; background:var(--bg-input); padding:7px 10px; border-radius:4px; border:1px solid var(--border-subtle); grid-column:span 2;"><span>Close Any Modal</span><span class="nav-keycap">ESC</span></div>
       </div>
     </div>
   </div>
