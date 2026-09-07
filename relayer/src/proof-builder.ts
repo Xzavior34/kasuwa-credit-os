@@ -30,8 +30,11 @@ export async function waitForAttestation(
   provider: chainInfo.PrecompileChainInfoProvider,
   sourceChainKey: number,
   sourceHeight: number,
+  pollIntervalMs: number = 5000,
+  waitTimeoutMs: number = 900_000,
+  extraDelayMs: number = 15000,
 ): Promise<void> {
-  await provider.waitUntilHeightAttested(sourceChainKey, sourceHeight);
+  await provider.waitUntilHeightAttested(sourceChainKey, sourceHeight, pollIntervalMs, waitTimeoutMs, extraDelayMs);
 }
 
 export async function buildProof(
