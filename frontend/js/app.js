@@ -23,8 +23,8 @@ const JUDGE_TOUR_GUIDES = {
   },
   security: {
     step: 'STEP 5 OF 6',
-    criteria: 'JUDGING FOCUS: SECURITY RIGOR & 45/45 INVARIANT SUITES',
-    desc: 'Run the 4 interactive attack simulations. Witness real on-chain reverts: SourceContractMismatch, ProofAlreadyProcessed, and SourceTransactionFailed. Supported by 45/45 passing Foundry tests, including a documented and resolved reentrancy vulnerability.'
+    criteria: 'JUDGING FOCUS: SECURITY RIGOR & 47/47 INVARIANT SUITES',
+    desc: 'Run the 4 interactive attack simulations. Witness real on-chain reverts: SourceContractMismatch, EvidenceAlreadyConsumed, and SourceTransactionFailed. Supported by 47/47 passing Foundry tests, including a documented and resolved reentrancy vulnerability.'
   },
   creditline: {
     step: 'STEP 6 OF 6',
@@ -582,13 +582,13 @@ async function executeSecurityAttack(attackKey) {
     let auth = "";
 
     if (attackKey === 'replay') {
-      errName = "ProofAlreadyProcessed";
+      errName = "EvidenceAlreadyConsumed";
       selector = "0xae5c42ee";
       desc = "Cryptographic evidence has already been consumed in protocol replay registry.";
       auth = "AttestcoinVerifier.sol (evidenceConsumed mapping)";
     } else if (attackKey === 'fakesource') {
       errName = "SourceContractMismatch";
-      selector = "0x6e9f1345";
+      selector = "0xd1ec97f1";
       desc = "Source emitter contract is not present in protocol allowlist registry.";
       auth = "AttestcoinVerifier.sol (registeredSourceContracts mapping)";
     } else if (attackKey === 'failedtx') {
@@ -980,6 +980,54 @@ window.addEventListener('DOMContentLoaded', async () => {
   
   const nextTourBtn = $('judge-hud-next-btn');
   if (nextTourBtn) nextTourBtn.addEventListener('click', advanceJudgeTour);
+
+
+  // Currency Segmented Toggle Listeners
+  document.querySelectorAll('.currency-toggle .curr-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.currency-toggle .curr-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.currency = btn.dataset.curr;
+      showToast(`Denomination switched to ${btn.dataset.curr} FX parity`);
+      refreshDashboard();
+    });
+  });
+
+  // Zero-Trust Modal Listeners
+  const zeroTrustBtn = $('zero-trust-inspect-btn');
+  if (zeroTrustBtn) zeroTrustBtn.addEventListener('click', openZeroTrustInspector);
+  const closeZeroTrustBtn = $('close-zero-trust-btn');
+  if (closeZeroTrustBtn) closeZeroTrustBtn.addEventListener('click', closeZeroTrustInspector);
+  const refreshZeroTrustBtn = $('zero-trust-refresh-btn');
+  if (refreshZeroTrustBtn) refreshZeroTrustBtn.addEventListener('click', executeZeroTrustQuery);
+
+  // Shortcuts Modal Listeners
+  const shortcutsBtn = $('shortcuts-toggle-btn');
+  if (shortcutsBtn) shortcutsBtn.addEventListener('click', toggleShortcutsModal);
+  const closeShortcutsBtn = $('close-shortcuts-btn');
+  if (closeShortcutsBtn) closeShortcutsBtn.addEventListener('click', closeShortcutsModal);
+
+  // Global Bloomberg Hotkeys
+  window.addEventListener('keydown', (e) => {
+    if (['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName)) return;
+    const key = e.key;
+    if (key === '1') navigateToPage('overview');
+    else if (key === '2') navigateToPage('passport');
+    else if (key === '3') navigateToPage('capacity');
+    else if (key === '4') navigateToPage('creditline');
+    else if (key === '5') navigateToPage('proofs');
+    else if (key === '6') navigateToPage('activity');
+    else if (key === '7') navigateToPage('security');
+    else if (key === '8') navigateToPage('api');
+    else if (key === 'j' || key === 'J') toggleJudgeMode();
+    else if (key === 'z' || key === 'Z') openZeroTrustInspector();
+    else if (key === '?') toggleShortcutsModal();
+    else if (key === 'Escape') {
+      closeProofDrawer();
+      closeZeroTrustInspector();
+      closeShortcutsModal();
+    }
+  });
 
   // Initial render
   refreshDashboard();
