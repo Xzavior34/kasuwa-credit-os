@@ -245,6 +245,37 @@ async function renderEventHistoryLedger() {
 
 // Proof Inspector Modal Drawer
 export function openProofDrawer(idx = 0) {
+  const events = [
+    {
+      tx: "0xacb4856a667a29e5fa92f898f5e273d62a3cb951b0e23e0a6439fe6aed6a4321",
+      block: "Ethereum Sepolia (ChainKey 1) / Block #11,640,173",
+      emitter: (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
+      merchant: `${state.merchantName} (${state.merchantId ? state.merchantId.slice(0, 10) + '...' + state.merchantId.slice(-6) : 'merchant-1'})`,
+      event: "PaymentSettled — Volume: $4,200.00"
+    },
+    {
+      tx: "0x30e8780988f6641a8e426d315d16179f60556572a83540b7ed79fbdfab356fe0",
+      block: "Ethereum Sepolia (ChainKey 1) / Block #11,640,150",
+      emitter: (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
+      merchant: `${state.merchantName} (${state.merchantId ? state.merchantId.slice(0, 10) + '...' + state.merchantId.slice(-6) : 'merchant-1'})`,
+      event: "PaymentSettled — Volume: $750.00"
+    },
+    {
+      tx: "0x2ea8d2f32547815a13f2754a9d24510eb9be42d42dc3868f90341292c9e7264b",
+      block: "Ethereum Sepolia (ChainKey 1) / Block #11,639,957",
+      emitter: (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
+      merchant: `${state.merchantName} (${state.merchantId ? state.merchantId.slice(0, 10) + '...' + state.merchantId.slice(-6) : 'merchant-1'})`,
+      event: "LoanRepayment — Volume: $50.00"
+    }
+  ];
+
+  const ev = events[idx] || events[0];
+  if ($('insp-tx-hash')) $('insp-tx-hash').textContent = ev.tx;
+  if ($('insp-chain-block')) $('insp-chain-block').textContent = ev.block;
+  if ($('insp-emitter')) $('insp-emitter').textContent = ev.emitter;
+  if ($('insp-merchant')) $('insp-merchant').textContent = ev.merchant;
+  if ($('insp-event')) $('insp-event').textContent = ev.event;
+
   const backdrop = $('proof-drawer-backdrop');
   if (backdrop) backdrop.classList.add('active');
 }
