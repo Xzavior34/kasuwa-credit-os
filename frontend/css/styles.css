@@ -1350,3 +1350,65 @@ input[type="range"]::-webkit-slider-thumb:hover {
     display: none;
   }
 }
+
+/* Judge Guidance HUD */
+.judge-guidance-hud {
+  display: none;
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.45), rgba(15, 23, 42, 0.85));
+  border: 1px solid rgba(96, 165, 250, 0.4);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  animation: fadeIn 0.3s ease-in-out;
+}
+.judge-guidance-hud.active {
+  display: block;
+}
+.judge-hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.judge-hud-badge {
+  background: #2563eb;
+  color: #ffffff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+.judge-hud-criteria {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  color: #93c5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex: 1;
+}
+.judge-hud-next-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #ffffff;
+  border: none;
+  border-radius: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all var(--trans-fast);
+}
+.judge-hud-next-btn:hover {
+  background: #1d4ed8;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+.judge-hud-body {
+  font-size: 12.5px;
+  color: #e2e8f0;
+  line-height: 1.5;
+}
