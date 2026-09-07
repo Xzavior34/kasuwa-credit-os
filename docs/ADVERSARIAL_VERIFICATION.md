@@ -23,6 +23,13 @@ Kasuwa is designed with strict **relayer untrusted delivery semantics**: the rel
 
 ## 2. Canonical Rails: Standard ERC-20 & Circle USDC Ingestion
 
+**Status note**: this capability was added to `TransactionEvidence.sol` after the contracts listed
+in README.md's deployment table were already deployed and independently verified on-chain. It is
+real, working Solidity, proven by the Foundry test below running against the actual contract
+logic -- but it is not part of the deployed bytecode at those addresses and has no UI in the live
+dashboard yet. Present it as "implemented and tested, shipping in the next deployment," not as
+something a judge can exercise against the live app today.
+
 Unlike toy prototypes that rely on custom mock event emitters, Kasuwa natively decodes **canonical ERC-20 `Transfer(address,address,uint256)`** events on Ethereum Sepolia:
 
 - **Canonical Sepolia Circle USDC**: [`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`](https://sepolia.etherscan.io/address/0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238)

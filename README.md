@@ -14,10 +14,13 @@ application; the credit state is the product — any protocol on Creditcoin can 
 
 ## Live deployment status (updated 2026-09-06)
 
-This table is the single source of truth for what's live. All 7 contracts of the Kasuwa stack —
-the Sepolia source contract plus all 6 CC3 execution contracts — are now live and independently
-verified; no local-only or in-progress components remain. Every address below has been checked
-directly against its block explorer.
+This table is the single source of truth for what's live at these exact addresses. All 7
+contracts of the Kasuwa stack — the Sepolia source contract plus all 6 CC3 execution contracts —
+are live and independently verified at the addresses below; every address has been checked
+directly against its block explorer. Note: the source tree has since gained additional
+tested-but-undeployed capability (canonical Circle USDC ingestion, B2B composability — see
+"What's technically novel" below); those are real, tested Solidity, but are not part of the
+bytecode at the addresses in this table and are not reachable from the live dashboard.
 
 | Component | Network | Address | Status | Explorer |
 |---|---|---|---|---|
@@ -62,8 +65,8 @@ merchant's claimed economic activity is real, not self-reported.
 
 ## What's technically novel
 
-- **Canonical Economic Rails**: Ingests standard ERC-20 `Transfer` events directly from Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`) — merchants do not need to adopt proprietary event contracts to build a credit passport.
-- **Credit State Layer / OS Composability**: Third-party protocols (e.g., `src/examples/SupplierB2BMarketplace.sol`) compose directly with `CreditPassport` via its developer API to offer uncollateralized 30-day net terms.
+- **Canonical Economic Rails (implemented, not yet on the deployed contracts below)**: `TransactionEvidence.sol` can decode standard ERC-20 `Transfer` events directly from Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`) as a canonical economic event, so merchants would not need to adopt a proprietary event contract. This is implemented and covered by `test/circle-usdc-and-composability.t.sol`, but it landed after the contracts in the deployment table above were deployed, so it is not part of their live bytecode yet and is not wired into the live dashboard. Treat this as a demonstrated, tested capability for the next deployment, not something a judge can exercise against the live app today.
+- **Credit State Layer / OS Composability (same status as above)**: `src/examples/SupplierB2BMarketplace.sol` demonstrates a third-party protocol composing directly with `CreditPassport`'s developer API to offer uncollateralized 30-day net terms, proven in `test/circle-usdc-and-composability.t.sol`. It is a real, tested Solidity example, not a deployed or live-linked contract.
 - **Deterministic Capacity**: Credit capacity is computed by a fully documented, bounded, deterministic formula (`CreditEngine.sol`), never an opaque score.
 - **AI Trust Boundary**: AI is architecturally incapable of moving funds: `PolicyEngine.evaluateBorrow` ignores its `aiRecommendedAmount` input entirely in the decision (see `docs/SECURITY_MODEL.md`, `test/malicious-ai.t.sol`).
 - **Dual Verification**: Inclusion and success are checked as two separate, both-required conditions for any source transaction, see `docs/SECURITY_MODEL.md`.
