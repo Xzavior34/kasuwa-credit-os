@@ -227,15 +227,24 @@ export async function refreshDashboard() {
 
   const capacity = finalCap;
   const exposure = prof.exposure;
-  const available = Math.max(0, capacity - exposure);
+  // The formula above computes a merchant's raw, uncapped mathematical capacity
+  // (this is intentionally shown uncapped on the Capacity Engine breakdown page,
+  // so judges can see the formula before enforcement). Everywhere else in the UI
+  // that claims to show the merchant's *available borrowing limit* must respect
+  // PolicyEngine.sol's deterministic ceiling (state.policyLimit) -- otherwise the
+  // hero number can (and for several demo merchants, does) exceed the "$2,000
+  // hard on-chain policy ceiling" label rendered right next to it, contradicting
+  // the app's own "AI can advise. AI cannot authorize." trust-boundary pitch.
+  const effectiveCapacity = Math.min(capacity, state.policyLimit);
+  const available = Math.max(0, effectiveCapacity - exposure);
 
   // Overview Hero Numbers
   if ($('overview-capacity')) $('overview-capacity').textContent = available.toLocaleString();
   if ($('overview-exposure')) $('overview-exposure').textContent = exposure.toLocaleString();
   if ($('overview-limit')) $('overview-limit').textContent = state.policyLimit.toLocaleString();
 
-  // Utilization Gauge
-  const utilPct = capacity > 0 ? Math.min(100, Math.round((exposure / capacity) * 100)) : 0;
+  // Utilization Gauge (measured against the enforced ceiling, not the raw formula output)
+  const utilPct = effectiveCapacity > 0 ? Math.min(100, Math.round((exposure / effectiveCapacity) * 100)) : 0;
   if ($('overview-util-pct')) $('overview-util-pct').textContent = `${utilPct}%`;
   if ($('overview-progress-bar')) $('overview-progress-bar').style.width = `${utilPct}%`;
 
@@ -276,6 +285,7 @@ export async function refreshDashboard() {
   if ($('facility-active-exp')) $('facility-active-exp').textContent = `$${exposure.toLocaleString()}.00`;
   updateBorrowPreview();
   renderEventHistoryLedger();
+  renderAmortizationSchedule();
 }
 
 // Render Event History Table
@@ -424,8 +434,30 @@ async function handleEmitActivity() {
 
   setTimeout(() => {
     logBox.innerHTML += `<div style="color:#10b981; font-weight:700;">[4/4] Cryptographically verified on Creditcoin CC3! Capacity updated.</div>`;
-    state.merchantProfile.vol += amount;
-    showToast(`Verified ${EVENT_TYPE_NAMES[eventType]} ($ ${amount.toLocaleString()}) recorded!`, "success");
+    const evTypeName = EVENT_TYPE_NAMES[eventType] || 'PaymentSettled';
+    const isPenalized = eventType === 3; // ObligationMissed
+    const randomTx = '0x' + Array.from({length: 8}, () => Math.floor(Math.random()*16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random()*16).toString(16)).join('');
+
+    if (isPenalized) {
+      state.merchantProfile.missed += 1;
+      state.merchantProfile.streak = 0; // Missed resets streak
+    } else {
+      state.merchantProfile.vol += amount;
+      if (eventType === 2) { // LoanRepayment
+        state.merchantProfile.repCount += 1;
+        state.merchantProfile.streak += 1;
+      }
+    }
+
+    state.merchantProfile.events.unshift({
+      type: evTypeName,
+      vol: `${amount.toLocaleString()}.00`,
+      chain: 'Sepolia (ChainKey 1)',
+      evId: randomTx,
+      status: isPenalized ? 'PENALIZED' : 'VERIFIED'
+    });
+
+    showToast(`Recorded ${evTypeName} (${amount.toLocaleString()}) on-chain!`, isPenalized ? 'warning' : 'success');
     refreshDashboard();
   }, 1600);
 }
@@ -855,4 +887,40 @@ function advanceJudgeTour() {
   const idx = pages.indexOf(curPage);
   const nextIdx = (idx + 1) % pages.length;
   navigateToPage(pages[nextIdx]);
+}
+
+// Dynamically Render Amortization Schedule Table
+function renderAmortizationSchedule() {
+  const tbody = $('facility-amort-tbody');
+  if (!tbody) return;
+
+  const exposure = state.merchantProfile.exposure;
+  if (exposure <= 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="4" style="text-align:center; color:var(--text-dim); padding:16px;">
+          No active debt balance. Request a borrow drawdown above to generate schedule.
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  const installments = 4;
+  const principalPer = exposure / installments;
+  const weeklyRate = 0.065 / 52;
+  const days = [7, 14, 21, 28];
+
+  tbody.innerHTML = days.map((day, idx) => {
+    const remaining = exposure - (principalPer * idx);
+    const interest = remaining * weeklyRate;
+    return `
+      <tr>
+        <td>Week ${idx + 1}</td>
+        <td>In ${day} Days</td>
+        <td class="mono" style="color:#ffffff;">$${principalPer.toFixed(2)}</td>
+        <td class="mono" style="color:#10b981;">$${interest.toFixed(2)}</td>
+      </tr>
+    `;
+  }).join('');
 }
