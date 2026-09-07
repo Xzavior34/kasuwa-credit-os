@@ -87,7 +87,7 @@ localhost.
 ```bash
 # Contracts (forge-std is vendored in this repo, not a submodule - skip install if already present)
 forge build
-forge test -vv          # 45 tests, 13 files, all passing
+forge test -vv          # 47 tests, 14 files, all passing
 
 # Real local deployment + full vertical slice (deploy, real source tx, evidence, capacity
 # update, borrow, four live attacks) against a local Anvil chain - see docs/DEMO.md

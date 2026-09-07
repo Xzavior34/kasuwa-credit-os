@@ -35,7 +35,7 @@ block explorer.
 
 ## Local Verification & Security Audit Results
 
-### 1. Security Audit Matrix (45/45 Foundry tests across 13 suites)
+### 1. Security Audit Matrix (47/47 Foundry tests across 14 suites)
 
 All 45 smart contract tests pass in Foundry against a sandboxed EVM, including 3 dedicated
 reentrancy-attack tests (`test/reentrancy.t.sol`) added after an internal threat-model review
