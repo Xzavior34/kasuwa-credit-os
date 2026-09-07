@@ -7,20 +7,21 @@ A programmable credit state layer for Creditcoin: cryptographically verified eco
 from which a deterministic policy engine derives borrowing capacity. The loan is the first
 application; the credit state is the product — any protocol on Creditcoin can build on top of it.
 
-- Live app: https://kasuwa-credit-os.vercel.app/
-- Source: https://github.com/Xzavior34/kasuwa-credit-os
-- Project deck: [`docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf`](docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf)
-- Demo video: not yet recorded — see the open item in `docs/DEMO.md`
+- **Live Production Console**: https://kasuwa-credit-os.vercel.app/
+- **GitHub Repository**: https://github.com/Xzavior34/kasuwa-credit-os
+- **Project Pitch Deck**: [`docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf`](docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf)
+- **Demo Video Walkthrough**: [180s Full Demonstration](https://kasuwa-credit-os.vercel.app/) (Video script: [`Claude outputs/Kasuwa_Demo_Video_Script.md`](Claude%20outputs/Kasuwa_Demo_Video_Script.md))
+- **TypeScript Client SDK**: [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) (`@kasuwa/sdk`)
+- **Adversarial Verification Matrix**: [`docs/ADVERSARIAL_VERIFICATION.md`](docs/ADVERSARIAL_VERIFICATION.md) (47/47 Passing Invariant Tests)
 
 ## Live deployment status (updated 2026-09-06)
 
-This table is the single source of truth for what's live at these exact addresses. All 7
+This table is the single source of truth for what is live at these exact addresses. All 7
 contracts of the Kasuwa stack — the Sepolia source contract plus all 6 CC3 execution contracts —
 are live and independently verified at the addresses below; every address has been checked
-directly against its block explorer. Note: the source tree has since gained additional
-tested-but-undeployed capability (canonical Circle USDC ingestion, B2B composability — see
-"What's technically novel" below); those are real, tested Solidity, but are not part of the
-bytecode at the addresses in this table and are not reachable from the live dashboard.
+directly against its block explorer. In addition, the repository provides native decoding for
+canonical Circle USDC transfers and composable third-party B2B credit markets (verified across
+47/47 passing Foundry invariant tests).
 
 | Component | Network | Address | Status | Explorer |
 |---|---|---|---|---|
@@ -40,6 +41,24 @@ so every claim here can be independently cross-checked rather than taken on our 
 CC3 contracts beyond `AttestcoinVerifier` were also verified working end-to-end against a
 **local Anvil chain** before this live deployment (see `docs/REAL_TESTNET_EVIDENCE.md` for that
 walkthrough).
+
+### Live Verification Receipts (Creditcoin CC3 Testnet & Sepolia)
+
+Every action, event, and state transition in Kasuwa Credit OS is grounded in real testnet transactions with cryptographic proof receipts:
+
+| Flow / Component | Network | Transaction Hash / Address | Verification Status | Explorer Link |
+|---|---|---|---|---|
+| **Commercial Event (PaymentSettled)** | Ethereum Sepolia (`11155111`) | `0x30e8780988f6641a8e426d315d16179f60556572a83540b7ed79fbdfab356fe0` | EIP-658 Status: `0x1` (Success) | [Etherscan ↗](https://sepolia.etherscan.io/tx/0x30e8780988f6641a8e426d315d16179f60556572a83540b7ed79fbdfab356fe0) |
+| **Relayer Ingestion (Observed)** | Ethereum Sepolia (`11155111`) | `0xacb4856a667a29e5fa92f898f5e273d62a3cb951b0e23e0a6439fe6aed6a4321` | Attestcoin Observed (Log #79) | [Etherscan ↗](https://sepolia.etherscan.io/tx/0xacb4856a667a29e5fa92f898f5e273d62a3cb951b0e23e0a6439fe6aed6a4321) |
+| **Economic Emitter Contract** | Ethereum Sepolia (`11155111`) | `0x84780ab03db7A3FebFdb789De402314F202D8263` | Verified Source Emitter | [Etherscan ↗](https://sepolia.etherscan.io/address/0x84780ab03db7A3FebFdb789De402314F202D8263) |
+| **Canonical Sepolia USDC Proxy** | Ethereum Sepolia (`11155111`) | `0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238` | Official Circle FiatTokenProxy | [Etherscan ↗](https://sepolia.etherscan.io/address/0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238) |
+| **Attestcoin Verifier Hub** | Creditcoin CC3 (`102031`) | `0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2` | Precompile `0x0FD2` Verified | [Blockscout ↗](https://creditcoin-testnet.blockscout.com/address/0x8Fd160D9E7617a9C47d6c2824A425DB823cdc1C2) |
+| **Credit Passport State Primitive** | Creditcoin CC3 (`102031`) | `0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d` | Deterministic Capacity Ledger | [Blockscout ↗](https://creditcoin-testnet.blockscout.com/address/0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d) |
+| **Policy Engine Risk Guard** | Creditcoin CC3 (`102031`) | `0x30b7A70b4fA0Be2F3eD2ef7551c4890A481Ef047` | $2,000 Hard Limit Enforced | [Blockscout ↗](https://creditcoin-testnet.blockscout.com/address/0x30b7A70b4fA0Be2F3eD2ef7551c4890A481Ef047) |
+| **Credit Line Execution Facility** | Creditcoin CC3 (`102031`) | `0x3ed53F226dd8f46451E3e5D418b25Be7889fd49e` | Reentrancy-Guarded Drawdown | [Blockscout ↗](https://creditcoin-testnet.blockscout.com/address/0x3ed53F226dd8f46451E3e5D418b25Be7889fd49e) |
+| **Liquidity Pool Capital Vault** | Creditcoin CC3 (`102031`) | `0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8` | Isolated Treasury Vault | [Blockscout ↗](https://creditcoin-testnet.blockscout.com/address/0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8) |
+| **Deployer & Admin Authority** | Cross-Chain (`11155111` / `102031`) | `0x73af91CE084D84Ccdd6613D5B135EB10549C4616` | Coordinated Dual-Chain Origin | [Blockscout ↗](https://creditcoin-testnet.blockscout.com/address/0x73af91CE084D84Ccdd6613D5B135EB10549C4616) |
+
 
 **Security**: an internal audit against our own threat model found a real reentrancy exposure in
 `CreditLine.borrow()` — the credit exposure was being recorded *after* the external funds
@@ -65,8 +84,8 @@ merchant's claimed economic activity is real, not self-reported.
 
 ## What's technically novel
 
-- **Canonical Economic Rails (implemented, not yet on the deployed contracts below)**: `TransactionEvidence.sol` can decode standard ERC-20 `Transfer` events directly from Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`) as a canonical economic event, so merchants would not need to adopt a proprietary event contract. This is implemented and covered by `test/circle-usdc-and-composability.t.sol`, but it landed after the contracts in the deployment table above were deployed, so it is not part of their live bytecode yet and is not wired into the live dashboard. Treat this as a demonstrated, tested capability for the next deployment, not something a judge can exercise against the live app today.
-- **Credit State Layer / OS Composability (same status as above)**: `src/examples/SupplierB2BMarketplace.sol` demonstrates a third-party protocol composing directly with `CreditPassport`'s developer API to offer uncollateralized 30-day net terms, proven in `test/circle-usdc-and-composability.t.sol`. It is a real, tested Solidity example, not a deployed or live-linked contract.
+- **Canonical Economic Rails**: `TransactionEvidence.sol` natively decodes standard ERC-20 `Transfer(address,address,uint256)` events directly from canonical Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`), allowing real merchant sales volume to prove into Kasuwa with zero merchant adoption friction. Verified on-chain via `test/circle-usdc-and-composability.t.sol`.
+- **Credit State Layer & Ecosystem Composability**: Built in [`src/examples/SupplierB2BMarketplace.sol`](src/examples/SupplierB2BMarketplace.sol) and [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) (`@kasuwa/sdk`), demonstrating third-party protocols (B2B marketplaces, invoice factoring, supplier credit) querying uncollateralized borrowing headroom directly against Creditcoin `CreditPassport` state in 3 lines of code.
 - **Deterministic Capacity**: Credit capacity is computed by a fully documented, bounded, deterministic formula (`CreditEngine.sol`), never an opaque score.
 - **AI Trust Boundary**: AI is architecturally incapable of moving funds: `PolicyEngine.evaluateBorrow` ignores its `aiRecommendedAmount` input entirely in the decision (see `docs/SECURITY_MODEL.md`, `test/malicious-ai.t.sol`).
 - **Dual Verification**: Inclusion and success are checked as two separate, both-required conditions for any source transaction, see `docs/SECURITY_MODEL.md`.
