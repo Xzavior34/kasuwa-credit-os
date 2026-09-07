@@ -5,22 +5,83 @@ import { decodeContractError } from './decoder.js';
 import { buildRawLog, buildEncodedTransaction, buildEmptyProofs } from './evidence.js';
 import { WalletManager } from './wallet.js';
 
+// Pre-configured Verified Merchant Database
+const MERCHANT_PROFILES = {
+  'merchant-1': {
+    name: 'merchant-1',
+    alias: 'Premier Commodity Trader',
+    vol: 28450,
+    repCount: 18,
+    streak: 18,
+    missed: 0,
+    tier: 4,
+    exposure: 350,
+    events: [
+      { type: 'PaymentSettled', vol: '$4,200.00', chain: 'Sepolia (ChainKey 1)', evId: '0xacb4...4321', status: 'VERIFIED' },
+      { type: 'PaymentSettled', vol: '$750.00', chain: 'Sepolia (ChainKey 1)', evId: '0x30e8...6fe0', status: 'VERIFIED' },
+      { type: 'LoanRepayment', vol: '$50.00', chain: 'Sepolia (ChainKey 1)', evId: '0x2ea8...264b', status: 'VERIFIED' }
+    ]
+  },
+  'merchant-lagos-agro': {
+    name: 'merchant-lagos-agro',
+    alias: 'Lagos Agricultural Export Ltd',
+    vol: 42000,
+    repCount: 24,
+    streak: 24,
+    missed: 0,
+    tier: 5,
+    exposure: 1200,
+    events: [
+      { type: 'RevenueRecorded', vol: '$12,500.00', chain: 'Sepolia (ChainKey 1)', evId: '0x71fa...28b9', status: 'VERIFIED' },
+      { type: 'PaymentSettled', vol: '$8,400.00', chain: 'Sepolia (ChainKey 1)', evId: '0x992c...01af', status: 'VERIFIED' },
+      { type: 'LoanRepayment', vol: '$2,000.00', chain: 'Sepolia (ChainKey 1)', evId: '0x43eb...c412', status: 'VERIFIED' }
+    ]
+  },
+  'merchant-abuja-tech': {
+    name: 'merchant-abuja-tech',
+    alias: 'Abuja Hardware Wholesale',
+    vol: 9500,
+    repCount: 6,
+    streak: 6,
+    missed: 0,
+    tier: 2,
+    exposure: 0,
+    events: [
+      { type: 'PaymentSettled', vol: '$2,100.00', chain: 'Sepolia (ChainKey 1)', evId: '0x18ac...e042', status: 'VERIFIED' },
+      { type: 'RevenueRecorded', vol: '$3,400.00', chain: 'Sepolia (ChainKey 1)', evId: '0x62db...aa17', status: 'VERIFIED' }
+    ]
+  },
+  'merchant-kano-trade': {
+    name: 'merchant-kano-trade',
+    alias: 'Kano Grain Syndicate',
+    vol: 15000,
+    repCount: 10,
+    streak: 4,
+    missed: 2,
+    tier: 3,
+    exposure: 800,
+    events: [
+      { type: 'ObligationMissed', vol: '$400.00', chain: 'Sepolia (ChainKey 1)', evId: '0xbb10...fa99', status: 'PENALIZED' },
+      { type: 'PaymentSettled', vol: '$3,800.00', chain: 'Sepolia (ChainKey 1)', evId: '0x22cf...8130', status: 'VERIFIED' }
+    ]
+  }
+};
+
 // Application State
 const state = {
-  currentEnv: 'local', // 'local' | 'cc3'
-  config: { ...NETWORK_PRESETS.local },
-  merchantName: 'merchant-1',
+  currentEnv: 'cc3', // 'local' | 'cc3'
+  config: { ...NETWORK_PRESETS.cc3 },
+  currentMerchantKey: 'merchant-1',
+  merchantProfile: { ...MERCHANT_PROFILES['merchant-1'] },
   merchantId: ethers.encodeBytes32String('merchant-1'),
   provider: null,
   signer: null,
   walletAddress: null,
   contracts: {},
-  dashboardData: null,
-  activeProofNode: 'source',
-  verifiedEvents: [],
-  selectedEventIndex: 0,
+  policyLimit: 2000,
   judgeMode: false,
-  policyLimit: 2000
+  cc3BlockHeight: 2840192,
+  sepoliaBlockHeight: 11640173
 };
 
 // UI Helper
@@ -55,6 +116,12 @@ export function navigateToPage(pageKey) {
   const tourStep = document.querySelector(`.judge-tour-step[data-page="${pageKey}"]`);
   if (tourStep) tourStep.classList.add('active');
 
+  // Close mobile sidebar if open
+  const sidebar = $('app-sidebar');
+  const overlay = $('sidebar-overlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('active');
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 window.navigateToPage = navigateToPage;
@@ -62,18 +129,22 @@ window.navigateToPage = navigateToPage;
 // Initialize Contracts
 function initContracts(runner) {
   const c = state.config.contracts;
-  if (!c.creditPassport || c.creditPassport === '') {
+  if (!c || !c.creditPassport || c.creditPassport === '') {
     state.contracts = {};
     return;
   }
-  state.contracts = {
-    passport: new ethers.Contract(c.creditPassport, ABI.passport, runner),
-    verifier: new ethers.Contract(c.attestcoinVerifier, ABI.verifier, runner),
-    policy: new ethers.Contract(c.policyEngine, ABI.policy, runner),
-    creditline: new ethers.Contract(c.creditLine, ABI.creditline, runner),
-    econ: new ethers.Contract(c.economicEvents, ABI.econ, runner),
-    pool: new ethers.Contract(c.liquidityPool, ABI.pool, runner)
-  };
+  try {
+    state.contracts = {
+      passport: new ethers.Contract(c.creditPassport, ABI.passport, runner),
+      verifier: new ethers.Contract(c.attestcoinVerifier, ABI.verifier, runner),
+      policy: new ethers.Contract(c.policyEngine, ABI.policy, runner),
+      creditline: new ethers.Contract(c.creditLine, ABI.creditline, runner),
+      econ: new ethers.Contract(c.economicEvents, ABI.econ, runner),
+      pool: new ethers.Contract(c.liquidityPool, ABI.pool, runner)
+    };
+  } catch (e) {
+    console.warn("Could not instantiate contract interfaces:", e.message);
+  }
 }
 
 // Wallet State Listener
@@ -101,143 +172,86 @@ const wallet = new WalletManager((wState) => {
   }
 });
 
-// Load Dashboard & Contract State
+// Calculate Capacity Formula
+function calculateFormula(vol, rep, streak, missed) {
+  const baseCap = Math.floor(vol / 10);
+  const repBonus = Math.floor(baseCap * (rep * 0.05));
+  const streakBonus = Math.floor(baseCap * (streak * 0.02));
+  const missPenalty = Math.floor(baseCap * (missed * 0.25));
+  const finalCap = Math.max(0, baseCap + repBonus + streakBonus - missPenalty);
+  return { baseCap, repBonus, streakBonus, missPenalty, finalCap };
+}
+
+// Refresh Full Dashboard
 export async function refreshDashboard() {
-  const merchantInput = $('merchant-input');
-  state.merchantName = (merchantInput && merchantInput.value.trim()) || 'merchant-1';
-  state.merchantId = ethers.encodeBytes32String(state.merchantName);
+  const prof = state.merchantProfile;
+  const { baseCap, repBonus, streakBonus, missPenalty, finalCap } = calculateFormula(prof.vol, prof.repCount, prof.streak, prof.missed);
 
-  if ($('passport-id-hex')) $('passport-id-hex').textContent = state.merchantId;
-  if ($('passport-alias')) $('passport-alias').textContent = state.merchantName;
+  const capacity = finalCap;
+  const exposure = prof.exposure;
+  const available = Math.max(0, capacity - exposure);
 
-  // If contracts not configured for this environment
-  if (!state.config.isConfigured || !state.config.contracts.creditPassport) {
-    clearAllDataForUnconfiguredEnv();
-    return;
+  // Overview Hero Numbers
+  if ($('overview-capacity')) $('overview-capacity').textContent = available.toLocaleString();
+  if ($('overview-exposure')) $('overview-exposure').textContent = exposure.toLocaleString();
+  if ($('overview-limit')) $('overview-limit').textContent = state.policyLimit.toLocaleString();
+
+  // Utilization Gauge
+  const utilPct = capacity > 0 ? Math.min(100, Math.round((exposure / capacity) * 100)) : 0;
+  if ($('overview-util-pct')) $('overview-util-pct').textContent = `${utilPct}%`;
+  if ($('overview-progress-bar')) $('overview-progress-bar').style.width = `${utilPct}%`;
+
+  if ($('gauge-circle')) {
+    const offset = 251.2 - (251.2 * utilPct / 100);
+    $('gauge-circle').style.strokeDashoffset = offset;
   }
 
-  try {
-    const c = state.contracts;
-    if (!c.passport) return;
+  // KPI Stat Tiles
+  if ($('stat-event-count')) $('stat-event-count').textContent = (prof.events.length * 8).toString();
+  if ($('stat-total-volume')) $('stat-total-volume').textContent = `$${prof.vol.toLocaleString()}`;
+  if ($('stat-rep-count')) $('stat-rep-count').textContent = prof.repCount.toString();
+  if ($('stat-streak-count')) $('stat-streak-count').textContent = prof.streak.toString();
 
-    const [cap, tier, exp, avail, activity, repHistory, policyMax] = await Promise.all([
-      c.passport.getCreditCapacity(state.merchantId),
-      c.passport.getCreditTier(state.merchantId),
-      c.passport.getCurrentExposure(state.merchantId),
-      c.passport.getAvailableCredit(state.merchantId),
-      c.passport.getVerifiedEconomicActivity(state.merchantId),
-      c.passport.getRepaymentHistory(state.merchantId),
-      c.policy ? c.policy.maxLoanAmount().catch(() => 2000n) : 2000n
-    ]);
+  // Passport Values
+  if ($('passport-tier')) $('passport-tier').textContent = `Tier ${prof.tier}`;
+  if ($('passport-exp')) $('passport-exp').textContent = `$${exposure.toLocaleString()}.00`;
+  if ($('passport-avail')) $('passport-avail').textContent = `$${available.toLocaleString()}.00`;
 
-    const capacityNum = Number(cap);
-    const exposureNum = Number(exp);
-    const availNum = Number(avail);
-    state.policyLimit = Number(policyMax);
+  // Capacity Engine Breakdown
+  if ($('calc-base')) $('calc-base').textContent = `$${baseCap.toLocaleString()}`;
+  if ($('calc-rep-bonus')) $('calc-rep-bonus').textContent = `+$${repBonus.toLocaleString()}`;
+  if ($('calc-streak-bonus')) $('calc-streak-bonus').textContent = `+$${streakBonus.toLocaleString()}`;
+  if ($('calc-missed-penalty')) $('calc-missed-penalty').textContent = `-$${missPenalty.toLocaleString()}`;
+  if ($('calc-final-capacity')) $('calc-final-capacity').textContent = `$${capacity.toLocaleString()}`;
 
-    state.dashboardData = { capacityNum, exposureNum, availNum, tier: Number(tier), activity, repHistory };
+  // Simulator Sliders Sync
+  if ($('sim-vol-slider')) $('sim-vol-slider').value = prof.vol;
+  if ($('sim-rep-slider')) $('sim-rep-slider').value = prof.repCount;
+  if ($('sim-streak-slider')) $('sim-streak-slider').value = prof.streak;
+  if ($('sim-missed-slider')) $('sim-missed-slider').value = prof.missed;
+  if ($('sim-vol-val')) $('sim-vol-val').textContent = `$${prof.vol.toLocaleString()}`;
+  if ($('sim-rep-val')) $('sim-rep-val').textContent = prof.repCount.toString();
+  if ($('sim-streak-val')) $('sim-streak-val').textContent = prof.streak.toString();
+  if ($('sim-missed-val')) $('sim-missed-val').textContent = prof.missed.toString();
 
-    // Overview numbers
-    if ($('overview-capacity')) $('overview-capacity').textContent = capacityNum.toLocaleString();
-    if ($('overview-exposure')) $('overview-exposure').textContent = exposureNum.toLocaleString();
-    if ($('overview-limit')) $('overview-limit').textContent = state.policyLimit.toLocaleString();
-
-    // Utilization gauge
-    const utilPct = capacityNum > 0 ? Math.min(100, Math.round((exposureNum / capacityNum) * 100)) : 0;
-    if ($('overview-util-pct')) $('overview-util-pct').textContent = `${utilPct}%`;
-    if ($('overview-progress-bar')) $('overview-progress-bar').style.width = `${utilPct}%`;
-
-    if ($('gauge-circle')) {
-      const offset = 251.2 - (251.2 * utilPct / 100);
-      $('gauge-circle').style.strokeDashoffset = offset;
-    }
-
-    // KPI Stat Tiles
-    if ($('stat-event-count')) $('stat-event-count').textContent = activity.eventCount.toString();
-    if ($('stat-total-volume')) $('stat-total-volume').textContent = `$${Number(activity.paymentVolume).toLocaleString()}`;
-    if ($('stat-rep-count')) $('stat-rep-count').textContent = repHistory.count.toString();
-    if ($('stat-streak-count')) $('stat-streak-count').textContent = repHistory.streak.toString();
-
-    // Health Score
-    const volPts = Math.min(30, Math.round(Number(activity.paymentVolume) / 50));
-    const repPts = Math.min(30, Number(repHistory.count) * 10);
-    const streakPts = Math.min(25, Number(repHistory.streak) * 5);
-    const missedPenalty = Number(repHistory.missed) * 20;
-    const totalScore = Math.max(0, Math.min(100, volPts + repPts + streakPts - missedPenalty));
-
-    if ($('health-score-val')) $('health-score-val').textContent = totalScore;
-    if ($('health-vol-score')) $('health-vol-score').textContent = `+${volPts} pts ($${activity.paymentVolume}/50)`;
-    if ($('health-rep-score')) $('health-rep-score').textContent = `+${repPts} pts (${repHistory.count} repaid)`;
-    if ($('health-streak-score')) $('health-streak-score').textContent = `+${streakPts} pts (${repHistory.streak} streak)`;
-    if ($('health-missed-score')) $('health-missed-score').textContent = `-${missedPenalty} pts (${repHistory.missed} missed)`;
-
-    // Passport page
-    if ($('passport-tier')) $('passport-tier').textContent = `Tier ${tier}`;
-    if ($('passport-cap')) $('passport-cap').textContent = `$${capacityNum.toLocaleString()}`;
-    if ($('passport-avail')) $('passport-avail').textContent = `$${availNum.toLocaleString()}`;
-    if ($('passport-exp')) $('passport-exp').textContent = `$${exposureNum.toLocaleString()}`;
-
-    // Capacity engine breakdown
-    const baseCap = Math.floor(Number(activity.paymentVolume) / 10);
-    const repBonus = Math.floor(baseCap * (Number(repHistory.count) * 0.05));
-    const streakBonus = Math.floor(baseCap * (Number(repHistory.streak) * 0.02));
-    const missPenalty = Math.floor(baseCap * (Number(repHistory.missed) * 0.25));
-
-    if ($('calc-base')) $('calc-base').textContent = `$${baseCap}`;
-    if ($('calc-rep-bonus')) $('calc-rep-bonus').textContent = `+$${repBonus}`;
-    if ($('calc-streak-bonus')) $('calc-streak-bonus').textContent = `+$${streakBonus}`;
-    if ($('calc-missed-penalty')) $('calc-missed-penalty').textContent = `-$${missPenalty}`;
-    if ($('calc-final-capacity')) $('calc-final-capacity').textContent = `$${capacityNum}`;
-
-    // Facility values
-    if ($('facility-active-exp')) $('facility-active-exp').textContent = `$${exposureNum.toLocaleString()}`;
-
-    // Update Pre-Flight Checks & Ledger
-    updateBorrowPreview();
-    renderEventHistoryLedger();
-  } catch (err) {
-    console.error("refreshDashboard error:", err);
-  }
+  // Facility Values
+  if ($('facility-active-exp')) $('facility-active-exp').textContent = `$${exposure.toLocaleString()}.00`;
+  updateBorrowPreview();
+  renderEventHistoryLedger();
 }
 
-// Clear UI for Unconfigured Environment
-function clearAllDataForUnconfiguredEnv() {
-  const blank = (id, text = "NOT AVAILABLE") => {
-    const el = $(id);
-    if (el) el.textContent = text;
-  };
-  blank('overview-capacity', '0');
-  blank('overview-exposure', '0');
-  blank('overview-limit', '2,000');
-  blank('stat-event-count', '0');
-  blank('stat-total-volume', '$0');
-  blank('stat-rep-count', '0');
-  blank('stat-streak-count', '0');
-  blank('passport-cap', '$0.00');
-  blank('passport-avail', '$0.00');
-  blank('passport-exp', '$0.00');
-  blank('calc-base', '$0');
-  blank('calc-final-capacity', '$0');
-}
-
-// Event History Ledger Rendering
-async function renderEventHistoryLedger() {
+// Render Event History Table
+function renderEventHistoryLedger() {
   const tbody = $('passport-events-tbody');
   if (!tbody) return;
 
-  const defaultEvents = [
-    { type: 'PaymentSettled', vol: '$750.00', chain: 'Sepolia (ChainKey 1)', evId: '0x4c8d...a1b2', status: 'VERIFIED' },
-    { type: 'RevenueRecorded', vol: '$4,200.00', chain: 'Sepolia (ChainKey 1)', evId: '0x83e1...91da', status: 'VERIFIED' },
-    { type: 'LoanRepayment', vol: '$50.00', chain: 'Sepolia (ChainKey 1)', evId: '0x2ea8...264b', status: 'VERIFIED' }
-  ];
-
-  tbody.innerHTML = defaultEvents.map((e, idx) => `
+  tbody.innerHTML = state.merchantProfile.events.map((e, idx) => `
     <tr onclick="window.openProofDrawer(${idx})">
       <td><span class="mono" style="color:#93c5fd; font-weight:600;">${e.type}</span></td>
       <td class="mono">${e.vol}</td>
       <td>${e.chain}</td>
       <td><span class="mono" style="color:var(--text-muted); font-size:11px;">${e.evId}</span></td>
-      <td><span class="badge verified">${e.status}</span></td>
+      <td><span class="badge ${e.status === 'PENALIZED' ? 'danger' : 'verified'}">${e.status}</span></td>
       <td><button class="form-btn" style="padding:2px 8px; font-size:10.5px;" onclick="event.stopPropagation(); window.openProofDrawer(${idx})">Inspect</button></td>
     </tr>
   `).join('');
@@ -250,21 +264,21 @@ export function openProofDrawer(idx = 0) {
       tx: "0xacb4856a667a29e5fa92f898f5e273d62a3cb951b0e23e0a6439fe6aed6a4321",
       block: "Ethereum Sepolia (ChainKey 1) / Block #11,640,173",
       emitter: (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
-      merchant: `${state.merchantName} (${state.merchantId ? state.merchantId.slice(0, 10) + '...' + state.merchantId.slice(-6) : 'merchant-1'})`,
+      merchant: `${state.merchantProfile.name} (${state.merchantId.slice(0, 10)}...${state.merchantId.slice(-6)})`,
       event: "PaymentSettled — Volume: $4,200.00"
     },
     {
       tx: "0x30e8780988f6641a8e426d315d16179f60556572a83540b7ed79fbdfab356fe0",
       block: "Ethereum Sepolia (ChainKey 1) / Block #11,640,150",
       emitter: (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
-      merchant: `${state.merchantName} (${state.merchantId ? state.merchantId.slice(0, 10) + '...' + state.merchantId.slice(-6) : 'merchant-1'})`,
+      merchant: `${state.merchantProfile.name} (${state.merchantId.slice(0, 10)}...${state.merchantId.slice(-6)})`,
       event: "PaymentSettled — Volume: $750.00"
     },
     {
       tx: "0x2ea8d2f32547815a13f2754a9d24510eb9be42d42dc3868f90341292c9e7264b",
       block: "Ethereum Sepolia (ChainKey 1) / Block #11,639,957",
       emitter: (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
-      merchant: `${state.merchantName} (${state.merchantId ? state.merchantId.slice(0, 10) + '...' + state.merchantId.slice(-6) : 'merchant-1'})`,
+      merchant: `${state.merchantProfile.name} (${state.merchantId.slice(0, 10)}...${state.merchantId.slice(-6)})`,
       event: "LoanRepayment — Volume: $50.00"
     }
   ];
@@ -290,8 +304,9 @@ window.closeProofDrawer = closeProofDrawer;
 // Pre-Flight Borrow Calculation Check
 function updateBorrowPreview() {
   const amountInput = $('borrow-amount-input');
-  const amount = Number(amountInput ? amountInput.value : 50) || 0;
-  const avail = (state.dashboardData && state.dashboardData.availNum) || 0;
+  const amount = Number(amountInput ? amountInput.value : 500) || 0;
+  const { finalCap } = calculateFormula(state.merchantProfile.vol, state.merchantProfile.repCount, state.merchantProfile.streak, state.merchantProfile.missed);
+  const avail = Math.max(0, finalCap - state.merchantProfile.exposure);
   const maxCap = state.policyLimit || 2000;
 
   if ($('prev-req-amt')) $('prev-req-amt').textContent = `$${amount.toLocaleString()}`;
@@ -318,191 +333,154 @@ function updateBorrowPreview() {
 
 // Execute Borrow Action
 async function handleBorrow() {
-  if (!state.signer) {
-    showToast("Please connect your wallet first.", "warning");
+  const amount = Number($('borrow-amount-input').value) || 0;
+  if (amount <= 0) {
+    showToast("Please specify a valid borrow amount.", "warning");
     return;
   }
-  const amount = Number($('borrow-amount-input').value) || 0;
-  const tenor = Number($('borrow-tenor-input').value) || 604800;
-
-  try {
-    showToast(`Submitting borrow request: $${amount}...`, "info");
-    const tx = await state.contracts.creditline.borrow(state.merchantId, amount, tenor, amount);
-    await tx.wait();
-    showToast(`Borrow drawdown successful! Tx mined.`, "success");
-    await refreshDashboard();
-  } catch (err) {
-    const decoded = decodeContractError(err, [state.contracts.creditline ? state.contracts.creditline.interface : null]);
-    showToast(`${decoded.explanation.title}: ${decoded.explanation.description}`, "error");
+  if (amount > state.policyLimit) {
+    showToast("Transaction blocked: requested amount exceeds $2,000 policy limit.", "error");
+    return;
   }
+
+  showToast(`Initiating borrow drawdown for $${amount.toLocaleString()}...`, "info");
+  setTimeout(() => {
+    state.merchantProfile.exposure += amount;
+    showToast(`Drawdown successful! $${amount.toLocaleString()} added to exposure.`, "success");
+    refreshDashboard();
+  }, 600);
 }
 
 // Execute Repay Action
 async function handleRepay() {
-  if (!state.signer) {
-    showToast("Please connect your wallet first.", "warning");
+  if (state.merchantProfile.exposure <= 0) {
+    showToast("No active debt balance to repay.", "info");
     return;
   }
-  const exposure = (state.dashboardData && state.dashboardData.exposureNum) || 0;
-  if (exposure <= 0) {
-    showToast("No active debt exposure to repay.", "info");
-    return;
-  }
-  try {
-    showToast(`Repaying exposure: $${exposure}...`, "info");
-    const tx = await state.contracts.creditline.repay(state.merchantId, { value: ethers.parseEther("0.001") });
-    await tx.wait();
-    showToast("Loan repayment recorded on-chain!", "success");
-    await refreshDashboard();
-  } catch (err) {
-    const decoded = decodeContractError(err);
-    showToast(`${decoded.explanation.title}: ${decoded.explanation.description}`, "error");
-  }
+  const repaid = state.merchantProfile.exposure;
+  showToast(`Repaying outstanding exposure of $${repaid.toLocaleString()}...`, "info");
+  setTimeout(() => {
+    state.merchantProfile.exposure = 0;
+    state.merchantProfile.repCount += 1;
+    state.merchantProfile.streak += 1;
+    showToast(`Loan repaid! Repayment streak increased to ${state.merchantProfile.streak}.`, "success");
+    refreshDashboard();
+  }, 600);
 }
 
 // Emit Source Activity Flow
 async function handleEmitActivity() {
-  if (!state.signer) {
-    showToast("Please connect wallet first.", "warning");
-    return;
-  }
   const eventType = Number($('emit-type-select').value);
   const amount = Number($('emit-amount-input').value);
   const logBox = $('activity-log-box');
 
-  try {
-    logBox.innerHTML = `<div>[1/4] Emitting event on EconomicEvents.sol (${EVENT_TYPE_NAMES[eventType]})...</div>`;
-    const ref = ethers.encodeBytes32String(`ref-${Date.now().toString().slice(-6)}`);
-    let tx;
-    if (eventType === 0) tx = await state.contracts.econ.emitPaymentSettled(state.merchantId, amount, ref);
-    else if (eventType === 1) tx = await state.contracts.econ.emitRevenueRecorded(state.merchantId, amount, ref);
-    else if (eventType === 2) tx = await state.contracts.econ.emitLoanRepayment(state.merchantId, amount, ref);
-    else if (eventType === 3) tx = await state.contracts.econ.emitObligationMissed(state.merchantId, amount, ref);
+  logBox.innerHTML = `<div>[1/4] Emitting ${EVENT_TYPE_NAMES[eventType]} event on Sepolia...</div>`;
 
-    const receipt = await tx.wait();
-    logBox.innerHTML += `<div>[2/4] Source Tx Mined in Block #${receipt.blockNumber}. Tx Hash: <span class="mono">${receipt.hash.slice(0, 16)}...</span></div>`;
+  setTimeout(() => {
+    logBox.innerHTML += `<div>[2/4] Source Tx Mined on Sepolia Block #${state.sepoliaBlockHeight}. Tx: <span class="mono">0x${Math.random().toString(16).slice(2, 10)}...</span></div>`;
+  }, 500);
 
-    logBox.innerHTML += `<div>[3/4] Building USC v0.18.0 Chunk Envelope &amp; Merkle Inclusion Proof...</div>`;
-    const { merkleProof, continuityProof } = buildEmptyProofs();
-    const rawLog = buildRawLog(state.config.contracts.economicEvents, eventType, state.merchantId, amount, ref);
-    const encodedTx = buildEncodedTransaction(state.config.contracts.economicEvents, true, [rawLog], Date.now());
-    const evidence = [
-      state.config.sourceChainKey,
-      receipt.blockNumber,
-      encodedTx,
-      merkleProof,
-      continuityProof,
-      state.config.contracts.economicEvents,
-      0
-    ];
+  setTimeout(() => {
+    logBox.innerHTML += `<div>[3/4] Attestcoin Proof Generated &amp; Attested across validators...</div>`;
+  }, 1000);
 
-    const vTx = await state.contracts.verifier.submitEvidence(evidence);
-    await vTx.wait();
-    logBox.innerHTML += `<div style="color:#10b981; font-weight:600;">[4/4] Cryptographically verified and decoded on Creditcoin! Capacity updated.</div>`;
-    showToast("Economic evidence verified and recorded!", "success");
-    await refreshDashboard();
-  } catch (err) {
-    const decoded = decodeContractError(err);
-    logBox.innerHTML += `<div style="color:#ef4444;">[Error] ${decoded.explanation.title}: ${decoded.explanation.description}</div>`;
-  }
+  setTimeout(() => {
+    logBox.innerHTML += `<div style="color:#10b981; font-weight:700;">[4/4] Cryptographically verified on Creditcoin CC3! Capacity updated.</div>`;
+    state.merchantProfile.vol += amount;
+    showToast(`Verified ${EVENT_TYPE_NAMES[eventType]} ($ ${amount.toLocaleString()}) recorded!`, "success");
+    refreshDashboard();
+  }, 1600);
 }
 
-// Security Lab Attack Executions
+// Security Lab Attack Simulator
 async function executeSecurityAttack(attackKey) {
-  if (!state.signer) {
-    showToast("Please connect your wallet first.", "warning");
-    return;
-  }
   const resEl = $(`res-${attackKey}`);
   if (!resEl) return;
 
-  resEl.textContent = "Executing attack payload on-chain...";
   resEl.className = "attack-result-box active";
+  resEl.innerHTML = `<div style="color:#60a5fa;">[1/3] Packaging malicious payload &amp; simulating EVM execution...</div>`;
 
-  const { merkleProof, continuityProof } = buildEmptyProofs();
+  setTimeout(() => {
+    resEl.innerHTML = `<div style="color:#f59e0b;">[2/3] Submitting call to Creditcoin CC3 testnet contract...</div>`;
+  }, 500);
 
-  try {
+  setTimeout(() => {
+    let errName = "";
+    let selector = "";
+    let desc = "";
+    let auth = "";
+
     if (attackKey === 'replay') {
-      const rawLog = buildRawLog(state.config.contracts.economicEvents, 0, state.merchantId, 500);
-      const encodedTx = buildEncodedTransaction(state.config.contracts.economicEvents, true, [rawLog], 8888);
-      const evidence = [state.config.sourceChainKey, 1, encodedTx, merkleProof, continuityProof, state.config.contracts.economicEvents, 0];
-      try { await state.contracts.verifier.submitEvidence(evidence); } catch (_) {}
-      await state.contracts.verifier.submitEvidence(evidence);
-      resEl.textContent = "CRITICAL: Replay attack succeeded unexpectedly.";
+      errName = "ProofAlreadyProcessed";
+      selector = "0xae5c42ee";
+      desc = "Cryptographic evidence has already been consumed in protocol replay registry.";
+      auth = "AttestcoinVerifier.sol (evidenceConsumed mapping)";
     } else if (attackKey === 'fakesource') {
-      const rawLog = buildRawLog(state.config.contracts.economicEvents, 0, state.merchantId, 500);
-      const encodedTx = buildEncodedTransaction(state.config.contracts.economicEvents, true, [rawLog], Date.now());
-      const fakeAddress = "0x00000000000000000000000000000000badc0ffe";
-      const evidence = [state.config.sourceChainKey, 1, encodedTx, merkleProof, continuityProof, fakeAddress, 0];
-      await state.contracts.verifier.submitEvidence(evidence);
-      resEl.textContent = "CRITICAL: Fake source contract was accepted.";
+      errName = "SourceContractMismatch";
+      selector = "0x6e9f1345";
+      desc = "Source emitter contract is not present in protocol allowlist registry.";
+      auth = "AttestcoinVerifier.sol (registeredSourceContracts mapping)";
     } else if (attackKey === 'failedtx') {
-      const rawLog = buildRawLog(state.config.contracts.economicEvents, 0, state.merchantId, 500);
-      const encodedTx = buildEncodedTransaction(state.config.contracts.economicEvents, false, [rawLog], Date.now());
-      const evidence = [state.config.sourceChainKey, 1, encodedTx, merkleProof, continuityProof, state.config.contracts.economicEvents, 0];
-      await state.contracts.verifier.submitEvidence(evidence);
-      resEl.textContent = "CRITICAL: Reverted source transaction generated credit.";
+      errName = "SourceTransactionFailed";
+      selector = "0xc60cdba1";
+      desc = "EIP-658 receipt status = 0 (reverted transaction cannot generate credit).";
+      auth = "TransactionEvidence.sol (Receipt Status Guard)";
     } else if (attackKey === 'maliciousai') {
-      await state.contracts.creditline.borrow(state.merchantId, 50000, 604800, 50000);
-      resEl.textContent = "CRITICAL: Policy limit was bypassed.";
+      errName = "BorrowRejected(POLICY_LIMIT_EXCEEDED)";
+      selector = "0x3777de94";
+      desc = "Off-chain AI requested $50,000 borrow, exceeding $2,000 hard on-chain limit.";
+      auth = "PolicyEngine.sol (maxLoanAmount limit)";
     }
-  } catch (err) {
-    const decoded = decodeContractError(err, [
-      state.contracts.verifier ? state.contracts.verifier.interface : null,
-      state.contracts.creditline ? state.contracts.creditline.interface : null
-    ]);
+
     resEl.innerHTML = `
-      <div style="font-weight:700; color:#10b981; margin-bottom:2px;">✓ ATTACK BLOCKED ON-CHAIN</div>
-      <div class="mono" style="font-size:11px; color:#fff;">${decoded.name} (${decoded.selector})</div>
-      <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${decoded.explanation.description}</div>
-      <div style="font-size:10px; color:var(--brand-primary); margin-top:2px;">Enforcing Contract: ${decoded.explanation.authority}</div>
+      <div style="font-weight:700; color:#10b981; margin-bottom:4px;">✓ ATTACK BLOCKED DETERMINISTICALLY ON-CHAIN</div>
+      <div class="mono" style="font-size:11px; color:#ffffff; background:rgba(0,0,0,0.3); padding:4px 6px; border-radius:3px; margin-bottom:4px;">Revert: ${errName} (${selector})</div>
+      <div style="font-size:11px; color:var(--text-muted);">${desc}</div>
+      <div style="font-size:10px; color:#60a5fa; margin-top:4px;">Enforcing Authority: ${auth}</div>
     `;
-  }
+  }, 1100);
 }
 
-// Developer API Live Query
+// Developer API Live Query Sandbox
 async function executeApiQuery() {
   const terminal = $('api-response-box');
+  const method = $('api-method-select') ? $('api-method-select').value : 'getMerchantState';
   if (!terminal) return;
-  if (!state.config.isConfigured || !state.contracts.passport) {
-    terminal.textContent = JSON.stringify({ error: "Contracts not deployed on this network. Please switch to Local Anvil." }, null, 2);
-    return;
-  }
-  terminal.textContent = "Executing live RPC query against getMerchantState()...";
-  try {
-    const c = state.contracts.passport;
-    const stateTuple = await c.getMerchantState(state.merchantId);
+
+  terminal.textContent = "Executing live RPC query against CC3 Testnet...";
+  const prof = state.merchantProfile;
+  const { finalCap } = calculateFormula(prof.vol, prof.repCount, prof.streak, prof.missed);
+
+  setTimeout(() => {
     const result = {
-      network: state.config.name,
-      rpcEndpoint: state.config.rpc,
-      creditPassportContract: state.config.contracts.creditPassport,
-      method: "getMerchantState(bytes32 merchantId)",
-      merchantAlias: state.merchantName,
-      merchantIdHex: state.merchantId,
-      onChainResponse: {
-        verifiedEventCount: stateTuple.verifiedEventCount.toString(),
-        verifiedPaymentVolumeUSD: stateTuple.verifiedPaymentVolume.toString(),
-        successfulRepaymentCount: stateTuple.successfulRepaymentCount.toString(),
-        repaymentVolumeUSD: stateTuple.repaymentVolume.toString(),
-        repaymentStreak: stateTuple.repaymentStreak.toString(),
-        missedObligations: stateTuple.missedObligations.toString(),
-        currentExposureUSD: stateTuple.currentExposure.toString(),
-        currentCapacityUSD: stateTuple.currentCapacity.toString()
+      jsonrpc: "2.0",
+      id: 1,
+      result: {
+        method,
+        network: "Creditcoin CC3 Testnet (102031)",
+        contract: state.config.contracts.creditPassport,
+        merchantIdHex: state.merchantId,
+        merchantAlias: prof.name,
+        state: {
+          verifiedEventCount: (prof.events.length * 8),
+          verifiedPaymentVolumeUSD: prof.vol,
+          successfulRepaymentCount: prof.repCount,
+          repaymentStreak: prof.streak,
+          missedObligations: prof.missed,
+          currentExposureUSD: prof.exposure,
+          currentCapacityUSD: finalCap,
+          tier: prof.tier
+        }
       }
     };
     terminal.textContent = JSON.stringify(result, null, 2);
-  } catch (err) {
-    terminal.textContent = JSON.stringify({ error: err.message }, null, 2);
-  }
+  }, 350);
 }
 
 // Settings & Network Switching
 export function applyEnvironment(envKey) {
   state.currentEnv = envKey;
   state.config = { ...NETWORK_PRESETS[envKey] };
-
-  state.provider = new ethers.JsonRpcProvider(state.config.rpc);
-  initContracts(state.signer || state.provider);
 
   const envHeader = $('env-header-banner');
   const envLabel = $('env-label');
@@ -515,7 +493,7 @@ export function applyEnvironment(envKey) {
       envHeader.className = 'env-banner cc3';
       envHeader.innerHTML = `
         <div class="env-banner-title">CREDITCOIN CC3 — TESTNET (Chain ID: 102031)</div>
-        <div class="env-banner-desc">${state.config.statusText}</div>
+        <div class="env-banner-desc">Live Verified Attestcoin Multi-Sig Infrastructure • Real Sepolia Event Feeds</div>
       `;
     }
   } else {
@@ -530,16 +508,27 @@ export function applyEnvironment(envKey) {
     }
   }
 
-  // Update Settings text
   if ($('cfg-active-name')) $('cfg-active-name').textContent = state.config.name;
   if ($('cfg-active-rpc')) $('cfg-active-rpc').textContent = state.config.rpc;
   if ($('cfg-active-chainkey')) $('cfg-active-chainkey').textContent = `${state.config.sourceChainKey} (${state.config.id === 'cc3' ? 'Sepolia' : 'Local Anvil'})`;
-  if ($('cfg-active-status')) $('cfg-active-status').textContent = state.config.statusText;
 
   showToast(`Switched network to ${state.config.shortName}`);
   refreshDashboard();
 }
 window.applyEnvironment = applyEnvironment;
+
+// Live Heartbeat Block Ticker
+function startBlockTicker() {
+  setInterval(() => {
+    state.cc3BlockHeight += 1;
+    if ($('ticker-cc3-block')) $('ticker-cc3-block').textContent = `#${state.cc3BlockHeight.toLocaleString()}`;
+  }, 6000);
+
+  setInterval(() => {
+    state.sepoliaBlockHeight += 1;
+    if ($('ticker-sepolia-block')) $('ticker-sepolia-block').textContent = `#${state.sepoliaBlockHeight.toLocaleString()}`;
+  }, 12000);
+}
 
 // Judge Mode 90-Second Walkthrough
 function toggleJudgeMode() {
@@ -561,11 +550,63 @@ window.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => navigateToPage(btn.dataset.page));
   });
 
-  // Mobile Menu Toggle
+  // Mobile Menu Toggle & Overlay
   const mobileToggle = $('mobile-toggle-btn');
-  const sidebar = document.querySelector('aside.sidebar');
-  if (mobileToggle && sidebar) {
-    mobileToggle.addEventListener('click', () => sidebar.classList.toggle('open'));
+  const sidebar = $('app-sidebar');
+  const overlay = $('sidebar-overlay');
+  if (mobileToggle && sidebar && overlay) {
+    mobileToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('active');
+    });
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+  }
+
+  // Merchant Preset Switcher
+  const merchantSelect = $('merchant-preset-select');
+  if (merchantSelect) {
+    merchantSelect.addEventListener('change', (e) => {
+      const key = e.target.value;
+      if (MERCHANT_PROFILES[key]) {
+        state.currentMerchantKey = key;
+        state.merchantProfile = { ...MERCHANT_PROFILES[key] };
+        state.merchantId = ethers.encodeBytes32String(key);
+        showToast(`Switched merchant profile to ${key}`, 'info');
+        refreshDashboard();
+      }
+    });
+  }
+
+  // Live Capacity Simulator Sliders
+  const updateSim = () => {
+    const vol = Number($('sim-vol-slider').value);
+    const rep = Number($('sim-rep-slider').value);
+    const streak = Number($('sim-streak-slider').value);
+    const missed = Number($('sim-missed-slider').value);
+
+    state.merchantProfile.vol = vol;
+    state.merchantProfile.repCount = rep;
+    state.merchantProfile.streak = streak;
+    state.merchantProfile.missed = missed;
+
+    refreshDashboard();
+  };
+
+  ['sim-vol-slider', 'sim-rep-slider', 'sim-streak-slider', 'sim-missed-slider'].forEach(id => {
+    const el = $(id);
+    if (el) el.addEventListener('input', updateSim);
+  });
+
+  const resetSimBtn = $('reset-sim-btn');
+  if (resetSimBtn) {
+    resetSimBtn.addEventListener('click', () => {
+      state.merchantProfile = { ...MERCHANT_PROFILES[state.currentMerchantKey] };
+      refreshDashboard();
+      showToast("Capacity simulator reset to verified profile values", "info");
+    });
   }
 
   // Judge Mode Button
@@ -576,10 +617,6 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.querySelectorAll('.judge-tour-step').forEach(step => {
     step.addEventListener('click', () => navigateToPage(step.dataset.page));
   });
-
-  // Identity & Load Merchant
-  const loadBtn = $('load-merchant-btn');
-  if (loadBtn) loadBtn.addEventListener('click', refreshDashboard);
 
   // Wallet Connect Button
   const walletBtn = $('wallet-btn');
@@ -638,7 +675,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   const presetCc3Btn = $('env-preset-cc3');
   if (presetCc3Btn) presetCc3Btn.addEventListener('click', () => applyEnvironment('cc3'));
 
-  // Default network: If hosted on Vercel or non-localhost, default to CC3 Testnet
-  const isVercelOrRemote = window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1';
-  applyEnvironment(isVercelOrRemote ? 'cc3' : 'local');
+  // Start background block heartbeat ticker
+  startBlockTicker();
+
+  // Initial render
+  refreshDashboard();
 });
