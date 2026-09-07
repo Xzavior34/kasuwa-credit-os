@@ -46,14 +46,12 @@ transfer, not before. It's fixed: checks-effects-interactions ordering, a depend
 ("Reentrancy — fixed, previously mis-judged as low-risk") for the full writeup — we're
 documenting the bug we found and fixed, not just the clean surface.
 
-**Tests**: 45 tests across 13 Foundry test files, covering reentrancy, replay protection,
-malicious-AI bounding, fake/unauthorized source rejection, over-limit rejection, and a full
-deployment smoke test. Run `forge test -vv` to reproduce.
+**Tests**: 47 tests across 14 Foundry test files, covering canonical Circle USDC ERC-20 transfer ingestion, B2B third-party marketplace composability, reentrancy, replay protection, malicious-AI bounding, fake/unauthorized source rejection, over-limit rejection, and a full deployment smoke test. Run `forge test -vv` to reproduce. See [`docs/ADVERSARIAL_VERIFICATION.md`](docs/ADVERSARIAL_VERIFICATION.md) for the complete adversarial verification matrix.
 
 ## What is Kasuwa?
 
 A credit state layer, not a lending app: economic history -> verified credit state -> reusable
-capacity -> many possible downstream applications (see `docs/API.md`).
+capacity -> many possible downstream applications (see `docs/API.md` and `src/examples/SupplierB2BMarketplace.sol`).
 
 ## Why Creditcoin? Why Attestcoin?
 
@@ -64,15 +62,12 @@ merchant's claimed economic activity is real, not self-reported.
 
 ## What's technically novel
 
-- Credit capacity is computed by a fully documented, bounded, deterministic formula
-  (`CreditEngine.sol`), never an opaque score.
-- AI is architecturally incapable of moving funds: `PolicyEngine.evaluateBorrow` ignores its
-  `aiRecommendedAmount` input entirely in the decision (see `docs/SECURITY_MODEL.md`,
-  `test/malicious-ai.t.sol`).
-- Inclusion and success are checked as two separate, both-required conditions for any source
-  transaction, see `docs/SECURITY_MODEL.md`.
-- Verified repayment *history* and actual on-chain repayment are deliberately kept as separate
-  concepts so that one can't be used to fake the other.
+- **Canonical Economic Rails**: Ingests standard ERC-20 `Transfer` events directly from Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`) — merchants do not need to adopt proprietary event contracts to build a credit passport.
+- **Credit State Layer / OS Composability**: Third-party protocols (e.g., `src/examples/SupplierB2BMarketplace.sol`) compose directly with `CreditPassport` via its developer API to offer uncollateralized 30-day net terms.
+- **Deterministic Capacity**: Credit capacity is computed by a fully documented, bounded, deterministic formula (`CreditEngine.sol`), never an opaque score.
+- **AI Trust Boundary**: AI is architecturally incapable of moving funds: `PolicyEngine.evaluateBorrow` ignores its `aiRecommendedAmount` input entirely in the decision (see `docs/SECURITY_MODEL.md`, `test/malicious-ai.t.sol`).
+- **Dual Verification**: Inclusion and success are checked as two separate, both-required conditions for any source transaction, see `docs/SECURITY_MODEL.md`.
+- **State Isolation**: Verified repayment *history* and actual on-chain repayment are deliberately kept as separate concepts so that one can't be used to fake the other.
 
 ## How does the system work?
 

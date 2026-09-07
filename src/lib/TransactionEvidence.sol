@@ -22,6 +22,8 @@ library TransactionEvidence {
         keccak256("LoanRepayment(bytes32,address,uint256,bytes32,uint64)");
     bytes32 internal constant OBLIGATION_MISSED_SIG =
         keccak256("ObligationMissed(bytes32,address,uint256,bytes32,uint64)");
+    bytes32 internal constant ERC20_TRANSFER_SIG =
+        keccak256("Transfer(address,address,uint256)");
 
     struct RawLog {
         address emitter;
@@ -73,6 +75,14 @@ library TransactionEvidence {
         if (log.topics.length < 2) revert UnknownEventSignature();
 
         bytes32 topic0 = log.topics[0];
+        if (topic0 == ERC20_TRANSFER_SIG) {
+            if (log.topics.length < 3) revert UnknownEventSignature();
+            decoded.eventType = 0; // canonical payment settled
+            decoded.merchantId = log.topics[2]; // recipient merchant address
+            decoded.amount = abi.decode(log.data, (uint256));
+            return decoded;
+        }
+
         if (topic0 == PAYMENT_SETTLED_SIG) {
             decoded.eventType = 0;
         } else if (topic0 == REVENUE_RECORDED_SIG) {
