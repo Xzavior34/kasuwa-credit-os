@@ -7,6 +7,11 @@ A programmable credit state layer for Creditcoin: cryptographically verified eco
 from which a deterministic policy engine derives borrowing capacity. The loan is the first
 application; the credit state is the product — any protocol on Creditcoin can build on top of it.
 
+- Live app: https://kasuwa-credit-os.vercel.app/
+- Source: https://github.com/Xzavior34/kasuwa-credit-os
+- Project deck: [`docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf`](docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf)
+- Demo video: not yet recorded — see the open item in `docs/DEMO.md`
+
 ## Live deployment status (updated 2026-09-06)
 
 This table is the single source of truth for what's live. All 7 contracts of the Kasuwa stack —
