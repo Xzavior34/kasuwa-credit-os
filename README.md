@@ -10,8 +10,8 @@ application; the credit state is the product — any protocol on Creditcoin can 
 - **Live Production Console**: https://kasuwa-credit-os.vercel.app/
 - **GitHub Repository**: https://github.com/Xzavior34/kasuwa-credit-os
 - **Project Pitch Deck**: [`docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf`](docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf)
-- **Demo Video Walkthrough**: [180s Full Demonstration](https://kasuwa-credit-os.vercel.app/) (Video script: [`Claude outputs/Kasuwa_Demo_Video_Script.md`](Claude%20outputs/Kasuwa_Demo_Video_Script.md))
-- **TypeScript Client SDK**: [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) (`@kasuwa/sdk`)
+- **Demo Video**: not yet recorded — see the open item in `docs/DEMO.md` (script ready: [`Claude outputs/Kasuwa_Demo_Video_Script.md`](Claude%20outputs/Kasuwa_Demo_Video_Script.md))
+- **TypeScript Client SDK**: [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) — reference client, not yet published to npm
 - **Adversarial Verification Matrix**: [`docs/ADVERSARIAL_VERIFICATION.md`](docs/ADVERSARIAL_VERIFICATION.md) (47/47 Passing Invariant Tests)
 
 ## Live deployment status (updated 2026-09-06)
@@ -19,9 +19,11 @@ application; the credit state is the product — any protocol on Creditcoin can 
 This table is the single source of truth for what is live at these exact addresses. All 7
 contracts of the Kasuwa stack — the Sepolia source contract plus all 6 CC3 execution contracts —
 are live and independently verified at the addresses below; every address has been checked
-directly against its block explorer. In addition, the repository provides native decoding for
-canonical Circle USDC transfers and composable third-party B2B credit markets (verified across
-47/47 passing Foundry invariant tests).
+directly against its block explorer. In addition, the repository contains a further capability
+that is implemented and tested but not yet part of this deployment: native decoding of canonical
+Circle USDC transfers and composable third-party B2B credit markets, verified by 47/47 passing
+Foundry invariant tests (see "What's technically novel" below) — this is not reachable from the
+live dashboard today.
 
 | Component | Network | Address | Status | Explorer |
 |---|---|---|---|---|
@@ -84,8 +86,8 @@ merchant's claimed economic activity is real, not self-reported.
 
 ## What's technically novel
 
-- **Canonical Economic Rails**: `TransactionEvidence.sol` natively decodes standard ERC-20 `Transfer(address,address,uint256)` events directly from canonical Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`), allowing real merchant sales volume to prove into Kasuwa with zero merchant adoption friction. Verified on-chain via `test/circle-usdc-and-composability.t.sol`.
-- **Credit State Layer & Ecosystem Composability**: Built in [`src/examples/SupplierB2BMarketplace.sol`](src/examples/SupplierB2BMarketplace.sol) and [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) (`@kasuwa/sdk`), demonstrating third-party protocols (B2B marketplaces, invoice factoring, supplier credit) querying uncollateralized borrowing headroom directly against Creditcoin `CreditPassport` state in 3 lines of code.
+- **Canonical Economic Rails** (implemented, tested, not yet deployed): `TransactionEvidence.sol` natively decodes standard ERC-20 `Transfer(address,address,uint256)` events directly from canonical Circle USDC on Ethereum Sepolia (`0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238`), allowing real merchant sales volume to prove into Kasuwa with zero merchant adoption friction. Verified by `test/circle-usdc-and-composability.t.sol`, but it landed after the contracts in the deployment table above were deployed, so it is not part of their live bytecode and is not wired into the live dashboard yet — a demonstrated capability for the next deployment, not something a judge can exercise against the live app today.
+- **Credit State Layer & Ecosystem Composability** (same status as above): Built in [`src/examples/SupplierB2BMarketplace.sol`](src/examples/SupplierB2BMarketplace.sol) and [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) (a reference TypeScript client, not published to npm), demonstrating third-party protocols (B2B marketplaces, invoice factoring, supplier credit) querying uncollateralized borrowing headroom directly against Creditcoin `CreditPassport` state in 3 lines of code. Real, tested Solidity/TypeScript — not a deployed or live-linked capability.
 - **Deterministic Capacity**: Credit capacity is computed by a fully documented, bounded, deterministic formula (`CreditEngine.sol`), never an opaque score.
 - **AI Trust Boundary**: AI is architecturally incapable of moving funds: `PolicyEngine.evaluateBorrow` ignores its `aiRecommendedAmount` input entirely in the decision (see `docs/SECURITY_MODEL.md`, `test/malicious-ai.t.sol`).
 - **Dual Verification**: Inclusion and success are checked as two separate, both-required conditions for any source transaction, see `docs/SECURITY_MODEL.md`.
