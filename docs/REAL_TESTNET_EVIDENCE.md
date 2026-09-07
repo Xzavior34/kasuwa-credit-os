@@ -37,7 +37,7 @@ block explorer.
 
 ### 1. Security Audit Matrix (45/45 Foundry tests across 13 suites)
 
-All 45 smart contract tests pass in Foundry against a sandboxed EVM, including 4 dedicated
+All 45 smart contract tests pass in Foundry against a sandboxed EVM, including 3 dedicated
 reentrancy-attack tests (`test/reentrancy.t.sol`) added after an internal threat-model review
 found and fixed a real reentrancy exposure in `CreditLine.borrow()`:
 
@@ -55,7 +55,7 @@ found and fixed a real reentrancy exposure in `CreditLine.borrow()`:
 | `OverLimitTest` | 2/2 | **PASS** | Borrows exceeding capacity or liquidity rejected |
 | `ReplayTest` | 1/1 | **PASS** | Evidence consumption prevents double-execution |
 | `DeploymentSmokeTest` | 1/1 | **PASS** | Multi-contract permission wiring and admin setup |
-| `ReentrancyTest` | 4/4 | **PASS** | Reentrant borrow/withdraw attacks blocked by `ReentrancyGuard` + checks-effects-interactions |
+| `ReentrancyTest` | 3/3 | **PASS** | Reentrant borrow/withdraw attacks blocked by `ReentrancyGuard` + checks-effects-interactions |
 
 ### 2. Local Vertical Slice Execution Evidence (chain 31337, Anvil)
 

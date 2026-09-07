@@ -28,4 +28,4 @@ Credit tiers (`CreditEngine.getCreditTier`):
 Why portable credit state matters more than a single loan product: a lending protocol, a
 merchant-finance product, a payroll platform, and an embedded-finance app can all read the same
 `CreditPassport` state for the same merchant instead of each re-deriving underwriting signal
-from scratch. See `docs/CEIP_READINESS.md` (not yet written) for the fuller ecosystem argument.
+from scratch. (A dedicated ecosystem-composability writeup was planned but not written; the argument above is the complete version of it.)

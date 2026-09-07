@@ -2,11 +2,20 @@
 
 ## Real vs. local — read this first
 
-`script/Deploy.s.sol` is a genuine Foundry deployment script. It has been **run and verified only
-against a local Anvil chain** in the environment this repo was built in, because that environment
-has no network route to any live blockchain RPC (see `docs/IMPLEMENTATION_AUDIT.md`). It has
-**not** been run against Creditcoin CC3 testnet, Sepolia, or any other public network. Nothing
-in this file claims otherwise.
+**Update (2026-09-05/06):** the real testnet deployment described as not-yet-done below has since
+happened. All 6 CC3 contracts and the Sepolia `EconomicEvents.sol` source contract are live and
+independently verified — see the top-level `README.md` "Live deployment status" table and
+`docs/REAL_TESTNET_EVIDENCE.md` for the addresses and how each was checked against Blockscout /
+Etherscan. The section below is left as-is as the original historical record of what the
+sandboxed build environment could and could not do; it no longer describes the current state of
+the deployment itself.
+
+`script/Deploy.s.sol` is a genuine Foundry deployment script. It was originally **run and verified
+only against a local Anvil chain** in the sandboxed environment this repo was first built in,
+because that environment had no network route to any live blockchain RPC (see
+`docs/IMPLEMENTATION_AUDIT.md`). It has since been run for real against both Creditcoin CC3
+testnet and Ethereum Sepolia from a machine with real network access and a funded key — see the
+update note above.
 
 The script itself is not local-only — point `--rpc-url` at a real endpoint with real funds behind
 `PRIVATE_KEY` and it deploys there exactly the same way. The only thing that changes between a

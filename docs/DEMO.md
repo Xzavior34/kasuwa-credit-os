@@ -20,7 +20,7 @@ forge build
 forge test -vv
 ```
 
-This runs the full contract suite (42 tests, 12 suites) against a `MockBlockProver` test double
+This runs the full contract suite (45 tests, 13 suites as of the current `test/` directory — a `test/reentrancy.t.sol` suite was added after this doc was first written) against a `MockBlockProver` test double
 in place of the real Creditcoin precompile — see `docs/SECURITY_MODEL.md` for exactly why, and
 `docs/NETWORKS.md` for the real precompile addresses this mock stands in for.
 

@@ -1,5 +1,16 @@
 # Implementation Audit
 
+**Update (2026-09-05/06):** everything below describes the state of this repo at the moment it
+was first built in a network-sandboxed environment, including the "not yet executed on live
+testnet" section at the end. Since then, the real testnet deployment has actually happened from
+a machine with real RPC access and a funded key — all 7 contracts (6 on Creditcoin CC3, plus
+`EconomicEvents.sol` on Sepolia) are live and independently re-verified against Blockscout /
+Etherscan. See the top-level `README.md` "Live deployment status" table and
+`docs/REAL_TESTNET_EVIDENCE.md` for the current addresses, real transaction hashes, and how each
+was checked. This file is kept as-is below as the original, honest record of what the sandbox
+could and couldn't do — it is a historical snapshot, not a claim about the current state of the
+deployment.
+
 ## Starting state (as of this build)
 
 There was no existing repository, contracts, frontend, or deployment scripts — this is a
@@ -71,7 +82,7 @@ is new.
   outcomes
 - `src/CreditLine.sol` — borrow/repay, PolicyEngine as sole authority
 - `src/LiquidityPool.sol` — minimal single-pool liquidity, no AMM
-- `test/*.t.sol` — 42 tests across 12 files, all passing (`forge test`), covering every named
+- `test/*.t.sol` — 42 tests across 12 files at this snapshot (since grown to 45 tests across 13 files, adding `test/reentrancy.t.sol` — see update note above), all passing (`forge test`), covering every named
   security invariant from the directive (replay, fake/revoked source contract, failed-but-included
   source tx, malicious AI recommendation, over-capacity/over-liquidity borrow, unauthorized
   relayer writes, duplicate-event vs. genuine-replay distinction) PLUS the relayer-honesty
@@ -83,7 +94,9 @@ is new.
 - `frontend/` — interactive Single-Page App (Dashboard, Proof Explorer, Security Lab, Settings)
   with preset configurations for both Local Anvil and Creditcoin CC3 Testnet.
 
-## What's not yet executed on live testnet
+## What was not yet executed on live testnet, as of this snapshot (since resolved)
 
 - Broadcast of transactions to live CC3 Testnet / Sepolia (blocked on supplying a funded `PRIVATE_KEY`).
   RPC connectivity and Proof Builder responsiveness are independently verified.
+
+This has since been completed — see the update note at the top of this file.
