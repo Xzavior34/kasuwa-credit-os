@@ -77,7 +77,7 @@
       </button>
       <button class="nav-btn" data-page="security">
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        Security Lab
+        Security &amp; Adversarial Lab
         <span class="pill">4 Attacks</span>
       </button>
 
@@ -727,7 +727,7 @@
       <!-- ================= 7. SECURITY LAB SCREEN ================= -->
       <section class="page-container" id="page-security">
         <div class="page-header">
-          <h1 class="page-title">Interactive Security Lab</h1>
+          <h1 class="page-title">Security &amp; Adversarial Lab</h1>
           <p class="page-subtitle">Watch on-chain cryptographic invariants trap and block real attack vectors in real time.</p>
         </div>
 
@@ -811,6 +811,29 @@
         <div class="page-header">
           <h1 class="page-title">Developer API &amp; SDK</h1>
           <p class="page-subtitle">Query Creditcoin credit passports, verify Merkle proofs, and integrate programmable credit into any Web3 application.</p>
+        </div>
+
+        <!-- Kasuwa TypeScript SDK Integration Panel -->
+        <div class="panel-card" style="margin-bottom: 24px;">
+          <div class="panel-header">
+            <div class="panel-title">
+              <span>Kasuwa TypeScript SDK (@kasuwa/sdk)</span>
+              <span class="badge verified">Ecosystem OS API</span>
+            </div>
+            <span style="font-size:11.5px; color:var(--text-dim);">Query verifiable credit state in 3 lines of code</span>
+          </div>
+          <div style="background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; font-family:'IBM Plex Mono', monospace; font-size:12px; color:#93c5fd; overflow-x:auto;">
+<span style="color:#60a5fa;">import</span> { KasuwaClient } <span style="color:#60a5fa;">from</span> <span style="color:#34d399;">"@kasuwa/sdk"</span>;
+
+<span style="color:var(--text-dim);">// 1. Initialize client with Creditcoin CC3 RPC &amp; verified CreditPassport</span>
+<span style="color:#60a5fa;">const</span> kasuwa = <span style="color:#60a5fa;">new</span> KasuwaClient(provider, { passportAddress: <span style="color:#34d399;">"0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d"</span> });
+
+<span style="color:var(--text-dim);">// 2. Programmatically verify uncollateralized credit capacity derived from Ethereum USDC:</span>
+<span style="color:#60a5fa;">const</span> profile = <span style="color:#60a5fa;">await</span> kasuwa.getMerchantProfile(<span style="color:#34d399;">"0xMerchantAddress"</span>);
+
+console.log(`Credit Tier: ${profile.tierName}`);       <span style="color:var(--text-dim);">// e.g. "Tier 3 (Prime)"</span>
+console.log(`Available Credit: ${profile.availableCreditUSD}`); <span style="color:var(--text-dim);">// e.g. $1,650 (clamped to $2k hard ceiling)</span>
+          </div>
         </div>
 
         <div class="grid-2col">

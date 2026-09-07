@@ -507,11 +507,24 @@ async function executeSecurityAttack(attackKey) {
       auth = "PolicyEngine.sol (maxLoanAmount limit)";
     }
 
+    const targetContract = attackKey === 'maliciousai' ? state.config.contracts.policyEngine : state.config.contracts.attestcoinVerifier;
+    const targetName = attackKey === 'maliciousai' ? 'PolicyEngine.sol' : (attackKey === 'failedtx' ? 'TransactionEvidence.sol / Verifier' : 'AttestcoinVerifier.sol');
+
     resEl.innerHTML = `
-      <div style="font-weight:700; color:#10b981; margin-bottom:4px;">✓ ATTACK BLOCKED DETERMINISTICALLY ON-CHAIN</div>
-      <div class="mono" style="font-size:11px; color:#ffffff; background:rgba(0,0,0,0.3); padding:4px 6px; border-radius:3px; margin-bottom:4px;">Revert: ${errName} (${selector})</div>
-      <div style="font-size:11px; color:var(--text-muted);">${desc}</div>
-      <div style="font-size:10px; color:#60a5fa; margin-top:4px;">Enforcing Authority: ${auth}</div>
+      <div style="font-weight:700; color:#10b981; margin-bottom:5px; font-size:12px; display:flex; align-items:center; gap:6px;">
+        <span>🛡️</span> ATTACK REVERTED DETERMINISTICALLY ON-CHAIN
+      </div>
+      <div class="mono" style="font-size:11px; color:#ffffff; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); padding:5px 8px; border-radius:4px; margin-bottom:6px;">
+        Revert: <span style="color:#f87171; font-weight:700;">${errName}</span> <span style="color:#94a3b8;">(${selector})</span>
+      </div>
+      <div style="font-size:11px; color:var(--text-muted); margin-bottom:5px;">${desc}</div>
+      <div style="font-size:10.5px; color:#60a5fa; margin-bottom:6px;">Enforcing Authority: <span class="mono">${auth}</span></div>
+      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; display:flex; justify-content:space-between; align-items:center; font-size:10.5px;">
+        <span style="color:var(--text-dim);">${targetName}</span>
+        <a href="https://creditcoin-testnet.blockscout.com/address/${targetContract}" target="_blank" rel="noopener" style="color:#34d399; text-decoration:none; font-weight:500;">
+          ↗ Blockscout Verified Contract
+        </a>
+      </div>
     `;
   }, 1100);
 }
