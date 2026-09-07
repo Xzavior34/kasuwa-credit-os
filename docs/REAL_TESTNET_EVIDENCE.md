@@ -37,7 +37,7 @@ block explorer.
 
 ### 1. Security Audit Matrix (47/47 Foundry tests across 14 suites)
 
-All 45 smart contract tests pass in Foundry against a sandboxed EVM, including 3 dedicated
+All 47 smart contract tests pass in Foundry against a sandboxed EVM, including 3 dedicated
 reentrancy-attack tests (`test/reentrancy.t.sol`) added after an internal threat-model review
 found and fixed a real reentrancy exposure in `CreditLine.borrow()`:
 
