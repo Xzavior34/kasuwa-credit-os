@@ -1,3 +1,11 @@
+// Global Error Boundary
+window.addEventListener('unhandledrejection', function(event) {
+    console.error('Unhandled promise rejection:', event.reason);
+    if (typeof showToast === 'function') {
+        showToast('A network or execution error occurred. See console for details.', 'error');
+    }
+});
+
 
 // Judge Tour Step Guidance Information
 const JUDGE_TOUR_GUIDES = {
