@@ -187,11 +187,11 @@ a:hover {
 
 .nav-menu {
   flex: 1;
-  padding: 16px 10px;
+  padding: 24px 12px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 6px;
 }
 
 .nav-heading {
@@ -200,7 +200,7 @@ a:hover {
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--text-dim);
-  padding: 12px 10px 6px;
+  padding: 16px 14px 10px;
 }
 
 .nav-btn {
@@ -208,7 +208,7 @@ a:hover {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 9px 12px;
+  padding: 10px 14px;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
   background: transparent;
