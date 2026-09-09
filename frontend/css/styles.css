@@ -115,6 +115,8 @@ a:hover {
   display: flex;
   min-height: 100vh;
   background-color: var(--bg-base);
+  background-image: radial-gradient(circle, rgba(148, 163, 184, 0.055) 1px, transparent 1px);
+  background-size: 26px 26px;
   position: relative;
 }
 
@@ -155,9 +157,15 @@ a:hover {
 .brand-gem svg {
   width: 20px;
   height: 20px;
-  stroke: #ffffff;
-  fill: none;
-  stroke-width: 2;
+}
+
+.brand-mark rect,
+.brand-mark circle {
+  fill: #ffffff;
+}
+
+.brand-mark .brand-mark-node {
+  fill: #6ee7b7;
 }
 
 .brand-text .title {

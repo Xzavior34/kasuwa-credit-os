@@ -10,7 +10,7 @@ application; the credit state is the product — any protocol on Creditcoin can 
 - **Live Production Console**: https://kasuwa-credit-os.vercel.app/
 - **GitHub Repository**: https://github.com/Xzavior34/kasuwa-credit-os
 - **Project Pitch Deck**: [`docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf`](docs/assets/Kasuwa_Credit_OS_Project_Deck.pdf)
-- **Demo Video**: not yet recorded — see the open item in `docs/DEMO.md` (script ready: [`Claude outputs/Kasuwa_Demo_Video_Script.md`](Claude%20outputs/Kasuwa_Demo_Video_Script.md))
+- **Demo Video**: not yet recorded — see the open item in `docs/DEMO.md` (script ready: [`docs/DEMO_VIDEO_SCRIPT.md`](docs/DEMO_VIDEO_SCRIPT.md))
 - **TypeScript Client SDK**: [`src/sdk/KasuwaSDK.ts`](src/sdk/KasuwaSDK.ts) — reference client, not yet published to npm
 - **Adversarial Verification Matrix**: [`docs/ADVERSARIAL_VERIFICATION.md`](docs/ADVERSARIAL_VERIFICATION.md) (47/47 Passing Invariant Tests)
 

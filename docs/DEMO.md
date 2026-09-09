@@ -3,7 +3,7 @@
 ## Open item: recorded demo video
 
 The hackathon's own submission requirements ask for a Prototype Demo Video URL. A full narration
-script exists (`Claude outputs/Kasuwa_Demo_Video_Script.md`) but no video has been recorded or
+script exists (`docs/DEMO_VIDEO_SCRIPT.md`) but no video has been recorded or
 uploaded yet — this is outstanding and should be treated as a priority before the submission
 deadline, independent of everything else in this document being complete and verified.
 
