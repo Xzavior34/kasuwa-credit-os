@@ -24,6 +24,33 @@ function playAudioClick() {
   } catch (e) { /* ignore audio err */ }
 }
 
+
+// --- UI Animation Helpers ---
+function animateNumber(elId, targetVal, durationMs, formatter) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const startVal = parseFloat(el.getAttribute('data-val')) || 0;
+  el.setAttribute('data-val', targetVal);
+  if (startVal === targetVal) {
+    el.textContent = formatter(targetVal);
+    return;
+  }
+  let startTime = null;
+  const step = (timestamp) => {
+    if (!startTime) startTime = timestamp;
+    const progress = Math.min((timestamp - startTime) / durationMs, 1);
+    const easeOut = 1 - Math.pow(1 - progress, 4); // easeOutQuart
+    const currentVal = startVal + (targetVal - startVal) * easeOut;
+    el.textContent = formatter(currentVal);
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    } else {
+      el.textContent = formatter(targetVal);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
 // Global Error Boundary
 window.addEventListener('unhandledrejection', function(event) {
     console.error('Unhandled promise rejection:', event.reason);
