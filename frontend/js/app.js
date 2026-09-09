@@ -311,10 +311,10 @@ export async function refreshDashboard() {
   }
 
   // KPI Stat Tiles
-  if ($('stat-event-count')) $('stat-event-count').textContent = (prof.events.length * 8).toString();
+  animateNumber('stat-event-count', prof.events.length * 8, 800, v => Math.round(v).toString());
   if ($('stat-total-volume')) $('stat-total-volume').textContent = `$${prof.vol.toLocaleString()}`;
-  if ($('stat-rep-count')) $('stat-rep-count').textContent = prof.repCount.toString();
-  if ($('stat-streak-count')) $('stat-streak-count').textContent = prof.streak.toString();
+  animateNumber('stat-rep-count', prof.repCount, 800, v => Math.round(v).toString());
+  animateNumber('stat-streak-count', prof.streak, 800, v => Math.round(v).toString());
 
   // Passport Values
   if ($('passport-tier')) $('passport-tier').textContent = `Tier ${prof.tier}`;

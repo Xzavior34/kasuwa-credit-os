@@ -16,7 +16,7 @@
 
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
-  --text-dim: #64748b;
+  --text-dim: #8496b0;
   --text-inverse: #040711;
 
   /* Brand & Status Accents */
@@ -622,11 +622,11 @@ a:hover {
 }
 .page-container.active {
   display: block;
-  animation: fadeIn 0.22s ease-out;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -1608,4 +1608,39 @@ input[type="range"]::-webkit-slider-thumb:hover {
   font-weight: bold;
   user-select: none;
   text-align: center;
+}
+
+
+/* --- Mobile Responsive Fixes (768px and 375px) --- */
+@media (max-width: 768px) {
+  .stat-grid-4, .stat-grid-3, .stat-grid-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .split-panel {
+    flex-direction: column !important;
+  }
+  .split-panel > div {
+    width: 100% !important;
+  }
+  .chain-custody-grid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  .chain-arrow {
+    transform: rotate(90deg) !important;
+    margin: 4px auto !important;
+  }
+}
+@media (max-width: 375px) {
+  .stat-grid-4, .stat-grid-3, .stat-grid-2 {
+    grid-template-columns: 1fr !important;
+  }
+  .panel-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  .page-title {
+    font-size: 20px !important;
+  }
 }
