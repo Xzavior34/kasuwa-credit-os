@@ -648,6 +648,58 @@ async function handleRepay() {
   }
 }
 
+
+// Submit Real Attestcoin Cryptographic Proof to CC3 AttestcoinVerifier on-chain
+async function handleSubmitProofOnChain() {
+  if (!state.signer || !state.contracts.verifier) {
+    showToast("Connect your wallet first to submit this proof to CC3.", "warning");
+    return;
+  }
+  const btn = $('submit-proof-onchain-btn');
+  const originalLabel = btn ? btn.textContent : '';
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting to CC3 Verifier...'; }
+    showToast("Submitting cryptographic proof to CC3 AttestcoinVerifier...", "info");
+
+    const proofData = await fetch('./js/sepolia_proof.json').then(r => r.json());
+    const ev = [
+      BigInt(proofData.chainKey),
+      BigInt(proofData.headerNumber),
+      proofData.txBytes,
+      [
+        proofData.merkleProof.root,
+        proofData.merkleProof.siblings.map(s => [s.hash, s.isLeft])
+      ],
+      [
+        proofData.continuityProof.lowerEndpointDigest,
+        proofData.continuityProof.roots
+      ],
+      (state.config.contracts && state.config.contracts.economicEvents) || "0x84780ab03db7A3FebFdb789De402314F202D8263",
+      0 // logIndex
+    ];
+
+    const tx = await state.contracts.verifier.submitEvidence(ev);
+    if (btn) btn.textContent = 'Confirming proof on-chain...';
+    showToast(`Proof tx submitted: ${tx.hash.slice(0, 10)}... waiting for CC3 confirmation`, "info");
+
+    const receipt = await tx.wait();
+    showToast(`Evidence verified on-chain in CC3 block ${receipt.blockNumber}! Credit capacity updated.`, "success");
+    const explorerUrl = state.config.blockExplorer ? `${state.config.blockExplorer}/tx/${tx.hash}` : null;
+    if (explorerUrl) {
+      showTxLink('Proof verified on CC3', tx.hash, explorerUrl);
+    }
+    refreshDashboard();
+  } catch (err) {
+    console.error("submitEvidence error:", err);
+    const decoded = decodeContractError(err, [state.contracts.verifier.interface]);
+    showToast(`Verification rejected: ${decoded.explanation.title || err.message}`, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = originalLabel || '⚡ Submit & Verify Evidence On-Chain (CC3 Testnet)'; }
+  }
+}
+window.handleSubmitProofOnChain = handleSubmitProofOnChain;
+
+
 // Emit Source Activity Flow -- step 1 is a REAL signed transaction on Ethereum Sepolia
 // (EconomicEvents.sol). The remaining relayer step (proving that tx into AttestcoinVerifier on
 // CC3) is a real off-chain service call this page does not automate yet, so it is reported
@@ -1135,6 +1187,33 @@ window.addEventListener('DOMContentLoaded', async () => {
       launchApp();
     });
   }
+
+  
+  // Mobile Sidebar Drawer Navigation
+  const mobileBtn = $('mobile-toggle-btn');
+  const sidebar = $('app-sidebar');
+  const overlay = $('sidebar-overlay');
+
+  if (mobileBtn && sidebar) {
+    mobileBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      if (overlay) overlay.classList.toggle('active', sidebar.classList.contains('open'));
+    });
+  }
+  if (overlay && sidebar) {
+    overlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+  }
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (window.innerWidth <= 1024 && sidebar) {
+        sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+      }
+    });
+  });
 
   // Proof Drawer Open / Close
   const submitProofBtn = $('submit-proof-onchain-btn');
