@@ -379,12 +379,28 @@ function calculateFormula(vol, rep, streak, missed) {
   return { baseCap, repBonus, streakBonus, missPenalty, finalCap };
 }
 
-// Refresh Full Dashboard
+
+// Refresh Full Dashboard with True Live / Demo Discrimination
 export async function refreshDashboard() {
+  const isLive = state.walletAddress && state.currentMerchantKey === 'live-wallet';
+  const banner = $('live-wallet-status-banner');
+  const bannerAddr = $('live-banner-addr');
+  const bannerSub = $('live-banner-sub');
+  const mintBtn = $('live-mint-capacity-btn');
+
+  if (banner) {
+    if (isLive) {
+      banner.style.display = 'block';
+      if (bannerAddr) bannerAddr.textContent = `LIVE ON-CHAIN WALLET: ${state.walletAddress}`;
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+
   const prof = state.merchantProfile;
 
-  // If connected in LIVE WALLET mode, fetch real on-chain state from CreditPassport & LiquidityPool
-  if (state.walletAddress && state.currentMerchantKey === 'live-wallet') {
+  // Query live on-chain contracts when in LIVE WALLET mode
+  if (isLive) {
     try {
       const passportAddr = (state.config.contracts && state.config.contracts.creditPassport) || '0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d';
       const poolAddr = (state.config.contracts && state.config.contracts.liquidityPool) || '0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8';
@@ -409,16 +425,27 @@ export async function refreshDashboard() {
       prof.missed = Number(repHistory[3]);
       const onChainCap = Number(cap);
       prof.tier = onChainCap >= 1500 ? 5 : onChainCap >= 1000 ? 4 : onChainCap >= 500 ? 3 : onChainCap > 0 ? 2 : 1;
+
+      if (bannerSub) {
+        if (onChainCap === 0) {
+          bannerSub.innerHTML = 'Zero uncollateralized exposure. Click <strong>Mint Live Credit Capacity</strong> or submit proof in Tab 3 to seed capacity.';
+          if (mintBtn) mintBtn.style.display = 'inline-block';
+        } else {
+          bannerSub.innerHTML = `Verified on Creditcoin CC3. <strong>${onChainCap.toLocaleString()}</strong> live borrowing limit available.`;
+          if (mintBtn) mintBtn.style.display = 'none';
+        }
+      }
     } catch (err) {
-      console.warn("On-chain passport query warning:", err);
+      console.warn("Live on-chain read error:", err);
     }
   }
 
   const { baseCap, repBonus, streakBonus, missPenalty, finalCap } = calculateFormula(prof.vol, prof.repCount, prof.streak, prof.missed);
-  const capacity = finalCap;
+  const capacity = isLive ? (prof.vol > 0 ? finalCap : 0) : finalCap;
   const exposure = prof.exposure;
   const effectiveCapacity = Math.min(capacity, state.policyLimit);
   const available = Math.max(0, effectiveCapacity - exposure);
+
 
   // Overview Hero Numbers & FX Parity Re-denomination
   const currCfg = FX_RATES[state.currency] || FX_RATES.USD;
@@ -1298,6 +1325,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Proof Drawer Open / Close
+  const liveMintBtn = $('live-mint-capacity-btn');
+  if (liveMintBtn) liveMintBtn.addEventListener('click', handleSubmitProofOnChain);
+
   const submitProofBtn = $('submit-proof-onchain-btn');
   if (submitProofBtn) submitProofBtn.addEventListener('click', handleSubmitProofOnChain);
 

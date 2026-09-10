@@ -419,6 +419,23 @@
 
       <section class="page-container active" id="page-overview">
         <div class="page-header">
+
+        <!-- Live Wallet Status Banner -->
+        <div id="live-wallet-status-banner" class="panel-card" style="margin-bottom: 20px; display: none; background: linear-gradient(90deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.08)); border-color: rgba(16, 185, 129, 0.4);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="status-dot" style="background:#10b981; box-shadow:0 0 8px #10b981;"></span>
+              <div>
+                <div style="font-weight:700; color:#f8fafc; font-size:13.5px;" id="live-banner-addr">LIVE WALLET CONNECTED: 0x...</div>
+                <div style="font-size:12px; color:#94a3b8;" id="live-banner-sub">Real-time state queried directly from CreditPassport.sol on Creditcoin CC3 Testnet.</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="form-btn" id="live-mint-capacity-btn" style="background:#10b981; border-color:#10b981; font-weight:700; font-size:11.5px; padding:6px 14px;">⚡ Mint Live Credit Capacity ($420)</button>
+            </div>
+          </div>
+        </div>
+
           <h1 class="page-title">Institutional Credit Console</h1>
           <p class="page-subtitle">Verifiable cross-chain economic activity converted deterministically into programmable credit capacity on Creditcoin CC3.</p>
         </div>
