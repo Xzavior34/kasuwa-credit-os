@@ -34,7 +34,7 @@ export const ABI = {
   ],
   creditline: [
     "function borrow(bytes32 merchantId, uint256 requestedAmount, uint256 tenorSeconds, uint256 aiRecommendedAmount)",
-    "function repay(bytes32 merchantId) payable",
+    "function repay(bytes32 merchantId, uint256 amount) payable",
     "error BorrowRejected(uint8 reason)"
   ],
   econ: [

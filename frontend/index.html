@@ -33,7 +33,78 @@
 
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-<div class="app-shell">
+<!-- ================= Landing Page (marketing entry point) ================= -->
+<section id="landing-page" class="landing-page">
+  <div class="landing-bg-glow"></div>
+  <div class="landing-nav">
+    <div class="landing-brand">
+      <div class="brand-gem" style="width:34px;height:34px;">
+        <svg viewBox="0 0 24 24" class="brand-mark" aria-hidden="true" focusable="false">
+          <rect x="4" y="3" width="4.2" height="18" rx="1"/>
+          <rect x="8.2" y="10.80" width="15.2" height="3.6" rx="1" transform="rotate(-39.0 8.2 12.6)"/>
+          <rect x="8.2" y="10.80" width="15.2" height="3.6" rx="1" transform="rotate(39.0 8.2 12.6)"/>
+          <circle class="brand-mark-node" cx="8.2" cy="12.6" r="1.9"/>
+        </svg>
+      </div>
+      <span>Kasuwa</span>
+    </div>
+    <div class="landing-nav-links">
+      <a href="#landing-how">How it works</a>
+      <a href="#landing-security">Security</a>
+      <a href="https://github.com/Xzavior34/kasuwa-credit-os" target="_blank" rel="noopener">GitHub ↗</a>
+      <button type="button" class="landing-nav-cta" id="landing-launch-btn-nav">Launch App</button>
+    </div>
+  </div>
+
+  <div class="landing-hero">
+    <span class="landing-kicker">Live on Ethereum Sepolia &amp; Creditcoin CC3 Testnet</span>
+    <h1>Verified economic activity, <span class="grad-text">turned into programmable credit.</span></h1>
+    <p class="landing-sub">Kasuwa Credit OS proves real payments and repayments cryptographically across chains, then lets that history back a real, on-chain credit line — no crypto collateral required. Connect a wallet and it isn't a slideshow: your clicks sign real transactions on testnet.</p>
+    <div class="landing-cta-row">
+      <button type="button" class="landing-cta-primary" id="landing-connect-btn">Connect Wallet &amp; Try It</button>
+      <button type="button" class="landing-cta-secondary" id="landing-launch-btn">Explore as Guest →</button>
+    </div>
+    <div class="landing-stat-row">
+      <div class="landing-stat"><span>7</span>Contracts verified on Blockscout</div>
+      <div class="landing-stat"><span>47/47</span>Foundry tests passing</div>
+      <div class="landing-stat"><span>2</span>Chains: Sepolia + Creditcoin CC3</div>
+    </div>
+  </div>
+
+  <div class="landing-section" id="landing-how">
+    <h2>How it actually works</h2>
+    <p class="landing-section-sub">Three steps, each backed by a real deployed contract — not a mock.</p>
+    <div class="landing-steps">
+      <div class="landing-step">
+        <svg viewBox="0 0 48 48" class="landing-step-icon"><path d="M24 6 L40 14 V26 C40 34 33 41 24 43 C15 41 8 34 8 26 V14 Z"/><path d="M17 24 L22 30 L32 18"/></svg>
+        <h3>1. Prove it happened</h3>
+        <p>A real payment or repayment is emitted as an on-chain event on Ethereum Sepolia via EconomicEvents.sol — no off-chain claim, no spreadsheet.</p>
+      </div>
+      <div class="landing-step">
+        <svg viewBox="0 0 48 48" class="landing-step-icon"><circle cx="24" cy="24" r="17"/><path d="M24 14 V24 L31 29"/></svg>
+        <h3>2. Attest it cross-chain</h3>
+        <p>AttestcoinVerifier.sol checks a Merkle inclusion proof and receipt status against Creditcoin's native BlockProver precompile — the on-chain facts, never a relayer's word for it.</p>
+      </div>
+      <div class="landing-step">
+        <svg viewBox="0 0 48 48" class="landing-step-icon"><rect x="8" y="18" width="32" height="20" rx="3"/><path d="M8 24 H40"/><circle cx="16" cy="31" r="1.6" fill="currentColor" stroke="none"/></svg>
+        <h3>3. Borrow against it</h3>
+        <p>CreditPassport.sol turns verified history into capacity. PolicyEngine.sol enforces a deterministic ceiling on-chain — an AI can recommend, never authorize.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="landing-section" id="landing-security">
+    <h2>Security, shown honestly</h2>
+    <p class="landing-section-sub">We audited our own threat model, found a real reentrancy bug in the borrow path, and fixed it — 47/47 Foundry tests now cover it. The Security Lab inside the app fires real <span class="mono">eth_call</span> attempts against the deployed contracts so you can watch the invariants hold, not just read about them.</p>
+  </div>
+
+  <div class="landing-footer">
+    <span>Built for the BUIDL CTC 2026 Fall Hackathon by Creditcoin.</span>
+    <a href="https://dorahacks.io/buidl/48273/" target="_blank" rel="noopener">DoraHacks BUIDL ↗</a>
+  </div>
+</section>
+
+<div class="app-shell pre-launch" id="app-shell">
   <!-- ================= Left Navigation Rail ================= -->
   <aside class="sidebar" id="app-sidebar">
     <div class="brand-block">
@@ -784,7 +855,7 @@
       <section class="page-container" id="page-activity">
         <div class="page-header">
           <h1 class="page-title">Economic Activity Generator</h1>
-          <p class="page-subtitle">Emit live commercial transactions on Ethereum Sepolia and trigger cryptographic attestation round-trips.</p>
+          <p class="page-subtitle">Sign a real transaction on Ethereum Sepolia to emit a commercial event. Turning it into verified CC3 credit history needs the Attestcoin relayer's proof submission -- explained after you emit.</p>
         </div>
 
         <div class="grid-2col">
@@ -841,7 +912,7 @@
       <section class="page-container" id="page-security">
         <div class="page-header">
           <h1 class="page-title">Security &amp; Adversarial Lab</h1>
-          <p class="page-subtitle">Watch on-chain cryptographic invariants trap and block real attack vectors in real time.</p>
+          <p class="page-subtitle">Two of these fire a real <span class="mono">eth_call</span> against the deployed contracts right now and show the genuine revert. The other two walk through the same on-chain rule as an explainer (reproducing them live needs real historical chain data this page doesn't query yet).</p>
         </div>
 
         <div class="attack-grid">
@@ -859,7 +930,7 @@
               <div class="attack-code-line"><span>Target:</span><span>AttestcoinVerifier.sol</span></div>
               <div class="attack-code-line"><span>Expected Revert:</span><span class="mono" style="color:#ef4444;">EvidenceAlreadyConsumed()</span></div>
             </div>
-            <button type="button" class="attack-action-btn" data-attack="replay">Simulate Replay Attack</button>
+            <button type="button" class="attack-action-btn" data-attack="replay">Explain Replay Attack</button>
             <div class="attack-result-box" id="res-replay"></div>
           </div>
 
@@ -877,7 +948,7 @@
               <div class="attack-code-line"><span>Target:</span><span>AttestcoinVerifier.sol</span></div>
               <div class="attack-code-line"><span>Expected Revert:</span><span class="mono" style="color:#ef4444;">SourceContractMismatch()</span></div>
             </div>
-            <button type="button" class="attack-action-btn" data-attack="fakesource">Simulate Fake Source Attack</button>
+            <button type="button" class="attack-action-btn" data-attack="fakesource">Run Real Fake-Source Attack</button>
             <div class="attack-result-box" id="res-fakesource"></div>
           </div>
 
@@ -895,7 +966,7 @@
               <div class="attack-code-line"><span>Target:</span><span>TransactionEvidence.sol</span></div>
               <div class="attack-code-line"><span>Expected Revert:</span><span class="mono" style="color:#ef4444;">SourceTransactionFailed()</span></div>
             </div>
-            <button type="button" class="attack-action-btn" data-attack="failedtx">Simulate Failed Tx Attack</button>
+            <button type="button" class="attack-action-btn" data-attack="failedtx">Explain Failed Tx Attack</button>
             <div class="attack-result-box" id="res-failedtx"></div>
           </div>
 
@@ -913,7 +984,7 @@
               <div class="attack-code-line"><span>Target:</span><span>PolicyEngine.sol</span></div>
               <div class="attack-code-line"><span>Expected Revert:</span><span class="mono" style="color:#ef4444;">BorrowRejected(POLICY_LIMIT_EXCEEDED)</span></div>
             </div>
-            <button type="button" class="attack-action-btn" data-attack="maliciousai">Simulate Malicious AI Attack</button>
+            <button type="button" class="attack-action-btn" data-attack="maliciousai">Run Real Malicious AI Attack</button>
             <div class="attack-result-box" id="res-maliciousai"></div>
           </div>
         </div>

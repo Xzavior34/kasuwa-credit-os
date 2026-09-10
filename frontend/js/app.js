@@ -85,12 +85,12 @@ const JUDGE_TOUR_GUIDES = {
   security: {
     step: 'STEP 5 OF 6',
     criteria: 'JUDGING FOCUS: SECURITY RIGOR & 47/47 INVARIANT SUITES',
-    desc: 'Run the 4 interactive attack simulations. Witness real on-chain reverts: SourceContractMismatch, EvidenceAlreadyConsumed, and SourceTransactionFailed. Supported by 47/47 passing Foundry tests, including a documented and resolved reentrancy vulnerability.'
+    desc: 'Run the 4 interactive attack controls. Two fire a real eth_call against the deployed contracts and show the genuine revert; two walk through the same on-chain rule as an explainer. Backed by 47/47 passing Foundry tests, including a documented and resolved reentrancy vulnerability.'
   },
   creditline: {
     step: 'STEP 6 OF 6',
     criteria: 'JUDGING FOCUS: AI TRUST BOUNDARY & PROGRAMMABLE FACILITY',
-    desc: 'Test the borrow facility. "AI can advise. AI cannot authorize." Even if an off-chain AI attempts a $50,000 drawdown, PolicyEngine.sol strictly enforces the $2,000 deterministic ceiling on-chain. Drawdown and repay loans with instant amortization schedule feedback.'
+    desc: 'Test the borrow facility with your own connected wallet. "AI can advise. AI cannot authorize." Even if an off-chain AI attempts a $50,000 drawdown, PolicyEngine.sol strictly enforces the $2,000 deterministic ceiling on-chain. Drawdown and repay sign a real transaction you can verify on the block explorer.'
   }
 };
 
@@ -196,6 +196,21 @@ export function showToast(message, type = 'info') {
     toast.style.opacity = '0';
     setTimeout(() => toast.remove(), 200);
   }, 4000);
+}
+
+// Real transaction receipt toast -- links straight to the block explorer so anyone can verify
+// the tx independently rather than taking the UI's word for it.
+export function showTxLink(label, txHash, explorerUrl) {
+  const container = $('toast-container');
+  if (!container) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast-msg toast-success';
+  toast.innerHTML = `<span>${label}: <a href="${explorerUrl}" target="_blank" rel="noopener" style="color:#6ee7b7; text-decoration:underline;">${txHash.slice(0, 10)}...${txHash.slice(-6)} ↗</a></span>`;
+  container.appendChild(toast);
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 200);
+  }, 8000);
 }
 
 // Navigation Coordinator
@@ -541,9 +556,14 @@ function updateBorrowPreview() {
   }
 }
 
-// Execute Borrow Action
+// Execute Borrow Action -- signs and broadcasts a REAL transaction against the deployed
+// CreditLine contract on whichever network the connected wallet is on. Nothing here is
+// simulated: the tx hash below is real and independently checkable on the block explorer.
 async function handleBorrow() {
   const amount = Number($('borrow-amount-input').value) || 0;
+  const tenorInput = $('borrow-tenor-input');
+  const tenorSeconds = tenorInput ? Number(tenorInput.value) || 604800 : 604800;
+
   if (amount <= 0) {
     showToast("Please specify a valid borrow amount.", "warning");
     return;
@@ -552,60 +572,135 @@ async function handleBorrow() {
     showToast("Transaction blocked: requested amount exceeds $2,000 policy limit.", "error");
     return;
   }
+  if (!state.signer || !state.contracts.creditline) {
+    showToast("Connect your wallet first -- this signs a real transaction on testnet, it isn't a preview.", "warning");
+    return;
+  }
 
-  showToast(`Initiating borrow drawdown for $${amount.toLocaleString()}...`, "info");
-  setTimeout(() => {
+  const btn = $('execute-borrow-btn');
+  const originalLabel = btn ? btn.textContent : '';
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = 'Confirm in wallet...'; }
+    showToast(`Sign in your wallet to borrow $${amount.toLocaleString()} for real on ${state.config.shortName}...`, "info");
+
+    const tx = await state.contracts.creditline.borrow(state.merchantId, BigInt(amount), BigInt(tenorSeconds), 0n);
+
+    if (btn) btn.textContent = 'Confirming on-chain...';
+    showToast(`Tx submitted: ${tx.hash.slice(0, 10)}... waiting for confirmation.`, "info");
+
+    const receipt = await tx.wait();
     state.merchantProfile.exposure += amount;
-    showToast(`Drawdown successful! $${amount.toLocaleString()} added to exposure.`, "success");
+
+    const explorerUrl = state.config.blockExplorer ? `${state.config.blockExplorer}/tx/${tx.hash}` : null;
+    showToast(`Confirmed in block ${receipt.blockNumber}. $${amount.toLocaleString()} sent to your wallet -- for real.`, "success");
+    if (explorerUrl) {
+      showTxLink('Borrow confirmed', tx.hash, explorerUrl);
+    }
     refreshDashboard();
-  }, 600);
+  } catch (err) {
+    const decoded = decodeContractError(err, [state.contracts.creditline.interface]);
+    showToast(`Borrow rejected on-chain: ${decoded.explanation.title}`, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = originalLabel || 'Execute Borrow Draw'; }
+  }
 }
 
-// Execute Repay Action
+// Execute Repay Action -- a real payable transaction, msg.value == amount owed, matching
+// CreditLine.repay's own check (msg.value != amount reverts InvalidAmount()).
 async function handleRepay() {
   if (state.merchantProfile.exposure <= 0) {
     showToast("No active debt balance to repay.", "info");
     return;
   }
+  if (!state.signer || !state.contracts.creditline) {
+    showToast("Connect your wallet first -- this signs a real transaction on testnet, it isn't a preview.", "warning");
+    return;
+  }
+
   const repaid = state.merchantProfile.exposure;
-  showToast(`Repaying outstanding exposure of $${repaid.toLocaleString()}...`, "info");
-  setTimeout(() => {
+  const btn = $('execute-repay-btn');
+  const originalLabel = btn ? btn.textContent : '';
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = 'Confirm in wallet...'; }
+    showToast(`Sign in your wallet to repay $${repaid.toLocaleString()} for real on ${state.config.shortName}...`, "info");
+
+    const tx = await state.contracts.creditline.repay(state.merchantId, BigInt(repaid), { value: BigInt(repaid) });
+
+    if (btn) btn.textContent = 'Confirming on-chain...';
+    showToast(`Tx submitted: ${tx.hash.slice(0, 10)}... waiting for confirmation.`, "info");
+
+    const receipt = await tx.wait();
     state.merchantProfile.exposure = 0;
     state.merchantProfile.repCount += 1;
     state.merchantProfile.streak += 1;
-    showToast(`Loan repaid! Repayment streak increased to ${state.merchantProfile.streak}.`, "success");
+
+    const explorerUrl = state.config.blockExplorer ? `${state.config.blockExplorer}/tx/${tx.hash}` : null;
+    showToast(`Confirmed in block ${receipt.blockNumber}. Repayment streak now ${state.merchantProfile.streak}.`, "success");
+    if (explorerUrl) {
+      showTxLink('Repayment confirmed', tx.hash, explorerUrl);
+    }
     refreshDashboard();
-  }, 600);
+  } catch (err) {
+    const decoded = decodeContractError(err, [state.contracts.creditline.interface]);
+    showToast(`Repay rejected on-chain: ${decoded.explanation.title}`, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = originalLabel || 'Repay Active Debt'; }
+  }
 }
 
-// Emit Source Activity Flow
+// Emit Source Activity Flow -- step 1 is a REAL signed transaction on Ethereum Sepolia
+// (EconomicEvents.sol). The remaining relayer step (proving that tx into AttestcoinVerifier on
+// CC3) is a real off-chain service call this page does not automate yet, so it is reported
+// honestly instead of faked.
+const SEPOLIA_CHAIN_ID_HEX = "0xaa36a7"; // Ethereum Sepolia, chainId 11155111
+const EMIT_FN_BY_TYPE = ['emitPaymentSettled', 'emitRevenueRecorded', 'emitLoanRepayment', 'emitObligationMissed'];
+
 async function handleEmitActivity() {
   const eventType = Number($('emit-type-select').value);
   const amount = Number($('emit-amount-input').value);
   const logBox = $('activity-log-box');
+  if (!logBox) return;
 
-  logBox.innerHTML = `<div>[1/4] Emitting ${EVENT_TYPE_NAMES[eventType]} event on Sepolia...</div>`;
+  if (!state.signer) {
+    showToast("Connect your wallet first -- this signs a real Sepolia transaction, it isn't a preview.", "warning");
+    return;
+  }
+  const c = state.config.contracts;
+  const fnName = EMIT_FN_BY_TYPE[eventType] || 'emitPaymentSettled';
+  if (!c || !c.economicEvents) {
+    showToast("EconomicEvents address not configured for this network.", "error");
+    return;
+  }
 
-  setTimeout(() => {
-    logBox.innerHTML += `<div>[2/4] Source Tx Mined on Sepolia Block #${state.sepoliaBlockHeight}. Tx: <span class="mono">0x${Math.random().toString(16).slice(2, 10)}...</span></div>`;
-  }, 500);
+  logBox.innerHTML = `<div>[1/2] Switch your wallet to Ethereum Sepolia to emit a real source-chain event...</div>`;
+  try {
+    await wallet.switchNetwork(SEPOLIA_CHAIN_ID_HEX);
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const network = await provider.getNetwork();
+    if (Number(network.chainId) !== 11155111) {
+      logBox.innerHTML += `<div style="color:#f87171;">Still on chain ${network.chainId} -- switch to Sepolia in your wallet and try again.</div>`;
+      return;
+    }
+    const signer = await provider.getSigner();
+    const econ = new ethers.Contract(c.economicEvents, ABI.econ, signer);
+    const refBytes32 = ethers.encodeBytes32String("ref-" + Date.now().toString().slice(-8));
 
-  setTimeout(() => {
-    logBox.innerHTML += `<div>[3/4] Attestcoin Proof Generated &amp; Attested across validators...</div>`;
-  }, 1000);
+    logBox.innerHTML += `<div>[2/2] Sign in your wallet to emit ${EVENT_TYPE_NAMES[eventType]} for $${amount.toLocaleString()} on Sepolia...</div>`;
+    const tx = await econ[fnName](state.merchantId, BigInt(amount), refBytes32);
+    logBox.innerHTML += `<div>Tx submitted: <span class="mono">${tx.hash}</span> -- waiting for confirmation...</div>`;
 
-  setTimeout(() => {
-    logBox.innerHTML += `<div style="color:#10b981; font-weight:700;">[4/4] Cryptographically verified on Creditcoin CC3! Capacity updated.</div>`;
+    const receipt = await tx.wait();
+    logBox.innerHTML += `<div style="color:#10b981; font-weight:700;">Confirmed on Sepolia in block ${receipt.blockNumber}. <a href="https://sepolia.etherscan.io/tx/${tx.hash}" target="_blank" rel="noopener" style="color:#6ee7b7;">View on Etherscan &#8599;</a></div>`;
+    logBox.innerHTML += `<div style="color:#93c5fd; margin-top:6px; font-size:11px;">This transaction is real and independently verifiable. Turning it into verified CreditPassport capacity on Creditcoin CC3 needs the Attestcoin relayer to submit a Merkle inclusion proof of this tx to AttestcoinVerifier.submitEvidence -- that off-chain relayer hop isn't triggered automatically from this page.</div>`;
+
     const evTypeName = EVENT_TYPE_NAMES[eventType] || 'PaymentSettled';
     const isPenalized = eventType === 3; // ObligationMissed
-    const randomTx = '0x' + Array.from({length: 8}, () => Math.floor(Math.random()*16).toString(16)).join('') + '...' + Array.from({length: 4}, () => Math.floor(Math.random()*16).toString(16)).join('');
-
     if (isPenalized) {
       state.merchantProfile.missed += 1;
-      state.merchantProfile.streak = 0; // Missed resets streak
+      state.merchantProfile.streak = 0;
     } else {
       state.merchantProfile.vol += amount;
-      if (eventType === 2) { // LoanRepayment
+      if (eventType === 2) {
         state.merchantProfile.repCount += 1;
         state.merchantProfile.streak += 1;
       }
@@ -615,75 +710,106 @@ async function handleEmitActivity() {
       type: evTypeName,
       vol: `${amount.toLocaleString()}.00`,
       chain: 'Sepolia (ChainKey 1)',
-      evId: randomTx,
-      status: isPenalized ? 'PENALIZED' : 'VERIFIED'
+      evId: `${tx.hash.slice(0, 6)}...${tx.hash.slice(-4)}`,
+      status: 'SUBMITTED (awaiting relayer attestation)'
     });
 
-    showToast(`Recorded ${evTypeName} (${amount.toLocaleString()}) on-chain!`, isPenalized ? 'warning' : 'success');
+    showToast(`Real Sepolia transaction confirmed: ${tx.hash.slice(0, 10)}...`, "success");
     refreshDashboard();
-  }, 1600);
+  } catch (err) {
+    const decoded = decodeContractError(err);
+    logBox.innerHTML += `<div style="color:#f87171;">${decoded.explanation.title || decoded.explanation.description}</div>`;
+    showToast(`Could not emit event: ${decoded.explanation.title}`, "error");
+  }
 }
 
-// Security Lab Attack Simulator
+// Security Lab Attack Simulator -- "replay" and "maliciousai" fire a REAL eth_call against the
+// deployed contracts (no wallet or gas needed for a static call) and show the genuine revert.
+// "replay" and "failedtx" need a real already-consumed evidence ID / a real reverted source tx
+// pulled from chain history to reproduce live, which this page doesn't query yet -- those two
+// stay clearly labeled as an explainer, backed by the same error selectors this ABI defines.
 async function executeSecurityAttack(attackKey) {
   const resEl = $(`res-${attackKey}`);
   if (!resEl) return;
 
   resEl.className = "attack-result-box active";
-  resEl.innerHTML = `<div style="color:#60a5fa;">[1/3] Packaging malicious payload &amp; simulating EVM execution...</div>`;
 
+  if (attackKey === 'maliciousai' || attackKey === 'fakesource') {
+    resEl.innerHTML = `<div style="color:#60a5fa;">[1/2] Sending a real eth_call to the deployed contract on ${state.config.shortName}...</div>`;
+    const c = state.config.contracts;
+    const targetContract = attackKey === 'maliciousai' ? c.creditLine : c.attestcoinVerifier;
+    const targetName = attackKey === 'maliciousai' ? 'CreditLine.sol / PolicyEngine.sol' : 'AttestcoinVerifier.sol';
+    try {
+      const provider = state.provider || new ethers.BrowserProvider(window.ethereum);
+      if (attackKey === 'maliciousai') {
+        const creditline = new ethers.Contract(c.creditLine, ABI.creditline, provider);
+        await creditline.borrow.staticCall(state.merchantId, 50000n, 604800n, 50000n);
+      } else {
+        const verifier = new ethers.Contract(c.attestcoinVerifier, ABI.verifier, provider);
+        const rogueInput = {
+          chainKey: state.config.sourceChainKey,
+          height: 0,
+          encodedTransaction: "0x",
+          merkleProof: { root: ethers.ZeroHash, siblings: [] },
+          continuityProof: { lowerEndpointDigest: ethers.ZeroHash, roots: [] },
+          sourceContract: "0x000000000000000000000000000000000000dEaD",
+          logIndex: 0
+        };
+        await verifier.submitEvidence.staticCall(rogueInput);
+      }
+      resEl.innerHTML = `<div style="color:#f87171;">Unexpected: this call did not revert on ${state.config.shortName}. Please report this.</div>`;
+    } catch (err) {
+      const decoded = decodeContractError(err);
+      resEl.innerHTML = `
+        <div style="font-weight:700; color:#10b981; margin-bottom:5px; font-size:12px; display:flex; align-items:center; gap:6px;">
+          <span>🛡️</span> REAL ETH_CALL REVERTED ON-CHAIN
+        </div>
+        <div class="mono" style="font-size:11px; color:#ffffff; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); padding:5px 8px; border-radius:4px; margin-bottom:6px;">
+          Revert: <span style="color:#f87171; font-weight:700;">${decoded.name}</span> <span style="color:#94a3b8;">(${decoded.selector})</span>
+        </div>
+        <div style="font-size:11px; color:var(--text-muted); margin-bottom:5px;">${decoded.explanation.description}</div>
+        <div style="font-size:10.5px; color:#60a5fa; margin-bottom:6px;">Enforcing Authority: <span class="mono">${decoded.explanation.authority}</span></div>
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; display:flex; justify-content:space-between; align-items:center; font-size:10.5px;">
+          <span style="color:var(--text-dim);">${targetName}</span>
+          <a href="https://creditcoin-testnet.blockscout.com/address/${targetContract}" target="_blank" rel="noopener" style="color:#34d399; text-decoration:none; font-weight:500;">
+            ↗ Blockscout Verified Contract
+          </a>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  resEl.innerHTML = `<div style="color:#f59e0b;">Explaining the on-chain rule (not a live call for this one)...</div>`;
   setTimeout(() => {
-    resEl.innerHTML = `<div style="color:#f59e0b;">[2/3] Submitting call to Creditcoin CC3 testnet contract...</div>`;
-  }, 500);
-
-  setTimeout(() => {
-    let errName = "";
-    let selector = "";
-    let desc = "";
-    let auth = "";
-
+    let errName = "", selector = "", desc = "", auth = "";
     if (attackKey === 'replay') {
       errName = "EvidenceAlreadyConsumed";
       selector = "0xae5c42ee";
-      desc = "Cryptographic evidence has already been consumed in protocol replay registry.";
+      desc = "Cryptographic evidence that has already been consumed cannot be submitted again -- the protocol's evidenceConsumed mapping blocks it.";
       auth = "AttestcoinVerifier.sol (evidenceConsumed mapping)";
-    } else if (attackKey === 'fakesource') {
-      errName = "SourceContractMismatch";
-      selector = "0xd1ec97f1";
-      desc = "Source emitter contract is not present in protocol allowlist registry.";
-      auth = "AttestcoinVerifier.sol (registeredSourceContracts mapping)";
-    } else if (attackKey === 'failedtx') {
+    } else {
       errName = "SourceTransactionFailed";
       selector = "0xc60cdba1";
-      desc = "EIP-658 receipt status = 0 (reverted transaction cannot generate credit).";
+      desc = "EIP-658 receipt status = 0 (a reverted source transaction cannot generate credit).";
       auth = "TransactionEvidence.sol (Receipt Status Guard)";
-    } else if (attackKey === 'maliciousai') {
-      errName = "BorrowRejected(POLICY_LIMIT_EXCEEDED)";
-      selector = "0x3777de94";
-      desc = "Off-chain AI requested $50,000 borrow, exceeding $2,000 hard on-chain limit.";
-      auth = "PolicyEngine.sol (maxLoanAmount limit)";
     }
-
-    const targetContract = attackKey === 'maliciousai' ? state.config.contracts.policyEngine : state.config.contracts.attestcoinVerifier;
-    const targetName = attackKey === 'maliciousai' ? 'PolicyEngine.sol' : (attackKey === 'failedtx' ? 'TransactionEvidence.sol / Verifier' : 'AttestcoinVerifier.sol');
-
+    const targetContract = state.config.contracts.attestcoinVerifier;
     resEl.innerHTML = `
-      <div style="font-weight:700; color:#10b981; margin-bottom:5px; font-size:12px; display:flex; align-items:center; gap:6px;">
-        <span>🛡️</span> ATTACK REVERTED DETERMINISTICALLY ON-CHAIN
+      <div style="font-weight:700; color:#f59e0b; margin-bottom:5px; font-size:12px; display:flex; align-items:center; gap:6px;">
+        <span>📖</span> HOW THIS CONTROL WORKS (explainer, not a live call)
       </div>
       <div class="mono" style="font-size:11px; color:#ffffff; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3); padding:5px 8px; border-radius:4px; margin-bottom:6px;">
-        Revert: <span style="color:#f87171; font-weight:700;">${errName}</span> <span style="color:#94a3b8;">(${selector})</span>
+        Would revert: <span style="color:#f87171; font-weight:700;">${errName}</span> <span style="color:#94a3b8;">(${selector})</span>
       </div>
       <div style="font-size:11px; color:var(--text-muted); margin-bottom:5px;">${desc}</div>
       <div style="font-size:10.5px; color:#60a5fa; margin-bottom:6px;">Enforcing Authority: <span class="mono">${auth}</span></div>
-      <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:6px; display:flex; justify-content:space-between; align-items:center; font-size:10.5px;">
-        <span style="color:var(--text-dim);">${targetName}</span>
-        <a href="https://creditcoin-testnet.blockscout.com/address/${targetContract}" target="_blank" rel="noopener" style="color:#34d399; text-decoration:none; font-weight:500;">
-          ↗ Blockscout Verified Contract
-        </a>
+      <div style="font-size:10px; color:var(--text-dim); border-top:1px solid rgba(255,255,255,0.08); padding-top:6px;">
+        Reproducing this one live needs a genuinely already-consumed evidence ID / a genuinely reverted source tx pulled from chain history -- see <span class="mono">test/replay.t.sol</span> and <span class="mono">test/reentrancy.t.sol</span> for the version that runs for real in CI.
+        <a href="https://creditcoin-testnet.blockscout.com/address/${targetContract}" target="_blank" rel="noopener" style="color:#34d399; text-decoration:none; font-weight:500;">↗ Blockscout Verified Contract</a>
       </div>
     `;
-  }, 1100);
+  }, 500);
 }
 
 // Developer API Live Query Sandbox
@@ -979,6 +1105,34 @@ window.addEventListener('DOMContentLoaded', async () => {
       } catch (err) {
         showToast(err.message || "MetaMask not detected: running in public read-only RPC mode", "warning");
       }
+    });
+  }
+
+  // Landing Page -- launch the app, or connect wallet then launch
+  const launchApp = () => {
+    const landing = $('landing-page');
+    const shell = $('app-shell');
+    if (landing) landing.style.display = 'none';
+    if (shell) shell.classList.remove('pre-launch');
+    window.scrollTo({ top: 0 });
+  };
+  window.launchApp = launchApp;
+
+  const landingLaunchBtn = $('landing-launch-btn');
+  if (landingLaunchBtn) landingLaunchBtn.addEventListener('click', launchApp);
+
+  const landingLaunchBtnNav = $('landing-launch-btn-nav');
+  if (landingLaunchBtnNav) landingLaunchBtnNav.addEventListener('click', launchApp);
+
+  const landingConnectBtn = $('landing-connect-btn');
+  if (landingConnectBtn) {
+    landingConnectBtn.addEventListener('click', async () => {
+      try {
+        await wallet.connect();
+      } catch (err) {
+        showToast(err.message || "MetaMask not detected -- continuing in public read-only RPC mode", "warning");
+      }
+      launchApp();
     });
   }
 
