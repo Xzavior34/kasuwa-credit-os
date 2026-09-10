@@ -1,4 +1,4 @@
-// frontend/js/wallet.js - Robust wallet connection state machine
+// frontend/js/wallet.js - Robust wallet connection state machine with automatic CC3 chain addition
 
 export class WalletManager {
   constructor(onStateChange) {
@@ -9,14 +9,14 @@ export class WalletManager {
     this.onStateChange = onStateChange;
     this.isConnecting = false;
 
-    if (window.ethereum) {
+    if (typeof window !== 'undefined' && window.ethereum) {
       window.ethereum.on('accountsChanged', (accounts) => this.handleAccountsChanged(accounts));
       window.ethereum.on('chainChanged', (chainId) => this.handleChainChanged(chainId));
     }
   }
 
   async connect() {
-    if (!window.ethereum) {
+    if (typeof window === 'undefined' || !window.ethereum) {
       throw new Error("No Web3 wallet (MetaMask) detected. Please install a compatible browser wallet.");
     }
 
@@ -28,6 +28,12 @@ export class WalletManager {
       this.address = accounts[0];
       const network = await this.provider.getNetwork();
       this.chainId = Number(network.chainId);
+
+      // Auto-switch to Creditcoin CC3 Testnet (102031 / 0x18e8f) if on another network
+      if (this.chainId !== 102031) {
+        await this.switchNetwork('0x18e8f');
+      }
+
       this.isConnecting = false;
 
       this.onStateChange({
@@ -50,14 +56,34 @@ export class WalletManager {
   }
 
   async switchNetwork(targetChainIdHex) {
-    if (!window.ethereum) return;
+    if (typeof window === 'undefined' || !window.ethereum) return;
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: targetChainIdHex }],
       });
     } catch (switchError) {
-      console.warn("Could not auto-switch network:", switchError);
+      if (
+        switchError.code === 4902 ||
+        switchError.data?.originalError?.code === 4902 ||
+        String(switchError.message).includes('Unrecognized chain') ||
+        String(switchError.message).includes('4902')
+      ) {
+        if (targetChainIdHex === '0x18e8f' || targetChainIdHex === 102031 || targetChainIdHex === '102031') {
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{
+              chainId: '0x18e8f',
+              chainName: 'Creditcoin CC3 Testnet',
+              nativeCurrency: { name: 'Creditcoin', symbol: 'tCTC', decimals: 18 },
+              rpcUrls: ['https://rpc.cc3-testnet.creditcoin.network'],
+              blockExplorerUrls: ['https://creditcoin-testnet.blockscout.com']
+            }]
+          });
+        }
+      } else {
+        console.warn("Could not auto-switch network:", switchError);
+      }
     }
   }
 

@@ -281,20 +281,53 @@ function initContracts(runner) {
   }
 }
 
-// Wallet State Listener
-export const wallet = new WalletManager((wState) => {
+// Wallet State Listener & Live On-Chain Integration
+export const wallet = new WalletManager(async (wState) => {
   const btn = $('wallet-connect-btn') || $('wallet-btn');
   if (wState.status === 'CONNECTED') {
     state.provider = wState.provider;
     state.signer = wState.signer;
     state.walletAddress = wState.address;
+
     if (btn) {
-      btn.textContent = `${wState.address.slice(0, 6)}...${wState.address.slice(-4)}`;
+      btn.textContent = `🟢 ${wState.address.slice(0, 6)}...${wState.address.slice(-4)}`;
       btn.classList.add('connected');
     }
-    showToast(`Wallet connected: ${wState.address.slice(0, 6)}...${wState.address.slice(-4)}`, 'success');
+
+    // Register connected wallet as a live merchant profile
+    MERCHANT_PROFILES['live-wallet'] = {
+      name: 'My Connected Wallet',
+      alias: `${wState.address.slice(0, 6)}...${wState.address.slice(-4)} (Live Credit Identity)`,
+      vol: 0,
+      repCount: 0,
+      streak: 0,
+      missed: 0,
+      tier: 1,
+      exposure: 0,
+      isLive: true,
+      events: []
+    };
+
+    // Update merchant selector in topbar
+    const select = $('merchant-preset-select');
+    if (select) {
+      let liveOpt = select.querySelector('option[value="live-wallet"]');
+      if (!liveOpt) {
+        liveOpt = document.createElement('option');
+        liveOpt.value = 'live-wallet';
+        select.insertBefore(liveOpt, select.firstChild);
+      }
+      liveOpt.textContent = `🟢 [LIVE WALLET] ${wState.address.slice(0, 6)}...${wState.address.slice(-4)}`;
+      select.value = 'live-wallet';
+    }
+
+    state.currentMerchantKey = 'live-wallet';
+    state.merchantProfile = { ...MERCHANT_PROFILES['live-wallet'] };
+    state.merchantId = ethers.zeroPadValue(wState.address, 32);
+
+    showToast(`Wallet connected: ${wState.address.slice(0, 6)}...${wState.address.slice(-4)} (Live Mode Active)`, 'success');
     initContracts(state.signer);
-    refreshDashboard();
+    await refreshDashboard();
   } else if (wState.status === 'DISCONNECTED') {
     state.signer = null;
     state.walletAddress = null;
@@ -302,8 +335,18 @@ export const wallet = new WalletManager((wState) => {
       btn.textContent = 'Connect Wallet';
       btn.classList.remove('connected');
     }
+    const select = $('merchant-preset-select');
+    if (select) {
+      const liveOpt = select.querySelector('option[value="live-wallet"]');
+      if (liveOpt) liveOpt.remove();
+      select.value = 'merchant-1';
+    }
+    state.currentMerchantKey = 'merchant-1';
+    state.merchantProfile = { ...MERCHANT_PROFILES['merchant-1'] };
+    state.merchantId = ethers.encodeBytes32String('merchant-1');
+
     initContracts(state.provider);
-    refreshDashboard();
+    await refreshDashboard();
   }
 });
 window.wallet = wallet;
@@ -339,18 +382,41 @@ function calculateFormula(vol, rep, streak, missed) {
 // Refresh Full Dashboard
 export async function refreshDashboard() {
   const prof = state.merchantProfile;
-  const { baseCap, repBonus, streakBonus, missPenalty, finalCap } = calculateFormula(prof.vol, prof.repCount, prof.streak, prof.missed);
 
+  // If connected in LIVE WALLET mode, fetch real on-chain state from CreditPassport & LiquidityPool
+  if (state.walletAddress && state.currentMerchantKey === 'live-wallet') {
+    try {
+      const passportAddr = (state.config.contracts && state.config.contracts.creditPassport) || '0x9DbaD85c6eBFA90fD4634deE08020Bb95a80942d';
+      const poolAddr = (state.config.contracts && state.config.contracts.liquidityPool) || '0xB89E9A2D42BbE6Ffd7Dca9b8f225d4A43C219AF8';
+      const provider = state.provider || new ethers.JsonRpcProvider('https://rpc.cc3-testnet.creditcoin.network');
+      
+      const passport = new ethers.Contract(passportAddr, ABI.passport, provider);
+      const pool = new ethers.Contract(poolAddr, ABI.pool, provider);
+
+      const [cap, exp, avail, act, repHistory, poolBal] = await Promise.all([
+        passport.getCreditCapacity(state.merchantId).catch(() => 0n),
+        passport.getCurrentExposure(state.merchantId).catch(() => 0n),
+        passport.getAvailableCredit(state.merchantId).catch(() => 0n),
+        passport.getVerifiedEconomicActivity(state.merchantId).catch(() => [0n, 0n]),
+        passport.getRepaymentHistory(state.merchantId).catch(() => [0n, 0n, 0n, 0n]),
+        pool.totalLiquidity().catch(() => 0n)
+      ]);
+
+      prof.vol = Number(act[1]);
+      prof.exposure = Number(exp);
+      prof.repCount = Number(repHistory[0]);
+      prof.streak = Number(repHistory[2]);
+      prof.missed = Number(repHistory[3]);
+      const onChainCap = Number(cap);
+      prof.tier = onChainCap >= 1500 ? 5 : onChainCap >= 1000 ? 4 : onChainCap >= 500 ? 3 : onChainCap > 0 ? 2 : 1;
+    } catch (err) {
+      console.warn("On-chain passport query warning:", err);
+    }
+  }
+
+  const { baseCap, repBonus, streakBonus, missPenalty, finalCap } = calculateFormula(prof.vol, prof.repCount, prof.streak, prof.missed);
   const capacity = finalCap;
   const exposure = prof.exposure;
-  // The formula above computes a merchant's raw, uncapped mathematical capacity
-  // (this is intentionally shown uncapped on the Capacity Engine breakdown page,
-  // so judges can see the formula before enforcement). Everywhere else in the UI
-  // that claims to show the merchant's *available borrowing limit* must respect
-  // PolicyEngine.sol's deterministic ceiling (state.policyLimit) -- otherwise the
-  // hero number can (and for several demo merchants, does) exceed the "$2,000
-  // hard on-chain policy ceiling" label rendered right next to it, contradicting
-  // the app's own "AI can advise. AI cannot authorize." trust-boundary pitch.
   const effectiveCapacity = Math.min(capacity, state.policyLimit);
   const available = Math.max(0, effectiveCapacity - exposure);
 
