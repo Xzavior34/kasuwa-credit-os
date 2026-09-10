@@ -28,7 +28,7 @@ function playAudioClick() {
 // --- UI Animation Helpers ---
 function animateNumber(elId, targetVal, durationMs, formatter) {
   const el = document.getElementById(elId);
-  if (!el) return;
+  if (!el || typeof el.getAttribute !== 'function') return;
   const startVal = parseFloat(el.getAttribute('data-val')) || 0;
   el.setAttribute('data-val', targetVal);
   if (startVal === targetVal) {
@@ -43,12 +43,18 @@ function animateNumber(elId, targetVal, durationMs, formatter) {
     const currentVal = startVal + (targetVal - startVal) * easeOut;
     el.textContent = formatter(currentVal);
     if (progress < 1) {
-      window.requestAnimationFrame(step);
+      if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+        window.requestAnimationFrame(step);
+      }
     } else {
       el.textContent = formatter(targetVal);
     }
   };
-  window.requestAnimationFrame(step);
+  if (typeof window !== 'undefined' && window.requestAnimationFrame) {
+    window.requestAnimationFrame(step);
+  } else {
+    el.textContent = formatter(targetVal);
+  }
 }
 
 // Global Error Boundary
@@ -181,6 +187,8 @@ const state = {
   sepoliaBlockHeight: 11640173
 };
 
+
+
 // UI Helper
 const $ = (id) => document.getElementById(id);
 
@@ -212,6 +220,17 @@ export function showTxLink(label, txHash, explorerUrl) {
     setTimeout(() => toast.remove(), 200);
   }, 8000);
 }
+
+
+export function launchApp() {
+  const landing = $('landing-page');
+  const shell = $('app-shell');
+  if (landing) landing.style.display = 'none';
+  if (shell) shell.classList.remove('pre-launch');
+  window.scrollTo({ top: 0 });
+  refreshDashboard();
+}
+window.launchApp = launchApp;
 
 // Navigation Coordinator
 export function navigateToPage(pageKey) {
@@ -263,9 +282,10 @@ function initContracts(runner) {
 }
 
 // Wallet State Listener
-const wallet = new WalletManager((wState) => {
-  const btn = $('wallet-btn');
+export const wallet = new WalletManager((wState) => {
+  const btn = $('wallet-connect-btn') || $('wallet-btn');
   if (wState.status === 'CONNECTED') {
+    state.provider = wState.provider;
     state.signer = wState.signer;
     state.walletAddress = wState.address;
     if (btn) {
@@ -286,6 +306,7 @@ const wallet = new WalletManager((wState) => {
     refreshDashboard();
   }
 });
+window.wallet = wallet;
 
 // Emerging Market Dual FX Parity Configuration
 const FX_RATES = {
@@ -1149,6 +1170,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   // Wallet Connect Button
+  const walletConnectBtn = $('wallet-connect-btn') || $('wallet-btn');
+  if (walletConnectBtn) {
+    walletConnectBtn.addEventListener('click', async () => {
+      try {
+        await wallet.connect();
+      } catch (err) {
+        showToast(err.message || "MetaMask not detected: running in public read-only RPC mode", "warning");
+      }
+    });
+  }
+
   const walletBtn = $('wallet-btn');
   if (walletBtn) {
     walletBtn.addEventListener('click', async () => {
@@ -1189,23 +1221,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   
-  // Mobile Sidebar Drawer Navigation
-  const mobileBtn = $('mobile-toggle-btn');
-  const sidebar = $('app-sidebar');
-  const overlay = $('sidebar-overlay');
 
-  if (mobileBtn && sidebar) {
-    mobileBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      if (overlay) overlay.classList.toggle('active', sidebar.classList.contains('open'));
-    });
-  }
-  if (overlay && sidebar) {
-    overlay.addEventListener('click', () => {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('active');
-    });
-  }
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (window.innerWidth <= 1024 && sidebar) {
