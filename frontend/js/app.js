@@ -1137,6 +1137,9 @@ window.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Proof Drawer Open / Close
+  const submitProofBtn = $('submit-proof-onchain-btn');
+  if (submitProofBtn) submitProofBtn.addEventListener('click', handleSubmitProofOnChain);
+
   const openInspectorBtn = $('open-full-inspector-btn');
   if (openInspectorBtn) openInspectorBtn.addEventListener('click', () => openProofDrawer(0));
 
